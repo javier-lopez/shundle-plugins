@@ -82,7 +82,7 @@ To modify which aliases are loaded by default define `ALIAZATOR_PLUGINS` in your
    ALIAZATOR_PLUGINS="minimal"
    ```
 
-`ALIAZATOR_PLUGINS` recognice the following options:
+`ALIAZATOR_PLUGINS` recognize the following options:
 
 - none
  - no alias is loaded
