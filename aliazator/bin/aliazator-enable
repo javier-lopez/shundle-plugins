@@ -61,6 +61,10 @@ _aliazator_enable()
     esac
 }
 
+if [ -f ~/.aliases ] && [ ! -f "$ALIAZATOR_PATH"/default/custom.aliases ]; then
+    ln -s ~/.aliases "$ALIAZATOR_PATH"/default/custom.aliases #setup custom before starting
+fi
+
 _aliazator_enable "$1"; aliazator_status="$?"
 
 export ALIAZATOR_PLUGINS_ARRAY
