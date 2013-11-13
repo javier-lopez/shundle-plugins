@@ -20,11 +20,11 @@
 #===============================================================================
 
 #TODO 10-10-2013 06:02 >> add support for non bash shells
-export ALIAZATOR_PATH=""$plugin"/aliases"
+export ALIAZATOR_PATH=""$plugin"/aliazator/aliases"
 export ALIAZATOR_CACHE="$ALIAZATOR_PLUGINS"
 
-. "$plugin"/bin/aliazator-enable "$ALIAZATOR_PLUGINS"
+. "$plugin"/aliazator/bin/aliazator-enable "$ALIAZATOR_PLUGINS"
 
-_shundle_expose aliazator=". "$plugin"/bin/aliazator"
+_shundle_expose aliazator=". "$plugin"/aliazator/bin/aliazator"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh : 

@@ -11,7 +11,7 @@
 #================================ Settings =====================================
 #===============================================================================
 #Don't modify this section directly, instead set options in your shell init file
-[ -z "$ETERNALIZE_PATH" ] && ETERNALIZE_PATH=""$plugin"/eternalize.data"
+[ -z "$ETERNALIZE_PATH" ] && ETERNALIZE_PATH=""$plugin"/eternalize/eternalize.data"
 
 #===============================================================================
 #================================== Plugin =====================================

@@ -11,7 +11,7 @@
 #================================ Settings =====================================
 #===============================================================================
 #Don't modify this section directly, instead set them in your shell init file
-[ -z "$COLORIZE_PATH" ]  && COLORIZE_PATH="$plugin"
+[ -z "$COLORIZE_PATH" ]  && COLORIZE_PATH=""$plugin"/colorize"
 [ -z "$COLORIZE_THEME" ] && COLORIZE_THEME="blacky"
 [ -z "$COLORIZE_PS" ]    && COLORIZE_PS="yujie"
 
