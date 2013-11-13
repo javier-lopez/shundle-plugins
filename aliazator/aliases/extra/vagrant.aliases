@@ -1,0 +1,14 @@
+#vagrant
+alias v="vagrant"
+alias vup="vagrant up"
+alias vhlt="vagrant halt"
+alias vspd="vagrant suspend"
+alias vrsm="vagrant resume"
+alias vrl="vagrant reload"
+alias vs="vagrant ssh"
+alias vstat="vagrant status"
+alias vd="vagrant destroy"
+
+alias vup.vbox="vagrant up --provider=virtualbox"
+alias vup.digitalocean="vagrant up --provider=digital_ocean"
+alias vup.aws="vagrant up --provider=aws"

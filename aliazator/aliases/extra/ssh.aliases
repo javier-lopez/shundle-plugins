@@ -1,0 +1,3 @@
+#ssh
+alias ssh.x='ssh -c arcfour,blowfish-cbc -XC'
+alias ssh.list='cat ~/.ssh/config | grep -i "host "|cut -d" " -f2'

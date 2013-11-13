@@ -1,0 +1,30 @@
+# Name:         aliazator
+# Author:       Javier Lopez <m@javier.io>
+# Description:  aliazator manages aliases
+# License:      wtfpl
+# Home:         http://github.com/chilicuil/shundle-plugins/aliazator
+# Version:      0.1
+# Shell:        sh
+# Depends:      none
+
+#===============================================================================
+#================================ Settings =====================================
+#===============================================================================
+#Don't modify this section directly, instead set options in your shell init file
+[ -z "$ALIAZATOR_PLUGINS" ] && ALIAZATOR_PLUGINS="minimal"
+[ -z "$ALIAZATOR_CLOUD" ] && ALIAZATOR_CLOUD=""
+#TODO 03-11-2013 04:35 >> http://alias.sh
+
+#===============================================================================
+#================================== Plugin =====================================
+#===============================================================================
+
+#TODO 10-10-2013 06:02 >> add support for non bash shells
+export ALIAZATOR_PATH=""$plugin"/aliases"
+export ALIAZATOR_CACHE="$ALIAZATOR_PLUGINS"
+
+. "$plugin"/bin/aliazator-enable "$ALIAZATOR_PLUGINS"
+
+_shundle_expose aliazator=". "$plugin"/bin/aliazator"
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

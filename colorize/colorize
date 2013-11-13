@@ -1,0 +1,25 @@
+# Name:         colorize
+# Author:       Javier Lopez <m@javier.io>
+# Description:  colorize plugin, set terminal + ps
+# License:      wtfpl
+# Home:         http://github.com/chilicuil/shundle-plugins/colorize
+# Version:      0.1
+# Shell:        sh
+# Depends:      none
+
+#===============================================================================
+#================================ Settings =====================================
+#===============================================================================
+#Don't modify this section directly, instead set them in your shell init file
+[ -z "$COLORIZE_PATH" ]  && COLORIZE_PATH="$plugin"
+[ -z "$COLORIZE_THEME" ] && COLORIZE_THEME="blacky"
+[ -z "$COLORIZE_PS" ]    && COLORIZE_PS="yujie"
+
+#===============================================================================
+#================================== Plugin =====================================
+#===============================================================================
+
+[ -f "$COLORIZE_PATH"/theme/"$COLORIZE_THEME".theme ] && . "$COLORIZE_PATH"/theme/"$COLORIZE_THEME".theme
+[ -f "$COLORIZE_PATH"/ps/"$COLORIZE_PS".ps ]          && . "$COLORIZE_PATH"/ps/"$COLORIZE_PS".ps
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

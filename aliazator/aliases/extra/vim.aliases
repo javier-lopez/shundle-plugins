@@ -1,0 +1,5 @@
+#vim
+alias vimrc='vim $HOME/.vimrc'
+alias vin='vim -N -u NONE -U NONE'
+alias vrc='vim $HOME/.vimrc'
+alias vi='vim'

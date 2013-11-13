@@ -1,0 +1,2 @@
+#fc-cache
+alias update-fonts='sudo fc-cache -f -v'

@@ -1,0 +1,35 @@
+#git
+alias g='git'
+alias gcf='git clone --dept=1'
+alias gcl='git clone'
+alias ga='git add'
+alias gall='git add .'
+alias gst='git status'
+alias gd='git diff'
+alias gs='git status'
+alias gss='git status -s'
+alias gl='git pull'
+alias gpr='git pull --rebase'
+alias gpp='git pull && git push'
+alias gup='git fetch && git rebase'
+alias gp='git push'
+alias gpo='git push origin'
+alias gc='git commit -v'
+alias gcm='git commit -m'
+alias gca='git commit -v -a'
+alias gci='git commit --interactive'
+alias gb='git branch'
+alias gba='git branch -a'
+alias gcount='git shortlog -sn'
+alias gcp='git cherry-pick'
+alias gco='git checkout'
+alias gexport='git archive --format zip --output'
+alias gdel='git branch -D'
+alias gmu='git fetch origin -v; git fetch upstream -v; git merge upstream/master'
+alias gll='git log --graph --pretty=oneline --abbrev-commit'
+alias gg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
+alias ggs="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --stat"
+alias gsl="git shortlog -sn"
+alias gw="git whatchanged"
+alias grm="git rm"
+alias grmf="git ls-files -d -z | xargs -0 git update-index --remove"

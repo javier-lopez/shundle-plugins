@@ -1,0 +1,10 @@
+#apt-get
+alias update='sudo apt-get update'
+alias upgrade='sudo apt-get upgrade'
+alias remove='sudo apt-get remove'
+alias purge='sudo apt-get purge'
+alias autoremove='sudo apt-get autoremove'
+alias install='sudo apt-get install --no-install-recommends'
+alias isntall='sudo apt-get install --no-install-recommends'
+alias last.installed='grep " install .* <none> " /var/log/dpkg.log'
+alias last.removed='grep " remove .*" /var/log/dpkg.log'

@@ -1,0 +1,80 @@
+#yujie
+
+[ X"$TERM" = X"linux" ] && STR_MAX_LENGTH=3 || STR_MAX_LENGTH=4
+NORMAL_COLOR='\033[0m'
+DATE_COLOR='\033[1;35;40m'
+HOST_COLOR='\033[0;32m'
+USER_COLOR='\033[0;34m'
+DIR_COLOR='\033[1;32m'
+DIR_HOME_COLOR='\033[1;35m'
+DIR_SEP_COLOR='\033[1;31m'
+ABBR_DIR_COLOR='\033[1;37m'
+
+if [ -n "$BASH_VERSION" ]; then
+NEW_PWD='$(
+p=${PWD/$HOME/}
+[ X"$p" != X"$PWD" ] && printf "%s" "'"$DIR_HOME_COLOR"'~"
+if [ X"$p" != X"" ]; then
+until [ X"$p" = X"$d" ]; do
+    p=${p#*/}
+    d=${p%%/*}
+    dirnames[${#dirnames[@]}]="$d"
+done
+fi
+for (( i=0; i<${#dirnames[@]}; i++ )); do
+    if (( i == 0 )) || (( i == ${#dirnames[@]} - 1 )) || (( ${#dirnames[$i]} <= '"$STR_MAX_LENGTH"' )); then
+        printf "%s" "'"$DIR_SEP_COLOR"'/'"$DIR_COLOR"'${dirnames[$i]}"
+    else
+        printf "%s" "'"$DIR_SEP_COLOR"'/'"$ABBR_DIR_COLOR"'${dirnames[$i]:0:'"$STR_MAX_LENGTH"'}"
+    fi
+done
+)'
+else #sh implementation
+NEW_PWD='$(
+p=$(printf "%s\\n" "$PWD" | sed -e "s:$HOME::g")
+[ X"$p" != X"$PWD" ] && printf "%s" "'"$DIR_HOME_COLOR"'~"
+if [ X"$p" != X"" ]; then
+until [ X"$p" = X"$d" ]; do
+    p=${p#*/}
+    d=${p%%/*}
+    dirnames="$dirnames""$d",
+done
+fi
+j=$(printf "%s" "$dirnames" | sed "'"s/[^,]//g"'"|wc -m)
+i=1; while [ "$dirnames" ] ;do
+    dirname=${dirnames%%,*}
+    if [ $i -eq 0 ] || [ $i -eq $j ] || [ ${#dirname} -le '"$STR_MAX_LENGTH"' ]; then
+        printf "%s" "'"$DIR_SEP_COLOR"'/'"$DIR_COLOR"'${dirname}"
+    else
+        dirname=$(printf "%s" "$dirname" | cut -c 1-'"$STR_MAX_LENGTH"')
+        printf "%s" "'"$DIR_SEP_COLOR"'/'"$ABBR_DIR_COLOR"'${dirname}"
+    fi
+    [ X"$dirnames" = X"$dirname" ] && dirnames='' || dirnames="${dirnames#*,}"
+    i=$(expr $i + 1)
+done
+)'
+fi
+
+STATUS='$(
+ret=$?
+[ X"${ret}" = X"0" ] && printf "%b\\n" "\e[01;32m0" || printf "%b\\n" "\e[01;31m$ret"
+)'
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# the first $DIR_COLOR can be removed
+PS1="$NORMAL_COLOR╔═${debian_chroot:+($debian_chroot)}[$DATE_COLOR\D{%R %a(%d).%b}$NORMAL_COLOR] $USER_COLOR\u$NORMAL_COLOR@$HOST_COLOR\h$NORMAL_COLOR [$STATUS$NORMAL_COLOR:$DIR_COLOR$NEW_PWD$NORMAL_COLOR]\n╚═[\$] "
+
+unset STR_MAX_LENGTH DIR_COLOR DIR_HOME_COLOR DIR_SEP_COLOR ABBR_DIR_COLOR USER_COLOR NEW_PWD PS1_ERROR
+
+#http://aymanh.com/how-debug-bash-scripts
+if [ -n "$BASH_VERSION" ]; then
+    export PS4='>>(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+else
+    export PS4='>>($0:${LINENO})+:'
+fi
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

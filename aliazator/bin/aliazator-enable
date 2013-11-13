@@ -1,0 +1,70 @@
+[ "$#" -lt 1 ] && return
+
+#TODO 19-10-2013 08:30 >> reeplace basename with a full portable option, probably shell code
+_aliazator_source()
+{
+    [ -z "$1" ] && return
+    ALIAZATOR_PLUGINS_ARRAY="$ALIAZATOR_PLUGINS_ARRAY""$(basename "$1" .aliases)"","
+    . "$1"
+}
+
+_aliazator_enable()
+{
+    case "$1" in
+        minimal)
+            for aliases in "$ALIAZATOR_PATH"/default/*; do
+                case $(basename $aliases .aliases) in
+                    general|custom|$OSTYPE) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
+                    osx) #special case, OSTYPE returns string + version on osx systems, wtf
+                        case $OSTYPE in darwin*) [ -f "$aliases" ] && _aliazator_source "$aliases".aliases;; esac ;;
+                esac
+            done
+            ;;
+        installed)
+            _aliazator_enable minimal
+            for aliases in "$ALIAZATOR_PATH"/extra/*; do
+                case $(basename $aliases .aliases) in
+                    *)
+                        if type $(basename $aliases .aliases) 1> /dev/null 2> /dev/null; then
+                            _aliazator_source "$aliases"
+                        fi
+                        ;;
+                esac
+            done
+            ;;
+        all)
+            _aliazator_enable minimal
+            for aliases in "$ALIAZATOR_PATH"/extra/*; do
+                case $(basename $aliases .aliases) in
+                    *) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
+                esac
+            done
+            ;;
+        custom*)
+            #http://stackoverflow.com/a/15988793/1724603
+            _aliazator_enable_var_aplugin=$(printf "%s\\n" "$1" | grep "custom:" | cut -d: -f2)
+            while [ "$_aliazator_enable_var_aplugin" ] ;do
+                _aliazator_enable_var_option=${_aliazator_enable_var_aplugin%%,*}
+                case "$_aliazator_enable_var_option" in
+                    minimal|installed) _aliazator_enable "$_aliazator_enable_var_option" ;;
+                    *) [ -f "$ALIAZATOR_PATH"/extra/"$_aliazator_enable_var_option".aliases ] && \
+                        _aliazator_source "$ALIAZATOR_PATH"/extra/"$_aliazator_enable_var_option".aliases ;;
+                esac
+            [ X"$_aliazator_enable_var_aplugin" = X"$_aliazator_enable_var_option" ] && \
+                _aliazator_enable_var_aplugin='' || _aliazator_enable_var_aplugin="${_aliazator_enable_var_aplugin#*,}"
+            done
+        ;;
+        *)
+            [ -f "$ALIAZATOR_PATH"/extra/"$1".aliases ] && { _aliazator_source "$ALIAZATOR_PATH"/extra/"$1".aliases; return 0; }
+            [ -f "$ALIAZATOR_PATH"/default/"$1".aliases ] && { _aliazator_source "$ALIAZATOR_PATH"/default/"$1".aliases; return 0; }
+        ;;
+    esac
+}
+
+_aliazator_enable "$1"; aliazator_status="$?"
+
+export ALIAZATOR_PLUGINS_ARRAY
+
+return $aliazator_status
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

@@ -1,0 +1,24 @@
+#general
+alias bashrc='$EDITOR $HOME/.bashrc'
+alias beep='printf "%b\\n" "\007\c"'
+alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
+
+#cd
+alias ..='cd ..'
+alias ....='cd ../..'
+alias cd-='cd -'
+alias cd..='cd ..'
+
+#clear
+alias cls='clear'
+
+alias edit="$EDITOR"
+alias dmesg.tail='dmesg|tail'
+alias h='history'
+alias pg='ping google.com'
+alias pager="$PAGER"
+alias rd='rmdir'
+alias size='du -sh'
+
+alias zz='exit'
+alias q='exit'

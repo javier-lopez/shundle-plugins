@@ -1,0 +1,2 @@
+#traceroute
+alias traceroute='traceroute -T -p 80'

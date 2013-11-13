@@ -1,0 +1,31 @@
+# Name:         eternalize
+# Author:       Javier Lopez <m@javier.io>
+# Description:  eternalize creates an eternal bash history file
+# License:      wtfpl
+# Home:         http://github.com/chilicuil/shundle-plugins/eternalize
+# Version:      0.1
+# Shell:        bash
+# Depends:      none
+
+#===============================================================================
+#================================ Settings =====================================
+#===============================================================================
+#Don't modify this section directly, instead set options in your shell init file
+[ -z "$ETERNALIZE_PATH" ] && ETERNALIZE_PATH=""$plugin"/eternalize.data"
+
+#===============================================================================
+#================================== Plugin =====================================
+#===============================================================================
+
+#TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed
+#on the fly
+
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
+export HISTCONTROL=ignoreboth
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
+'[ X"$(printf "%s\\n" "$eternalize_var_lastcmd" | cut -d" " -f5-)" = X"$(history 1 | cut -d" " -f5-)" ] || { export eternalize_var_lastcmd=$(history 1); eternalize_var_lastcmd_format=$(printf "%s\\n" "$eternalize_var_lastcmd"|cut -d" " -f3-); printf "%s\\n" "$USER:$eternalize_var_lastcmd_format" >> $ETERNALIZE_PATH; }'
+#'printf "%s\\n" "$USER      $(history 1)" >> $ETERNALIZE_PATH'
+
+[ -n "$EDITOR" ] && _shundle_expose eternalize="$EDITOR $ETERNALIZE_PATH" || _shundle_expose eternalize="vi $ETERNALIZE_PATH"
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

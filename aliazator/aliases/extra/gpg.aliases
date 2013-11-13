@@ -1,0 +1,6 @@
+# gnupg
+alias gpg.genkey='gpg --gen-key'
+alias gpg.delete='gpg --delete-key'
+alias gpg.listkeys='gpg --list-keys'
+alias gpg.encrypt='gpg -v --encrypt --recipient $GPGKEY'
+alias gpg.decrypt='gpg -v --decrypt'

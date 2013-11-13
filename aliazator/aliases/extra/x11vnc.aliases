@@ -1,0 +1,4 @@
+#x11vnc
+alias vnc-server='x11vnc -forever -safer -shared -display :0'
+alias vnc-server-passwd='x11vnc -forever -safer -shared -display :0 -passwd '
+alias vnc-server-readonly='x11vnc -forever -viewonly -shared -safer -display :0'

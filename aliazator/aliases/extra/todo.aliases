@@ -1,0 +1,7 @@
+#todo
+alias t='todo'
+alias tls="todo ls"
+alias ta="todo a"
+alias trm="todo rm"
+alias tdo="todo do"
+alias tpri="todo pri"

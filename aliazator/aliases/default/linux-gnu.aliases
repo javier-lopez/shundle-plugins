@@ -1,0 +1,35 @@
+#linux-gnu
+alias addgroup.touser='usermod -a -G'
+alias date.stamp='date +%d-%m-%Y'
+alias dir='ls -d */'
+alias less.color='less -R'
+
+#ls
+alias lh='ls -lah'
+alias lk='ls -l'
+alias l='ls -CF'
+alias lñ='ls --color=auto'
+alias ls='ls --color=auto'
+alias lss='ls --color=auto'
+alias ñ='ls --color=auto'
+alias kl='ls --color=auto'
+alias sl='ls --color=auto'
+alias k='ls -CF'
+alias ks='ls --color=auto'
+alias la='ls -A'
+alias ll='ls -lah'
+alias s='ls -CF'
+alias l1='ls -1'
+alias lsgrep='ls|grep'
+
+#tree
+[ ! -x "$(which tree 2>/dev/null)" ] && alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+
+#top
+alias top-cpu='ps auxf | sort -nr -k 3 | head -10'
+alias top-mem='ps auxf | sort -nr -k 4 | head -10'
+
+alias test-stress='dd if=/dev/zero of=/dev/null bs=1024k'
+
+alias x-nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
+alias rb='ruby'
