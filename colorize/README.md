@@ -46,67 +46,67 @@ To modify which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in your 
 
 `COLORIZE_PS` recognize the following options:
 
-- approval.ps
+- approval
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-approval.png" alt="approval"/>
 </p>
-- arch.ps
+- arch
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-arch.png" alt="arch"/>
 </p>
-- bretterpstra.ps
+- bretterpstra
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-bretterpstra.png" alt="bretterpstra"/>
 </p>
-- delicious.ps
+- delicious
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-delicious.png" alt="delicious"/>
 </p>
-- dhampir.ps
+- dhampir
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-dhampir.png" alt="dhampir"/>
 </p>
-- flex.ps
+- flex
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-flex.png.png" alt="flex"/>
 </p>
-- italian.ps
+- italian
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-italian.png" alt="italian"/>
 </p>
-- load.ps
+- load
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-load.png" alt="load"/>
 </p>
-- minimal.ps
+- minimal
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-minimal.png" alt="minimal"/>
 </p>
-- msdos.ps
+- msdos
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-msdos.png" alt="msdos"/>
 </p>
-- prome7hius.ps
+- prome7hius
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-prome7hius.png" alt="prome7hius"/>
 </p>
-- sergio.ps
+- sergio
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-sergio.png" alt="sergio"/>
 </p>
-- tonka.ps
+- tonka
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-tonka.png" alt="tonka"/>
 </p>
-- walk.ps
+- walk
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-walk.png" alt="walk"/>
 </p>
-- yujie.ps
+- yujie
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-yujie.png" alt="yujie"/>
 </p>
-- zork.ps
+- zork
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-zork.png" alt="zork"/>
 </p>
