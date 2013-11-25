@@ -22,8 +22,6 @@
    $ . ~/.bashrc
    ```
 
-   Installation requires [Shundle](https://github.com/chilicuil/shundle)
-
 ## Usage
 
 [Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) provides ps themes for your cli needs. More themes are welcome, fork and push back!
