@@ -26,7 +26,7 @@
    $ . ~/.bashrc
    ```
 
-[Todo-Rememberator] requires [todo](http://todotxt.com/)
+[Todo-Rememberator](https://github.com/chilicuil/shundle-plugins/tree/master/todo-rememberator) requires [todo](http://todotxt.com/)
 
 ## Usage
 
