@@ -1,0 +1,7 @@
+#setxkbmap
+alias kb.list='less /usr/share/X11/xkb/rules/base.lst'
+alias kb.lat='setxkbmap latam'
+alias kb.us='setxkbmap us'
+alias kb.br='setxkbmap br'
+alias kb.ru='setxkbmap ru'
+alias яя='setxkbmap latam'
