@@ -1,7 +1,7 @@
 #curl
 if type dig 1> /dev/null 2> /dev/null; then
-    alias showmyip='dig +short myip.opendns.com @resolver1.opendns.com'
+    alias show.external.ip='dig +short myip.opendns.com @resolver1.opendns.com'
 else
-    alias showmyip='curl ifconfig.me'
+    alias show.external.ip='curl ifconfig.me'
 fi
 alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
