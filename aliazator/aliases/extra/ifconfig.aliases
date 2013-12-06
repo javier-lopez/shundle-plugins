@@ -1,2 +1,0 @@
-#ifconfig
-alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
