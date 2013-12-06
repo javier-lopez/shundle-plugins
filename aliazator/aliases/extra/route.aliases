@@ -1,2 +1,0 @@
-#route
-alias route-add-default-gw='sudo route add default gw'

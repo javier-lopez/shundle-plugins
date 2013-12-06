@@ -22,14 +22,18 @@ alias s='ls -CF'
 alias l1='ls -1'
 alias lsgrep='ls|grep'
 
-#tree
-[ ! -x "$(which tree 2>/dev/null)" ] && alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
-
 #top
-alias top-cpu='ps auxf | sort -nr -k 3 | head -10'
-alias top-mem='ps auxf | sort -nr -k 4 | head -10'
+alias top.cpu='ps auxf | sort -nr -k 3 | head -10'
+alias top.mem='ps auxf | sort -nr -k 4 | head -10'
 
-alias test-stress='dd if=/dev/zero of=/dev/null bs=1024k'
+alias test.stress='dd if=/dev/zero of=/dev/null bs=1024k'
 
-alias x-nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
-alias rb='ruby'
+#other single command aliases which don't deserve their own file but who may not be installed in many systems
+alias update-fonts='sudo fc-cache -f -v'
+
+#net
+alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
+alias traceroute='traceroute -T -p 80'
+alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
+alias route.add.default.gw='sudo route add default gw'
+alias listen.ports='sudo lsof -i -P | grep -i listen'
