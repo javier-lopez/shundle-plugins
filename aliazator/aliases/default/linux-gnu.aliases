@@ -1,5 +1,4 @@
 #linux-gnu
-alias addgroup.touser='usermod -a -G'
 alias date.stamp='date +%d-%m-%Y'
 alias dir='ls -d */'
 alias less.color='less -R'
@@ -28,8 +27,9 @@ alias top.mem='ps auxf | sort -nr -k 4 | head -10'
 
 alias test.stress='dd if=/dev/zero of=/dev/null bs=1024k'
 
-#other single command aliases which don't deserve their own file but who may not be installed in many systems
+#other single command aliases which don't deserve their own file
 alias update-fonts='sudo fc-cache -f -v'
+alias find.file=sh\ -c\ \''find . -name \*"$1"\*'\'\ -
 
 #net
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'

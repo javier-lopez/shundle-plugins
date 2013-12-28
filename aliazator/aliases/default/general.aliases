@@ -9,9 +9,8 @@ alias ....='cd ../..'
 alias cd-='cd -'
 alias cd..='cd ..'
 
-#clear
+alias a='aliazator'
 alias cls='clear'
-
 alias edit="$EDITOR"
 alias dmesg.tail='dmesg|tail'
 alias h='history'
