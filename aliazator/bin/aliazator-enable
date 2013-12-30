@@ -1,6 +1,5 @@
 [ "$#" -lt 1 ] && return
 
-#TODO 19-10-2013 08:30 >> reeplace basename with a full portable option, probably shell code
 _aliazator_source()
 {
     [ -z "$1" ] && return
