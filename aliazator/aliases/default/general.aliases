@@ -1,7 +1,5 @@
 #general
 alias bashrc='$EDITOR $HOME/.bashrc'
-alias beep='printf "%b\\n" "\007\c"'
-alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
 
 #cd
 alias ..='cd ..'
@@ -22,7 +20,10 @@ alias size='du -sh'
 
 alias rb='ruby'
 alias simple.server='sudo python -m SimpleHTTPServer'
-[ ! -x "$(which tree 2>/dev/null)" ] && alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+alias buf=sh\ -c\ \''cp "$1" "$1".$(date +%Y%m%d_%H%M%S)'\'\ -
+alias beep='printf "%b\\n" "\007\c"'
+alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
+alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
 
 alias zz='exit'

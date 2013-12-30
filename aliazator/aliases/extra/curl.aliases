@@ -1,7 +1,8 @@
-#curl
+ #curl
 if type dig 1> /dev/null 2> /dev/null; then
     alias show.external.ip='dig +short myip.opendns.com @resolver1.opendns.com'
 else
     alias show.external.ip='curl ifconfig.me'
 fi
 alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
+alias down4me=sh\ -c\ \''curl -s "http://www.downforeveryoneorjustme.com/$1" | sed "/just you/!d;s/<[^>]*>//g;s:&#x2F;:/:g" '\'\ -
