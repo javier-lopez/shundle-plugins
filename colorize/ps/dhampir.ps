@@ -1,3 +1,5 @@
+#dhampir.ps
+
 ## CHECK THAT WE'RE RUNNING BASH
 if [ -z "$BASH_VERSION" ]; then
 	printf "%s\\n" "This prompt only works in bash!" >&2
@@ -225,14 +227,14 @@ function _prompt_setup
 	fi
 
 	# set the PS2 prompt here - easily overridable
-	export PS2="${_PROMPT_COLOR_DARK}>${_PROMPT_COLOR_RESET} "
+	PS2="${_PROMPT_COLOR_DARK}>${_PROMPT_COLOR_RESET} "
 
 	# set PS3 (used with select)
-	export PS3="${_PROMPT_COLOR_DARK}#?${_PROMPT_COLOR_RESET} "
+	PS3="${_PROMPT_COLOR_DARK}#?${_PROMPT_COLOR_RESET} "
 
 	# set PS4 (used with tracing output, set -x)
 	# ${0} and ${LINENO} are single-quoted, so they'll be evaluated when they're displayed instead of now
-	export PS4="+"'${0}'":"'${LINENO}'" ${_PROMPT_COLOR_DARK}->${_PROMPT_COLOR_RESET} "
+	PS4="+"'${0}'":"'${LINENO}'" ${_PROMPT_COLOR_DARK}->${_PROMPT_COLOR_RESET} "
 
 	# check if uptime is available
 	type uptime &>/dev/null && _PROMPT_UPTIME=true || _PROMPT_UPTIME=false
