@@ -28,7 +28,14 @@
 
 By default it will enable the `yujie` ps sheme, you can however choose from a bunch of themes.
 
-To modify which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
+Use the `colorize` command to list and preview colorthemes:
+
+   ```
+   $ colorize list
+   $ colorize enable italian
+   ```
+
+Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
 
    ```sh
    COLORIZE_THEME="blacky"
