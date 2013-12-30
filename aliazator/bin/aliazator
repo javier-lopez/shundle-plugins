@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-#TODO 22-10-2013 00:40 >> replace basename for a portable alternative
+#TODO 22-10-2013 00:40 >> replace basename with a portable alternative
 
 _usage()
 {   #prints an usage msg and exits with 0
@@ -34,7 +34,7 @@ _aliazator_list()
 
     _aliazator_list_sourced()
     {
-        [ -z "$1" ] && return
+        [ -z "$1" ] && return 1
         _aliazator_list_sourced_var_l="$ALIAZATOR_PLUGINS_ARRAY"
         while [ "$_aliazator_list_sourced_var_l" ]; do
             _aliazator_list_sourced_var_option=${_aliazator_list_sourced_var_l%%,*}
