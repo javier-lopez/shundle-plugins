@@ -1,5 +1,6 @@
-#bretterpstra, http://brettterpstra.com/2009/11/17/my-new-favorite-bash-prompt/
+#bretterpstra
 
+#http://brettterpstra.com/2009/11/17/my-new-favorite-bash-prompt/
 prompt_command() {
     if [ $? -eq 0 ]; then # set an error string for the prompt, if applicable
         ERRPROMPT=" "
@@ -23,7 +24,7 @@ prompt_command() {
     local DEFAULT="\[\033[0;39m\]"
     # set the titlebar to the last 2 fields of pwd
     local TITLEBAR='\[\e]2;$(pwdtail)\a'
-    export PS1="\[${TITLEBAR}\]${CYAN}[ ${BCYAN}\u${GREEN}@${BCYAN}\
+    PS1="\[${TITLEBAR}\]${CYAN}[ ${BCYAN}\u${GREEN}@${BCYAN}\
 \h${DKGRAY}(${LOAD}) ${WHITE}${TIME} ${CYAN}]${RED}$ERRPROMPT${GRAY}\
 \w\n${GREEN}${BRANCH}${DEFAULT}$ "
 }

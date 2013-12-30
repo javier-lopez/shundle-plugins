@@ -1,0 +1,42 @@
+#bashstrap
+
+# Modified version of @gf3’s Sexy Bash Prompt 
+# (https://github.com/gf3/dotfiles)
+
+BLACK="\033[01;30m"
+MAGENTA="\033[1;31m"
+ORANGE="\033[1;33m"
+GREEN="\033[1;32m"
+PURPLE="\033[1;35m"
+WHITE="\033[1;37m"
+BOLD=""
+RESET="\033[m"
+
+# Git branch details
+_parse_git_dirty()
+{
+    _parse_git_dirty_var_status=$(git status 2> /dev/null | tail -n1)
+    case $_parse_git_dirty_var_status in
+        *working*directory*clean*) printf "*\\n"
+            ;;
+    esac
+}
+
+_parse_git_branch()
+{
+    if command -v "git" >/dev/null; then
+	git branch --no-color 2> /dev/null | \
+        sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(_parse_git_dirty)/"
+    else
+        return
+    fi
+}
+
+# Change this symbol to something sweet. 
+# (http://en.wikipedia.org/wiki/Unicode_symbols)
+symbol="⚡ "
+
+PS1="\[${BOLD}${MAGENTA}\]\u \[$WHITE\]in \[$GREEN\]\w\[$WHITE\]\$([[ -n \$(git branch 2> /dev/null) ]] && echo \" on \")\[$PURPLE\]\$(_parse_git_branch)\[$WHITE\]\n$symbol\[$RESET\]"
+PS2="\[$ORANGE\]→ \[$RESET\]"
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :
