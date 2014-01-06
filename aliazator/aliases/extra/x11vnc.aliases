@@ -1,4 +1,5 @@
 #x11vnc
-alias vnc-server='x11vnc -forever -safer -shared -display :0'
-alias vnc-server-passwd='x11vnc -forever -safer -shared -display :0 -passwd '
-alias vnc-server-readonly='x11vnc -forever -viewonly -shared -safer -display :0'
+alias vnc.server='x11vnc -forever -safer -shared -display :0'
+alias vnc.server.passwd='x11vnc -forever -safer -shared -display :0 -passwd '
+alias vnc.server.readonly='x11vnc -forever -viewonly -shared -safer -display :0'
+alias vnc.server.slim='sudo x11vnc -display :0 -auth /var/run/slim.auth -forever -safer -shared'
