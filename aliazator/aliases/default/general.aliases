@@ -3,7 +3,8 @@ alias bashrc='$EDITOR $HOME/.bashrc'
 
 #cd
 alias ..='cd ..'
-alias ....='cd ../..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 alias cd-='cd -'
 alias cd..='cd ..'
 
@@ -26,6 +27,7 @@ alias beep='printf "%b\\n" "\007\c"'
 alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
 alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 
 alias zz='exit'
 alias q='exit'
