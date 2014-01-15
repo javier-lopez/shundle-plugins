@@ -15,6 +15,7 @@ alias fh='open -a Finder .'
 alias s='open -a "Sublime Text"'
 alias textedit='open -a TextEdit'
 alias hex='open -a "Hex Fiend"'
+alias afk='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
 
 if [ -s /usr/bin/firefox ] ; then
   unalias firefox
