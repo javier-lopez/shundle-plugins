@@ -29,7 +29,7 @@ alias test.stress='dd if=/dev/zero of=/dev/null bs=1024k'
 
 #other single command aliases which don't deserve their own file
 alias update-fonts='sudo fc-cache -f -v'
-alias find.file=sh\ -c\ \''find . -name \*"$1"\*'\'\ -
+alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
 
 #net
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
