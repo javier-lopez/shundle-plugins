@@ -1,12 +1,13 @@
 #vagrant
 alias v="vagrant"
 alias vup="vagrant up"
-alias vhlt="vagrant halt"
-alias vspd="vagrant suspend"
-alias vrsm="vagrant resume"
+alias vh="vagrant halt"
+alias vs="vagrant suspend"
+alias vr="vagrant resume"
 alias vrl="vagrant reload"
-alias vs="vagrant ssh"
-alias vstat="vagrant status"
+alias vssh="vagrant ssh"
+alias vst="vagrant status"
+alias vp="vagrant provision"
 alias vd="vagrant destroy"
 
 alias vup.vbox="vagrant up --provider=virtualbox"
