@@ -1,7 +1,8 @@
 #todo
 alias t='todo'
 alias tls="todo ls"
+alias tls.today="todo ls today"
 alias ta="todo a"
 alias trm="todo rm"
-alias tdo="todo do"
+alias tdone="todo do"
 alias tpri="todo pri"
