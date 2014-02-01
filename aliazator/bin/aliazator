@@ -50,7 +50,7 @@ _aliazator_list()
         _aliazator_list_meta
 
         printf "\\n"
-        printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "options" "$_BIN_SHUNDLE_ENV_NORMAL"
+        printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "sets" "$_BIN_SHUNDLE_ENV_NORMAL"
         for aliases in "$ALIAZATOR_PATH"/default/*; do
             if _aliazator_list_sourced $(basename "$aliases" .aliases); then
                 printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
@@ -59,6 +59,7 @@ _aliazator_list()
             fi
         done
 
+        printf "\\n"
         for aliases in "$ALIAZATOR_PATH"/extra/*; do
             if _aliazator_list_sourced $(basename "$aliases" .aliases); then
                 printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
@@ -89,7 +90,7 @@ _aliazator_disable()
         minimal)
             for aliases in "$ALIAZATOR_PATH"/default/*; do
                 case $(basename $aliases .aliases) in
-                    general|custom|$OSTYPE) [ -f "$aliases" ] && _aliazator_desource "$aliases" ;;
+                    general|zcustom|$OSTYPE) [ -f "$aliases" ] && _aliazator_desource "$aliases" ;;
                     osx) #special case, OSTYPE returns string + version on osx systems, wtf
                         case $OSTYPE in darwin*) [ -f "$aliases" ] && _aliazator_desource "$aliases".aliases;; esac ;;
                 esac
