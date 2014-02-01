@@ -13,14 +13,13 @@ _aliazator_enable()
         minimal)
             for aliases in "$ALIAZATOR_PATH"/default/*; do
                 case $(basename $aliases .aliases) in
-                    general|custom|$OSTYPE) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
+                    general|zcustom|$OSTYPE) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
                     osx) #special case, OSTYPE returns string + version on osx systems, wtf
                         case $OSTYPE in darwin*) [ -f "$aliases" ] && _aliazator_source "$aliases".aliases;; esac ;;
                 esac
             done
             ;;
         installed)
-            _aliazator_enable minimal
             for aliases in "$ALIAZATOR_PATH"/extra/*; do
                 case $(basename $aliases .aliases) in
                     *)
@@ -30,14 +29,15 @@ _aliazator_enable()
                         ;;
                 esac
             done
+            _aliazator_enable minimal
             ;;
         all)
-            _aliazator_enable minimal
             for aliases in "$ALIAZATOR_PATH"/extra/*; do
                 case $(basename $aliases .aliases) in
                     *) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
                 esac
             done
+            _aliazator_enable minimal
             ;;
         custom*)
             #http://stackoverflow.com/a/15988793/1724603
@@ -60,8 +60,8 @@ _aliazator_enable()
     esac
 }
 
-if [ -f ~/.aliases ] && [ ! -f "$ALIAZATOR_PATH"/default/custom.aliases ]; then
-    ln -s ~/.aliases "$ALIAZATOR_PATH"/default/custom.aliases #setup custom before starting
+if [ -f ~/.aliases ] && [ ! -f "$ALIAZATOR_PATH"/default/zcustom.aliases ]; then
+    ln -s ~/.aliases "$ALIAZATOR_PATH"/default/zcustom.aliases #setup custom before starting
 fi
 
 _aliazator_enable "$1"; aliazator_status="$?"
