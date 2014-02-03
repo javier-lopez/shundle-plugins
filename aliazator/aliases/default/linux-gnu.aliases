@@ -4,21 +4,20 @@ alias dir='ls -d */'
 alias less.color='less -R'
 
 #ls
-alias lh='ls -lah'
-alias lk='ls -l'
-alias l='ls -CF'
 alias lñ='ls --color=auto'
 alias ls='ls --color=auto'
-alias lss='ls --color=auto'
 alias ñ='ls --color=auto'
 alias kl='ls --color=auto'
-alias sl='ls --color=auto'
-alias k='ls -CF'
+alias lss='ls --color=auto'
 alias ks='ls --color=auto'
+alias l='ls -CF'
+alias k='ls -CF'
+alias s='ls -CF'
+alias lh='ls -lah'
 alias la='ls -A'
 alias ll='ls -lah'
-alias s='ls -CF'
 alias l1='ls -1'
+alias lsdot='ls -ld .*'
 alias lsgrep='ls|grep'
 
 #top
@@ -28,6 +27,8 @@ alias top.mem='ps auxf | sort -nr -k 4 | head -10'
 alias test.stress='dd if=/dev/zero of=/dev/null bs=1024k'
 
 #other single command aliases which don't deserve their own file
+alias grep='grep --color'
+alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 alias update-fonts='sudo fc-cache -f -v'
 alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
 
