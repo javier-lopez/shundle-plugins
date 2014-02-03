@@ -1,3 +1,4 @@
 #sudo
 alias sudo='sudo ' # http://tinyurl.com/6azvksf
 alias _='sudo'
+alias please='sudo'
