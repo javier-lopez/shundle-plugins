@@ -21,6 +21,7 @@ alias pg='ping google.com'
 alias pager="$PAGER"
 alias rd='rmdir'
 alias md='mkdir -p'
+alias mkcd='_mkcd(){ mkdir $1; cd $1; }; _mkcd'
 alias size='du -sh'
 
 alias rb='ruby'
@@ -30,7 +31,7 @@ alias buf=sh\ -c\ \''cp "$1" "$1".$(date +%Y%m%d_%H%M%S)'\'\ -
 alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.adobe; ln -s /dev/null ~/.macromedia'
 alias beep='printf "%b\\n" "\007\c"'
 alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
-alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+alias tree="find . -print | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g'"
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
 alias simple.server='sudo python -m SimpleHTTPServer'
