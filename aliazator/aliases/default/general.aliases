@@ -27,7 +27,7 @@ alias size='du -sh'
 alias rb='ruby'
 alias py='python'
 
-alias buf=sh\ -c\ \''cp "$1" "$1".$(date +%Y%m%d_%H%M%S)'\'\ -
+alias buf=sh\ -c\ \''cp -r "$1" "$1".$(date +%Y%m%d_%H%M%S)'\'\ -
 alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.adobe; ln -s /dev/null ~/.macromedia'
 alias beep='printf "%b\\n" "\007\c"'
 alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
