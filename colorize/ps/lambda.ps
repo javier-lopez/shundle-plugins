@@ -1,0 +1,12 @@
+#lamda
+
+PS1="  ƛ \w: "
+
+#http://aymanh.com/how-debug-bash-scripts
+if [ -n "$BASH_VERSION" ]; then
+    PS4='>>(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+else
+    PS4='>>($0:${LINENO})+:'
+fi
+
+# vim: set ts=8 sw=4 tw=0 ft=sh : 

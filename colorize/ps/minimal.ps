@@ -2,120 +2,120 @@
 
 #taken from bashit, https://github.com/revans/bash-it
 
-function __ {
+__ {
   printf "%s\\n" "$@"
 }
 
-function __make_ansi {
+__make_ansi {
   next=$1 && shift
   printf "%s\\n" "\[\e[$(__$next $@)m\]"
 }
 
-function __make_echo {
+__make_echo {
   next=$1 && shift
   printf "%s\\n" "\033[$(__$next $@)m"
 }
 
 
-function __reset {
+__reset {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "0${out:+;${out}}"
 }
 
-function __bold {
+__bold {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}1"
 }
 
-function __faint {
+__faint {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}2"
 }
 
-function __italic {
+__italic {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}3"
 }
 
-function __underline {
+__underline {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}4"
 }
 
-function __negative {
+__negative {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}7"
 }
 
-function __crossed {
+__crossed {
   next=$1 && shift
   out="$(__$next $@)"
   printf "%s\\n" "${out:+${out};}8"
 }
 
 
-function __color_normal_fg {
+__color_normal_fg {
   printf "%s\\n" "3$1"
 }
 
-function __color_normal_bg {
+__color_normal_bg {
   printf "%s\\n" "4$1"
 }
 
-function __color_bright_fg {
+__color_bright_fg {
   printf "%s\\n" "9$1"
 }
 
-function __color_bright_bg {
+__color_bright_bg {
   printf "%s\\n" "10$1"
 }
 
 
-function __color_black   {
+__color_black   {
   printf "%s\\n" "0"
 }
 
-function __color_red   {
+__color_red   {
   printf "%s\\n" "1"
 }
 
-function __color_green   {
+__color_green   {
   printf "%s\\n" "2"
 }
 
-function __color_yellow  {
+__color_yellow  {
   printf "%s\\n" "3"
 }
 
-function __color_blue  {
+__color_blue  {
   printf "%s\\n" "4"
 }
 
-function __color_magenta {
+__color_magenta {
   printf "%s\\n" "5"
 }
 
-function __color_cyan  {
+__color_cyan  {
   printf "%s\\n" "6"
 }
 
-function __color_white   {
+__color_white   {
   printf "%s\\n" "7"
 }
 
-function __color_rgb {
+__color_rgb {
   r=$1 && g=$2 && b=$3
   [[ r == g && g == b ]] && printf "%s\\n" "$(( $r / 11 + 232 ))" && return # gray range above 232
   printf "%s\\n" "8;5;$(( ($r * 36  + $b * 6 + $g) / 51 + 16 ))"
 }
 
-function __color {
+__color {
   color=$1 && shift
   case "$1" in
     fg|bg) side="$1" && shift ;;
@@ -133,53 +133,53 @@ function __color {
 }
 
 
-function __black   {
+__black   {
   printf "%s\\n" "$(__color black $@)"
 }
 
-function __red   {
+__red   {
   printf "%s\\n" "$(__color red $@)"
 }
 
-function __green   {
+__green   {
   printf "%s\\n" "$(__color green $@)"
 }
 
-function __yellow  {
+__yellow  {
   printf "%s\\n" "$(__color yellow $@)"
 }
 
-function __blue  {
+__blue  {
   printf "%s\\n" "$(__color blue $@)"
 }
 
-function __magenta {
+__magenta {
   printf "%s\\n" "$(__color magenta $@)"
 }
 
-function __cyan  {
+__cyan  {
   printf "%s\\n" "$(__color cyan $@)"
 }
 
-function __white   {
+__white   {
   printf "%s\\n" "$(__color white $@)"
 }
 
-function __rgb {
+__rgb {
   printf "%s\\n" "$(__color rgb $@)"
 }
 
 
-function __color_parse {
+__color_parse {
   next=$1 && shift
   printf "%s\\n" "$(__$next $@)"
 }
 
-function color {
+color {
   printf "%s\\n" "$(__color_parse make_ansi $@)"
 }
 
-function echo_color {
+echo_color {
   printf "%s\\n" "$(__color_parse make_echo $@)"
 }
 
@@ -289,7 +289,7 @@ SCM_SVN_CHAR='⑆'
 SCM_NONE='NONE'
 SCM_NONE_CHAR='○'
 
-function git_prompt_vars {
+git_prompt_vars {
   if [[ -n $(git status -s 2> /dev/null |grep -v ^# |grep -v "working directory clean") ]]; then
     SCM_DIRTY=1
      SCM_STATE=${GIT_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
@@ -304,7 +304,7 @@ function git_prompt_vars {
   SCM_CHANGE=$(git rev-parse HEAD 2>/dev/null)
 }
 
-function svn_prompt_vars {
+svn_prompt_vars {
   if [[ -n $(svn status 2> /dev/null) ]]; then
     SCM_DIRTY=1
       SCM_STATE=${SVN_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
@@ -318,7 +318,7 @@ function svn_prompt_vars {
   SCM_CHANGE=$(svn info 2> /dev/null | sed -ne 's#^Revision: ##p' )
 }
 
-function hg_prompt_vars {
+hg_prompt_vars {
     if [[ -n $(hg status 2> /dev/null) ]]; then
       SCM_DIRTY=1
         SCM_STATE=${HG_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
@@ -332,22 +332,22 @@ function hg_prompt_vars {
     SCM_CHANGE=$(hg summary 2> /dev/null | grep parent: | awk '{print $2}')
 }
 
-function git_prompt_info {
+git_prompt_info {
   git_prompt_vars
   printf "%b\\n" "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
 }
 
-function svn_prompt_info {
+svn_prompt_info {
   svn_prompt_vars
   printf "%b\\n" "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
 }
 
-function hg_prompt_info() {
+hg_prompt_info() {
   hg_prompt_vars
   printf "%b\\n" "$SCM_PREFIX$SCM_BRANCH:${SCM_CHANGE#*:}$SCM_STATE$SCM_SUFFIX"
 }
 
-function scm {
+scm {
   if [[ -f .git/HEAD ]]; then SCM=$SCM_GIT
   elif [[ -n "$(git symbolic-ref HEAD 2> /dev/null)" ]]; then SCM=$SCM_GIT
   elif [[ -d .hg ]]; then SCM=$SCM_HG
@@ -357,7 +357,7 @@ function scm {
   fi
 }
 
-function scm_prompt_char {
+scm_prompt_char {
   if [[ -z $SCM ]]; then scm; fi
   if [[ $SCM == $SCM_GIT ]]; then SCM_CHAR=$SCM_GIT_CHAR
   elif [[ $SCM == $SCM_HG ]]; then SCM_CHAR=$SCM_HG_CHAR
@@ -366,7 +366,7 @@ function scm_prompt_char {
   fi
 }
 
-function scm_prompt_info {
+scm_prompt_info {
   scm
   scm_prompt_char
   SCM_DIRTY=0
