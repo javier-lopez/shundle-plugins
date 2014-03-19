@@ -31,6 +31,7 @@ alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 alias update-fonts='sudo fc-cache -f -v'
 alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
+alias inode.counter=sh\ -c\ \''cd "$1"; for i in $(ls -1A); do printf "%s\n" "$(find $i | sort -u | wc -l) $i"; done | sort -rn | head -5'\'\ -
 
 #net
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
