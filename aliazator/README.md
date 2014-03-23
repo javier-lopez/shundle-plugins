@@ -3,15 +3,7 @@
 [Aliazator](https://github.com/chilicuil/shundle-plugins/tree/master/aliazator) is a plugin for [Shundle](https://github.com/chilicuil/shundle) which manages [aliases](http://en.wikipedia.org/wiki/Alias_%28command%29).
 
 <p align="center">
-<img src="http://javier.io/assets/img/aliazator-1.png" alt="aliazator-1"/>
-</p>
-
-<p align="center">
-<img src="http://javier.io/assets/img/aliazator-2.png" alt="aliazator-2"/>
-</p>
-
-<p align="center">
-<img src="http://javier.io/assets/img/aliazator-3.png" alt="aliazator-3"/>
+<img src="http://javier.io/assets/img/aliazator.gif" alt="shundle"/>
 </p>
 
 ## Quick start
