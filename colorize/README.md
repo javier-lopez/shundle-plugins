@@ -2,6 +2,10 @@
 
 [Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) is a plugin for [Shundle](https://github.com/chilicuil/shundle) who manages ps and other color variables.
 
+<p align="center">
+<img src="http://javier.io/assets/img/colorize.gif" alt="colorize"/>
+</p>
+
 ## Quick start
 
 1. Add [colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) to your shundle configuration:
