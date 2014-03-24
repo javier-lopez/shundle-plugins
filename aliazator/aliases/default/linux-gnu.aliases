@@ -24,7 +24,7 @@ alias lsgrep='ls|grep'
 alias top.cpu='ps auxf | sort -nr -k 3 | head -10'
 alias top.mem='ps auxf | sort -nr -k 4 | head -10'
 
-alias test.stress='dd if=/dev/zero of=/dev/null bs=1024k'
+alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
 
 #other single command aliases which don't deserve their own file
 alias grep='grep --color'
