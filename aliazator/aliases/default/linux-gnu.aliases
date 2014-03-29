@@ -21,8 +21,10 @@ alias lsdot='ls -ld .*'
 alias lsgrep='ls|grep'
 
 #top
-alias top.cpu='ps auxf | sort -nr -k 3 | head -10'
-alias top.mem='ps auxf | sort -nr -k 4 | head -10'
+alias top.cpu='ps auxf | sort -nr -k 3 | head'
+alias top.mem='ps auxf | sort -nr -k 4 | head'
+alias top.inode=sh\ -c\ \''cd "${1}"; for i in $(ls -1A); do printf "%s\n" "$(find ${i} | sort -u | wc -l) ${i}"; done | sort -rn | head '\'\ -
+alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i} | sort -nr -k 1; done | head'\'\ -
 
 alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
 
@@ -31,7 +33,6 @@ alias grep='grep --color'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
 alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
-alias inode.counter=sh\ -c\ \''cd "$1"; for i in $(ls -1A); do printf "%s\n" "$(find $i | sort -u | wc -l) $i"; done | sort -rn | head -5'\'\ -
 
 #net
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
