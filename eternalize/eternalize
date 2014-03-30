@@ -23,7 +23,24 @@
 export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
 export HISTCONTROL=ignoreboth
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
-'[ X"$(printf "%s\\n" "$eternalize_var_lastcmd" | cut -d" " -f5-)" = X"$(history 1 | cut -d" " -f5-)" ] || { export eternalize_var_lastcmd=$(history 1); eternalize_var_lastcmd_format=$(printf "%s\\n" "$eternalize_var_lastcmd"|cut -d" " -f3-); printf "%s\\n" "$USER:$eternalize_var_lastcmd_format" >> $ETERNALIZE_PATH; }'
+'
+et="0"
+case "$(history 1)" in
+    *\ cd\ *|*\ ls|*\ gs|*\ bashrc|*\ getpass*|*\ pg|*\ \.\.) et="1" ;;
+    *\ cd|*\ ll|*\ man|*\ translate|*\ yowsup|*\ mail|*\ l)   et="1" ;;
+    *\ c|*\ gps|*\ g|*\ gl|*\ mpc\ *|*\ pwd|*\ tls|*\ tadd)   et="1" ;;
+    *\ tdone|*eternalize*|*history*|*ussh*)  et="1";;
+esac
+
+if [ X"${et}" = X"0" ]; then
+    if [ X"$(printf "%s\\n" "${eternalize_var_lastcmd}" | cut -d" " -f5-)" \
+       != X"$(history 1 | cut -d" " -f5-)" ]; then
+       export eternalize_var_lastcmd="$(history 1)"
+       eternalize_var_lastcmd_format="$(printf "%s\\n" "${eternalize_var_lastcmd}"|cut -d" " -f3-)"
+       printf "%s\\n" "${USER}:${eternalize_var_lastcmd_format}" >> ${ETERNALIZE_PATH}
+    fi
+fi
+'
 #'printf "%s\\n" "$USER      $(history 1)" >> $ETERNALIZE_PATH'
 
 [ -n "$EDITOR" ] && _shundle_expose eternalize="$EDITOR $ETERNALIZE_PATH" || _shundle_expose eternalize="vi $ETERNALIZE_PATH"
