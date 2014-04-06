@@ -27,7 +27,7 @@ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
 et="0"
 case "$(history 1)" in
     *\ cd\ *|*\ ls|*\ gs|*\ bashrc|*\ getpass*|*\ pg|*\ \.\.) et="1" ;;
-    *\ cd|*\ ll|*\ man|*\ translate|*\ yowsup|*\ mail|*\ l)   et="1" ;;
+    *\ cd|*\ ll|*\ man|*\ translate|*\ yowsup|*mail*|*\ l)   et="1" ;;
     *\ c|*\ gps|*\ g|*\ gl|*\ mpc\ *|*\ pwd|*\ tls|*\ tadd)   et="1" ;;
     *\ tdone|*eternalize*|*history*|*ussh*)  et="1";;
 esac
