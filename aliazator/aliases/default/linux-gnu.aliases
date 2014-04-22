@@ -1,5 +1,4 @@
 #linux-gnu
-alias date.stamp='date +%d-%m-%Y'
 alias dir='ls -d */'
 alias less.color='less -R'
 
@@ -22,21 +21,19 @@ alias lsgrep='ls|grep'
 
 #top
 alias top.cpu='ps auxf | sort -nr -k 3 | head'
-alias top.mem='ps auxf | sort -nr -k 4 | head'
+alias top.mem='ps -eo size,pid,user,command --sort -size | awk '\''{ hr=$1/1024 ; printf("%13.2f Mb ",hr) } { for ( x=4 ; x<=NF ; x++ ) { printf("%s ",$x) } print "" }'\'' | head -11'
+alias top.mem.detailed='ps auxf | sort -nr -k 4 | head'
 alias top.inode=sh\ -c\ \''cd "${1}"; for i in $(ls -1A); do printf "%s\n" "$(find ${i} | sort -u | wc -l) ${i}"; done | sort -rn | head '\'\ -
 alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i} | sort -nr -k 1; done | head'\'\ -
-
-alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
 
 #other single command aliases which don't deserve their own file
 alias grep='grep --color'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
-alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
 
 #net
-alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
-alias traceroute='traceroute -T -p 80'
 alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
-alias route.add.default.gw='sudo route add default gw'
 alias listen.ports='sudo lsof -i -P | grep -i listen'
+alias route.add.default.gw='sudo route add default gw'
+alias traceroute='traceroute -T -p 80'
+alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'

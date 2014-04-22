@@ -12,28 +12,32 @@ alias cd-='cd -'
 alias -- -='cd -'
 
 alias a='aliazator'
+alias beep='printf "%b\\n" "\007\c"'
+alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
+alias buf=sh\ -c\ \''cp -r "$1" "$(printf "%s" "$1" | sed 's:/$::g')".$(date +%Y%m%d_%H%M%S)'\'\ -
+alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.adobe; ln -s /dev/null ~/.macromedia'
 alias cls='clear'
 alias edit="$EDITOR"
+alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
 alias dmesg.tail='dmesg|tail'
+alias date.stamp='date +%d-%m-%Y'
 alias h='history'
-alias p='ping'
-alias pg='ping google.com'
-alias pager="$PAGER"
-alias rd='rmdir'
 alias md='mkdir -p'
 alias mkcd='_mkcd(){ mkdir $1; cd $1; }; _mkcd'
+alias pager="$PAGER"
+alias rd='rmdir'
 alias size='du -sh'
+alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
+alias tree="find . -print | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g'"
+alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
 
 alias rb='ruby'
 alias py='python'
 
-alias buf=sh\ -c\ \''cp -r "$1" "$(printf "%s" "$1" | sed 's:/$::g')".$(date +%Y%m%d_%H%M%S)'\'\ -
-alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.adobe; ln -s /dev/null ~/.macromedia'
-alias beep='printf "%b\\n" "\007\c"'
-alias bar='printf "%b\\n" "\033[1m================================================================================\033[0m"'
-alias tree="find . -print | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g'"
-alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
-alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
+alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
+
+alias p='ping'
+alias pg='ping google.com'
 alias simple.server='sudo python -m SimpleHTTPServer'
 
 alias zz='exit'
