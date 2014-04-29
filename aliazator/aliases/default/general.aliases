@@ -38,6 +38,7 @@ alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
 
 alias p='ping'
 alias pg='ping google.com'
+alias show.external.ip='dig -4 +short myip.opendns.com @resolver1.opendns.com'
 alias simple.server='sudo python -m SimpleHTTPServer'
 
 alias zz='exit'

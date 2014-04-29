@@ -1,4 +1,3 @@
 #curl
 alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
-alias show.external.ip='curl ifconfig.me'
 alias down4me=sh\ -c\ \''curl -s "http://www.downforeveryoneorjustme.com/$1" | sed "/just you/!d;s/<[^>]*>//g;s:&#x2F;:/:g" '\'\ -
