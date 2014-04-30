@@ -38,5 +38,6 @@ alias gl='git log --graph --pretty=oneline --abbrev-commit'
 alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
 alias gls="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --stat"
 alias gw="git whatchanged"
+alias gmv='git mv'
 alias grm="git rm"
 alias grmf="git ls-files -d -z | xargs -0 git update-index --remove"
