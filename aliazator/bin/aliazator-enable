@@ -1,73 +1,68 @@
-[ "$#" -lt 1 ] && return
+[ "${#}" -eq "0" ] && return
 
 _aliazator_source()
 {
-    [ -z "$1" ] && return
-    ALIAZATOR_PLUGINS_ARRAY="$ALIAZATOR_PLUGINS_ARRAY""$(basename "$1" .aliases)"","
-    . "$1"
+    [ -z "${1}" ] && return
+    ALIAZATOR_PLUGINS_ARRAY="${ALIAZATOR_PLUGINS_ARRAY}$(basename "${1}" .aliases),"
+    . "${1}"
 }
 
 _aliazator_enable()
 {
-    case "$1" in
+    case "${1}" in
         minimal)
-            for aliases in "$ALIAZATOR_PATH"/default/*; do
-                case $(basename $aliases .aliases) in
-                    general|zcustom|$OSTYPE) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
-                    osx) #special case, OSTYPE returns string + version on osx systems, wtf
-                        case $OSTYPE in darwin*) [ -f "$aliases" ] && _aliazator_source "$aliases".aliases;; esac ;;
+            for aliases in "${ALIAZATOR_PATH}"/default/*; do
+                #case "$(basename "${aliases}" .aliases)" in
+                case "${aliases}" in
+                    *general*|*zcustom*|*"${OSTYPE}"*) _aliazator_source "${aliases}" ;;
+                    *osx*) #special case, OSTYPE returns string + version on osx systems, wtf
+                        case "${OSTYPE}" in darwin*)   _aliazator_source "${aliases}" ;; esac ;;
                 esac
             done
             ;;
         installed)
-            for aliases in "$ALIAZATOR_PATH"/extra/*; do
-                case $(basename $aliases .aliases) in
-                    *)
-                        if type $(basename $aliases .aliases) 1> /dev/null 2> /dev/null; then
-                            _aliazator_source "$aliases"
-                        fi
-                        ;;
-                esac
+            for aliases in "${ALIAZATOR_PATH}"/extra/*; do
+                if command -v "$(basename "${aliases}" .aliases)" 1> /dev/null 2>&1; then
+                    _aliazator_source "${aliases}"
+                fi
             done
             _aliazator_enable minimal
             ;;
         all)
-            for aliases in "$ALIAZATOR_PATH"/extra/*; do
-                case $(basename $aliases .aliases) in
-                    *) [ -f "$aliases" ] && _aliazator_source "$aliases" ;;
-                esac
+            for aliases in "${ALIAZATOR_PATH}"/extra/*; do
+                _aliazator_source "${aliases}"
             done
             _aliazator_enable minimal
             ;;
         custom*)
             #http://stackoverflow.com/a/15988793/1724603
-            _aliazator_enable_var_aplugin=$(printf "%s\\n" "$1" | grep "custom:" | cut -d: -f2)
-            while [ "$_aliazator_enable_var_aplugin" ] ;do
-                _aliazator_enable_var_option=${_aliazator_enable_var_aplugin%%,*}
-                case "$_aliazator_enable_var_option" in
-                    minimal|installed) _aliazator_enable "$_aliazator_enable_var_option" ;;
-                    *) [ -f "$ALIAZATOR_PATH"/extra/"$_aliazator_enable_var_option".aliases ] && \
-                        _aliazator_source "$ALIAZATOR_PATH"/extra/"$_aliazator_enable_var_option".aliases ;;
+            _aliazator_enable_var_aplugin="$(printf "%s" "${1}" | grep "custom:" | cut -d: -f2)"
+            while [ "${_aliazator_enable_var_aplugin}" ] ;do
+                _aliazator_enable_var_option="${_aliazator_enable_var_aplugin%%,*}"
+                case "${_aliazator_enable_var_option}" in
+                    minimal|installed) _aliazator_enable "${_aliazator_enable_var_option}" ;;
+                    *) [ -f "${ALIAZATOR_PATH}/extra/${_aliazator_enable_var_option}.aliases" ] && \
+                        _aliazator_source "${ALIAZATOR_PATH}/extra/${_aliazator_enable_var_option}.aliases" ;;
                 esac
-            [ X"$_aliazator_enable_var_aplugin" = X"$_aliazator_enable_var_option" ] && \
+            [ X"${_aliazator_enable_var_aplugin}" = X"${_aliazator_enable_var_option}" ] && \
                 _aliazator_enable_var_aplugin='' || _aliazator_enable_var_aplugin="${_aliazator_enable_var_aplugin#*,}"
             done
-        ;;
-        *)
-            [ -f "$ALIAZATOR_PATH"/extra/"$1".aliases ] && { _aliazator_source "$ALIAZATOR_PATH"/extra/"$1".aliases; return 0; }
-            [ -f "$ALIAZATOR_PATH"/default/"$1".aliases ] && { _aliazator_source "$ALIAZATOR_PATH"/default/"$1".aliases; return 0; }
-        ;;
+            ;;
+          *)
+            [ -f "${ALIAZATOR_PATH}/extra/${1}.aliases" ]   && { _aliazator_source "${ALIAZATOR_PATH}/extra/${1}.aliases";   return 0; }
+            [ -f "${ALIAZATOR_PATH}/default/${1}.aliases" ] && { _aliazator_source "${ALIAZATOR_PATH}/default/${1}.aliases"; return 0; }
+            ;;
     esac
 }
 
-if [ -f ~/.aliases ] && [ ! -f "$ALIAZATOR_PATH"/default/zcustom.aliases ]; then
-    ln -s ~/.aliases "$ALIAZATOR_PATH"/default/zcustom.aliases #setup custom before starting
+if [ -f "${HOME}/.aliases" ] && [ ! -f "${ALIAZATOR_PATH}"/default/zcustom.aliases ]; then
+    ln -s "${HOME}/.aliases" "${ALIAZATOR_PATH}"/default/zcustom.aliases #setup custom before starting
 fi
 
-_aliazator_enable "$1"; aliazator_status="$?"
+_aliazator_enable "${1}"; aliazator_status="${?}"
 
 export ALIAZATOR_PLUGINS_ARRAY
 
-return $aliazator_status
+return "${aliazator_status}"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh : 

@@ -1,9 +1,11 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 #TODO 22-10-2013 00:40 >> replace basename with a portable alternative
+#                         may not be posible to use a really quick version
+#                         detect whenever basename exists and fallback to a portable implementation?
 
 _usage()
-{   #prints an usage msg and exits with 0
+{
     printf "%s\\n" "Usage: aliazator OPTION [ARGS]"
     printf "\\n"
     printf "%s\\n" "  enable  [subset]  enable plugin"
@@ -13,63 +15,83 @@ _usage()
     return 1
 }
 
+_basename()
+{
+    [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
+    [ -z "${2}" ] || _basename_var_suffix="${2}"
+    case "${_basename_var_name}" in
+        /*|*/*) _basename_var_name="$(expr "${_basename_var_name}" : '.*/\([^/]*\)')" ;;
+    esac
+
+    if [ -n "${_basename_var_suffix}" ] && [ "${#_basename_var_name}" -gt "${#2}" ]; then
+        if [ X"$(printf "%s" "${_basename_var_name}" | cut -c"$((${#_basename_var_name} - ${#_basename_var_suffix} + 1))"-"${#_basename_var_name}")" \
+           = X"$(printf "%s" "${_basename_var_suffix}")" ]; then
+            _basename_var_name="$(printf "%s" "${_basename_var_name}" | cut -c1-"$((${#_basename_var_name} - ${#_basename_var_suffix}))")"
+        fi
+    fi
+
+    printf "%s\\n" "${_basename_var_name}"
+}
+
 _aliazator_list()
 {
     _aliazator_list_var_aplugin="none,minimal,installed,all"
 
     _aliazator_list_meta()
     {
-        [ -z "$ALIAZATOR_PLUGINS" ] && ALIAZATOR_PLUGINS=$ALIAZATOR_CACHE
-        while [ "$_aliazator_list_var_aplugin" ]; do
-            _aliazator_list_var_option=${_aliazator_list_var_aplugin%%,*}
-            if [ X"$ALIAZATOR_PLUGINS" = X"$_aliazator_list_var_option" ]; then
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$_aliazator_list_var_option" "$_BIN_SHUNDLE_ENV_NORMAL"
+        [ -z "${ALIAZATOR_PLUGINS}" ] && ALIAZATOR_PLUGINS="${ALIAZATOR_CACHE}"
+        while [ "${_aliazator_list_var_aplugin}" ]; do
+            _aliazator_list_var_option="${_aliazator_list_var_aplugin%%,*}"
+            if [ X"${ALIAZATOR_PLUGINS}" = X"${_aliazator_list_var_option}" ]; then
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${_aliazator_list_var_option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_YELLOW" "  $_aliazator_list_var_option" "$_BIN_SHUNDLE_ENV_NORMAL"
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_YELLOW}" "  ${_aliazator_list_var_option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             fi
-            [ X"$_aliazator_list_var_aplugin" = X"$_aliazator_list_var_option" ] && \
+            [ X"${_aliazator_list_var_aplugin}" = X"${_aliazator_list_var_option}" ] && \
                 _aliazator_list_var_aplugin='' || _aliazator_list_var_aplugin="${_aliazator_list_var_aplugin#*,}"
         done
     }
 
     _aliazator_list_sourced()
     {
-        [ -z "$1" ] && return 1
-        _aliazator_list_sourced_var_l="$ALIAZATOR_PLUGINS_ARRAY"
-        while [ "$_aliazator_list_sourced_var_l" ]; do
-            _aliazator_list_sourced_var_option=${_aliazator_list_sourced_var_l%%,*}
-            [ X"$1" = X"$_aliazator_list_sourced_var_option" ] && return 0
-            [ X"$_aliazator_list_sourced_var_l" = X"$_aliazator_list_sourced_var_option" ] &&\
+        [ -z "${1}" ] && return 1
+        _aliazator_list_sourced_var_l="${ALIAZATOR_PLUGINS_ARRAY}"
+        while [ "${_aliazator_list_sourced_var_l}" ]; do
+            _aliazator_list_sourced_var_option="${_aliazator_list_sourced_var_l%%,*}"
+            [ X"${1}" = X"${_aliazator_list_sourced_var_option}" ] && return 0
+            [ X"${_aliazator_list_sourced_var_l}" = X"${_aliazator_list_sourced_var_option}" ] &&\
                 _aliazator_list_sourced_var_l='' || _aliazator_list_sourced_var_l="${_aliazator_list_sourced_var_l#*,}"
         done
         return 1
     }
 
-    if [ -z "$1" ]; then
-        printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "meta" "$_BIN_SHUNDLE_ENV_NORMAL"
+    if [ -z "${1}" ]; then
+        printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "meta" "${_BIN_SHUNDLE_ENV_NORMAL}"
         _aliazator_list_meta
 
         printf "\\n"
-        printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "sets" "$_BIN_SHUNDLE_ENV_NORMAL"
-        for aliases in "$ALIAZATOR_PATH"/default/*; do
-            if _aliazator_list_sourced $(basename "$aliases" .aliases); then
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
+        printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "sets" "${_BIN_SHUNDLE_ENV_NORMAL}"
+        for aliases in "${ALIAZATOR_PATH}"/default/*; do
+            baliases="$(basename "${aliases}" .aliases)"
+            if _aliazator_list_sourced "${baliases}"; then
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_YELLOW" "  $(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_YELLOW}" "  ${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             fi
         done
 
         printf "\\n"
-        for aliases in "$ALIAZATOR_PATH"/extra/*; do
-            if _aliazator_list_sourced $(basename "$aliases" .aliases); then
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
+        for aliases in "${ALIAZATOR_PATH}"/extra/*; do
+            baliases="$(basename "${aliases}" .aliases)"
+            if _aliazator_list_sourced "${baliases}"; then
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
-                printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_YELLOW" "  $(basename "$aliases" .aliases)" "$_BIN_SHUNDLE_ENV_NORMAL"
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_YELLOW}" "  ${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             fi
         done
     else
-        [ -f "$ALIAZATOR_PATH"/extra/"$1".aliases ] && { cat "$ALIAZATOR_PATH"/extra/"$1".aliases; return 0; }
-        [ -f "$ALIAZATOR_PATH"/default/"$1".aliases ] && { cat "$ALIAZATOR_PATH"/default/"$1".aliases; return 0; }
+        [ -f "${ALIAZATOR_PATH}/extra/${1}.aliases" ] && { cat "${ALIAZATOR_PATH}/extra/${1}.aliases"; return 0; }
+        [ -f "${ALIAZATOR_PATH}/default/${1}.aliases" ] && { cat "${ALIAZATOR_PATH}/default/${1}.aliases"; return 0; }
     fi
 }
 
@@ -77,68 +99,67 @@ _aliazator_disable()
 {
     _aliazator_desource()
     {
-        [ -z "$1" ] && return
-        _aliazator_desource_var_plugin="$(basename "$1" .aliases)"
-        ALIAZATOR_PLUGINS_ARRAY="$(printf "%s\\n" "$ALIAZATOR_PLUGINS_ARRAY"|sed -e "s:$_aliazator_desource_var_plugin,::g")"
+        [ -z "${1}" ] && return
+        _aliazator_desource_var_plugin="$(basename "${1}" .aliases)"
+        ALIAZATOR_PLUGINS_ARRAY="$(printf "%s" "${ALIAZATOR_PLUGINS_ARRAY}"|sed -e "s:${_aliazator_desource_var_plugin},::g")"
         #TODO 01-11-2013 04:35 >> avoid using files
-        sed -e "s:\<alias:unalias:g" -e "s:=.*::g" "$1" > "$1".disable
-        . "$1".disable >/dev/null 2>/dev/null
-        \rm -f "$1".disable
+        sed -e "s:\<alias:unalias:g" -e "s:=.*::g" "${1}" > /tmp/"${_aliazator_desource_var_plugin}".disable
+        . /tmp/"${_aliazator_desource_var_plugin}".disable >/dev/null 2>/dev/null
+        \rm -f /tmp/"${_aliazator_desource_var_plugin}".disable
     }
 
-    case "$1" in
+    case "${1}" in
         minimal)
-            for aliases in "$ALIAZATOR_PATH"/default/*; do
-                case $(basename $aliases .aliases) in
-                    general|zcustom|$OSTYPE) [ -f "$aliases" ] && _aliazator_desource "$aliases" ;;
+            for aliases in "${ALIAZATOR_PATH}"/default/*; do
+                case "$(basename "${aliases}" .aliases)" in
+                    general|zcustom|${OSTYPE}) [ -f "${aliases}" ] && _aliazator_desource "${aliases}" ;;
                     osx) #special case, OSTYPE returns string + version on osx systems, wtf
-                        case $OSTYPE in darwin*) [ -f "$aliases" ] && _aliazator_desource "$aliases".aliases;; esac ;;
+                        case "${OSTYPE}" in darwin*) [ -f "${aliases}" ] && _aliazator_desource "${aliases}".aliases;; esac ;;
                 esac
             done
             ;;
         installed)
             _aliazator_disable minimal
-            for aliases in "$ALIAZATOR_PATH"/extra/*; do
-                case $(basename $aliases .aliases) in
+            for aliases in "${ALIAZATOR_PATH}"/extra/*; do
+                case "$(basename "${aliases}" .aliases)" in
                     *)
-                        if type $(basename $aliases .aliases) 1> /dev/null 2> /dev/null; then
-                            _aliazator_desource "$aliases"
+                        if type "$(basename "${aliases}" .aliases)" 1> /dev/null 2> /dev/null; then
+                            _aliazator_desource "${aliases}"
                         fi
                         ;;
-                esac
-            done
+                esac done
             ;;
         all)
             _aliazator_disable minimal
-            for aliases in "$ALIAZATOR_PATH"/extra/*; do
-                case $(basename $aliases .aliases) in
-                    *) [ -f "$aliases" ] && _aliazator_desource "$aliases" ;;
+            for aliases in "${ALIAZATOR_PATH}"/extra/*; do
+                case "$(basename "${aliases}" .aliases)" in
+                    *) [ -f "${aliases}" ] && _aliazator_desource "${aliases}" ;;
                 esac
             done
             ;;
         *)
-            [ -f "$ALIAZATOR_PATH"/extra/"$1".aliases ] && { _aliazator_desource "$ALIAZATOR_PATH"/extra/"$1".aliases; return 0; }
-            [ -f "$ALIAZATOR_PATH"/default/"$1".aliases ] && { _aliazator_desource "$ALIAZATOR_PATH"/default/"$1".aliases; return 0; }
+            [ -f "${ALIAZATOR_PATH}/extra/${1}.aliases" ]   && { _aliazator_desource "${ALIAZATOR_PATH}/extra/${1}.aliases"; return 0; }
+            [ -f "${ALIAZATOR_PATH}/default/${1}.aliases" ] && { _aliazator_desource "${ALIAZATOR_PATH}/default/${1}.aliases"; return 0; }
         ;;
     esac
 }
 
 _aliazator_search()
 {
-    [ "$#" -lt 1 ] && _usage
-    grep -rin "$1" "$ALIAZATOR_PATH"
+    [ "${#}" -lt "1" ] && _usage
+    grep -rin "${1}" "${ALIAZATOR_PATH}"
 }
 
-if [ "$#" -lt 1 ]; then
+if [ "${#}" -lt "1" ]; then
    _usage
 else
-    case "$1" in
+    case "${1}" in
         #list|disable|search) _aliazator_$1 "$2";;
         #enable) . $ALIAZATOR_PATH/../bin/aliazator-enable "$2" ;;
-        l*) _aliazator_list "$2";;
-        d*) _aliazator_disable "$2";;
-        s*) _aliazator_search "$2";;
-        e*) . $ALIAZATOR_PATH/../bin/aliazator-enable "$2" ;;
+        l*) _aliazator_list    "${2}";;
+        d*) _aliazator_disable "${2}";;
+        s*) _aliazator_search  "${2}";;
+        e*) . "${ALIAZATOR_PATH}/../bin/aliazator-enable" "${2}" ;;
         *) _usage ;;
     esac
 fi
