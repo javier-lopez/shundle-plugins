@@ -11,7 +11,7 @@
 #================================ Settings =====================================
 #===============================================================================
 #Don't modify this section directly, instead set options in your shell init file
-[ -z "$ETERNALIZE_PATH" ] && ETERNALIZE_PATH=""$plugin"/eternalize/eternalize.data"
+[ -z "${ETERNALIZE_PATH}" ] && ETERNALIZE_PATH="${plugin}/eternalize/eternalize.data"
 
 #===============================================================================
 #================================== Plugin =====================================
@@ -20,8 +20,8 @@
 #TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed
 #on the fly
 
-export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
-export HISTCONTROL=ignoreboth
+export HISTCONTROL="${HISTCONTROL}${HISTCONTROL+,}ignoredups"
+export HISTCONTROL="ignoreboth"
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
 '
 et="0"
@@ -43,6 +43,6 @@ fi
 '
 #'printf "%s\\n" "$USER      $(history 1)" >> $ETERNALIZE_PATH'
 
-[ -n "$EDITOR" ] && _shundle_expose eternalize="$EDITOR $ETERNALIZE_PATH" || _shundle_expose eternalize="vi $ETERNALIZE_PATH"
+[ -n "${EDITOR}" ] && _shundle_expose eternalize="${EDITOR} ${ETERNALIZE_PATH}" || _shundle_expose eternalize="vi ${ETERNALIZE_PATH}"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh : 

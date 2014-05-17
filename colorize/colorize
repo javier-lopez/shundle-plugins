@@ -11,17 +11,17 @@
 #================================ Settings =====================================
 #===============================================================================
 #Don't modify this section directly, instead set them in your shell init file
-[ -z "$COLORIZE_PATH" ]  && COLORIZE_PATH=""$plugin"/colorize"
-[ -z "$COLORIZE_THEME" ] && COLORIZE_THEME="blacky"
-[ -z "$COLORIZE_PS" ]    && COLORIZE_PS="yujie"
+[ -z "${COLORIZE_PATH}" ]  && COLORIZE_PATH="${plugin}/colorize"
+[ -z "${COLORIZE_THEME}" ] && COLORIZE_THEME="blacky"
+[ -z "${COLORIZE_PS}" ]    && COLORIZE_PS="yujie"
 
 #===============================================================================
 #================================== Plugin =====================================
 #===============================================================================
 
-[ -f "$COLORIZE_PATH"/theme/"$COLORIZE_THEME".theme ] && . "$COLORIZE_PATH"/theme/"$COLORIZE_THEME".theme
-[ -f "$COLORIZE_PATH"/ps/"$COLORIZE_PS".ps ]          && . "$COLORIZE_PATH"/ps/"$COLORIZE_PS".ps
+[ -f "${COLORIZE_PATH}"/theme/"${COLORIZE_THEME}".theme ] && . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme"
+[ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]            && . "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps"
 
-_shundle_expose colorize=". "$plugin"/colorize/bin/colorize"
+_shundle_expose colorize=". ${plugin}/colorize/bin/colorize"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh : 

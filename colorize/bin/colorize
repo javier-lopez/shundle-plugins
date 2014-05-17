@@ -14,69 +14,71 @@ _usage()
 
 _colorize_source()
 {
-    [ -z "$1" ] && return
+    [ -z "${1}" ] && return
 
-    case $1 in
-        *.ps) COLORIZE_PS="$(basename "$1" .ps)" ;;
-        *.theme) COLORIZE_THEME="$(basename "$1" .theme)" ;;
+    case "${1}" in
+        *.ps)    COLORIZE_PS="$(basename "${1}" .ps)" ;;
+        *.theme) COLORIZE_THEME="$(basename "${1}" .theme)" ;;
     esac
-    . "$1"
+    . "${1}"
 }
 
 _colorize_list()
 {
     _colorize_list_sourced()
     {
-        [ -z "$1" ] && return 1
-        case $1 in
-            $COLORIZE_THEME|$COLORIZE_PS) return 0 ;;
+        [ -z "${1}" ] && return 1
+        case "${1}" in
+            "${COLORIZE_THEME}"|"${COLORIZE_PS}") return 0 ;;
         esac
         return 1
     }
 
-    printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "ps" "$_BIN_SHUNDLE_ENV_NORMAL"
-    for ps in "$COLORIZE_PATH"/ps/*; do
-        if _colorize_list_sourced $(basename "$ps" .ps); then
-            printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$ps" .ps)" "$_BIN_SHUNDLE_ENV_NORMAL"
+    printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "ps" "${_BIN_SHUNDLE_ENV_NORMAL}"
+    for ps in "${COLORIZE_PATH}"/ps/*; do
+        bps="$(basename "${ps}" .ps)"
+        if _colorize_list_sourced "${bps}"; then
+            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${bps}" "${_BIN_SHUNDLE_ENV_NORMAL}"
         else
-            printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" "  $(basename "$ps" .ps)" "$_BIN_SHUNDLE_ENV_NORMAL"
+            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" "  ${bps}" "${_BIN_SHUNDLE_ENV_NORMAL}"
         fi
     done
 
     printf "\\n"
-    printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_BLUE" "theme" "$_BIN_SHUNDLE_ENV_NORMAL"
-    for theme in "$COLORIZE_PATH"/theme/*; do
-        if _colorize_list_sourced $(basename "$ps" .theme); then
-            printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" " +$(basename "$theme" .theme)" "$_BIN_SHUNDLE_ENV_NORMAL"
+    printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "theme" "${_BIN_SHUNDLE_ENV_NORMAL}"
+    for theme in "${COLORIZE_PATH}"/theme/*; do
+        btheme="$(basename "${theme}" .theme)"
+        if _colorize_list_sourced "${btheme}"; then
+            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${btheme}" "${_BIN_SHUNDLE_ENV_NORMAL}"
         else
-            printf "%b%s%b\\n" "$_BIN_SHUNDLE_ENV_RED" "  $(basename "$theme" .theme)" "$_BIN_SHUNDLE_ENV_NORMAL"
+            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" "  ${btheme}" "${_BIN_SHUNDLE_ENV_NORMAL}"
         fi
     done
 }
 
 _colorize_enable()
 {
-    [ -z "$1" ] && _usage
+    [ -z "${1}" ] && _usage
 
-    [ -f "$COLORIZE_PATH"/ps/"$1".ps ] && { _colorize_source "$COLORIZE_PATH"/ps/"$1".ps; return 0; }
-    [ -f "$COLORIZE_PATH"/theme/"$1".theme ] && { _colorize_source "$COLORIZE_PATH"/theme/"$1".theme; return 0; }
+    [ -f "${COLORIZE_PATH}/ps/${1}.ps" ]       && { _colorize_source "${COLORIZE_PATH}/ps/${1}.ps"; return 0; }
+    [ -f "${COLORIZE_PATH}/theme/${1}.theme" ] && { _colorize_source "${COLORIZE_PATH}/theme/${1}.theme"; return 0; }
 }
 
 _colorize_show()
 {
-    [ -z "$1" ] && _usage
+    [ -z "${1}" ] && _usage
 
-    [ -f "$COLORIZE_PATH"/ps/"$1".ps ] && { cat "$COLORIZE_PATH"/ps/"$1".ps; return 0; }
-    [ -f "$COLORIZE_PATH"/theme/"$1".theme ] && { cat "$COLORIZE_PATH"/theme/"$1".theme; return 0; }
+    [ -f "${COLORIZE_PATH}/ps/${1}.ps" ]       && { cat "${COLORIZE_PATH}/ps/${1}.ps"; return 0; }
+    [ -f "${COLORIZE_PATH}/theme/${1}.theme" ] && { cat "${COLORIZE_PATH}/theme/${1}.theme"; return 0; }
 }
 
-if [ "$#" -lt 1 ]; then
+if [ "${#}" -lt "1" ]; then
    _usage
 else
-    case "$1" in
+    case "${1}" in
         l*) _colorize_list;;
-        s*) _colorize_show "$2";;
-        e*) _colorize_enable "$2";;
+        s*) _colorize_show "${2}";;
+        e*) _colorize_enable "${2}";;
         *) _usage ;;
     esac
 fi
