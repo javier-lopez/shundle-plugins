@@ -28,6 +28,7 @@ alias md='mkdir -p'
 alias mkcd='_mkcd(){ mkdir $1 && cd $1; }; _mkcd'
 alias pager="$PAGER"
 alias rd='rmdir'
+alias rm.rf='rm -rf'
 alias size='du -sh'
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
 alias tree="_tree(){ ([ -z \"\$1\" ] || \cd \$1 2>/dev/null && find . -print | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g';)}; _tree"
