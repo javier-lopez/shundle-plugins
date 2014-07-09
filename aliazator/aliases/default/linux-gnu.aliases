@@ -30,10 +30,11 @@ alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i
 alias grep='grep --color'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
+alias key.lookup="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
+alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
 
 #net
 alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
 alias listen.ports='sudo lsof -i -P | grep -i listen'
 alias route.add.default.gw='sudo route add default gw'
 alias traceroute='traceroute -T -p 80'
-alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
