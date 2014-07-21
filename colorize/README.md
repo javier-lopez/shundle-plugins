@@ -63,22 +63,6 @@ Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-arch.png" alt="arch"/>
 </p>
-- bretterpstra
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-bretterpstra.png" alt="bretterpstra"/>
-</p>
-- delicious
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-delicious.png" alt="delicious"/>
-</p>
-- dhampir
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-dhampir.png" alt="dhampir"/>
-</p>
-- flex
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-flex.png.png" alt="flex"/>
-</p>
 - italian
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-italian.png" alt="italian"/>
@@ -86,10 +70,6 @@ Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in
 - load
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-load.png" alt="load"/>
-</p>
-- minimal
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-minimal.png" alt="minimal"/>
 </p>
 - msdos
 <p align="center">
@@ -103,10 +83,6 @@ Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-sergio.png" alt="sergio"/>
 </p>
-- tonka
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-tonka.png" alt="tonka"/>
-</p>
 - walk
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-walk.png" alt="walk"/>
@@ -119,6 +95,7 @@ Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in
 <p align="center">
 <img src="http://javier.io/assets/img/colorize-zork.png" alt="zork"/>
 </p>
+- and more!
 
 ## Contributors
 
