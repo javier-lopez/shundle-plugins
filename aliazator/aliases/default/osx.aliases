@@ -20,12 +20,11 @@ alias textedit='open -a TextEdit'
 alias hex='open -a "Hex Fiend"'
 alias afk='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
 
-if [ -s /usr/bin/firefox ] ; then
-  unalias firefox
-fi
-
 # Requires growlnotify, which can be found in the Growl DMG under "Extras"
 alias grnot='growlnotify -s -t Terminal -m "Done"'
+
+# OS X has no `md5sum`
+alias md5sum="md5"
 
 # Get rid of those pesky .DS_Store files recursively
 alias dsclean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
@@ -39,3 +38,5 @@ alias flush='dscacheutil -flushcache'
 # Show/hide hidden files (for Mac OS X Mavericks)
 alias showhidden="defaults write com.apple.finder AppleShowAllFiles TRUE"
 alias hidehidden="defaults write com.apple.finder AppleShowAllFiles FALSE"
+
+alias beep="tput bel"
