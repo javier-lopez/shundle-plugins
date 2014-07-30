@@ -31,7 +31,7 @@ done
 )'
 else #sh implementation
 NEW_PWD='$(
-p=$(printf "%s\\n" "$PWD" | sed -e "s:$HOME::g")
+p=$(printf "%s" "$PWD" | sed -e "s:$HOME::g")
 [ X"$p" != X"$PWD" ] && printf "%s" "'"$DIR_HOME_COLOR"'~"
 if [ X"$p" != X"" ]; then
 until [ X"$p" = X"$d" ]; do
