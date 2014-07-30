@@ -2,7 +2,7 @@
 # Author:       Javier Lopez <m@javier.io>
 # Description:  aliazator manages aliases
 # License:      wtfpl
-# Home:         http://github.com/chilicuil/shundle-plugins/aliazator
+# Source:       http://github.com/chilicuil/shundle-plugins/aliazator
 # Version:      0.1
 # Shell:        sh
 # Depends:      none
