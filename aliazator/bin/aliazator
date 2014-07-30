@@ -1,8 +1,20 @@
 #!/bin/sh
 
-#TODO 22-10-2013 00:40 >> replace basename with a portable alternative
-#                         may not be posible to use a really quick version
-#                         detect whenever basename exists and fallback to a portable implementation?
+_basename()
+{
+    [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
+    [ -z "${2}" ] || _basename_var_suffix="${2}"
+    case "${_basename_var_name}" in
+        /*|*/*) _basename_var_name="${_basename_var_name##*/}"
+    esac
+
+    if [ -n "${_basename_var_suffix}" ] && [ "${#_basename_var_name}" -gt "${#2}" ]; then
+        _basename_var_name="${_basename_var_name%$_basename_var_suffix}"
+    fi
+
+    retval="${_basename_var_name}"
+    #printf "%s" "${_basename_var_name}"
+}
 
 _usage()
 {
@@ -13,24 +25,6 @@ _usage()
     printf "%s\\n" "  list    [subset]  list available plugins"
     printf "%s\\n" "  search  [pattern] look up where an alias is been sourced from, or if's managed by aliazator"
     return 1
-}
-
-_basename()
-{
-    [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
-    [ -z "${2}" ] || _basename_var_suffix="${2}"
-    case "${_basename_var_name}" in
-        /*|*/*) _basename_var_name="$(expr "${_basename_var_name}" : '.*/\([^/]*\)')" ;;
-    esac
-
-    if [ -n "${_basename_var_suffix}" ] && [ "${#_basename_var_name}" -gt "${#2}" ]; then
-        if [ X"$(printf "%s" "${_basename_var_name}" | cut -c"$((${#_basename_var_name} - ${#_basename_var_suffix} + 1))"-"${#_basename_var_name}")" \
-           = X"$(printf "%s" "${_basename_var_suffix}")" ]; then
-            _basename_var_name="$(printf "%s" "${_basename_var_name}" | cut -c1-"$((${#_basename_var_name} - ${#_basename_var_suffix}))")"
-        fi
-    fi
-
-    printf "%s\\n" "${_basename_var_name}"
 }
 
 _aliazator_list()
@@ -72,7 +66,7 @@ _aliazator_list()
         printf "\\n"
         printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "sets" "${_BIN_SHUNDLE_ENV_NORMAL}"
         for aliases in "${ALIAZATOR_PATH}"/default/*; do
-            baliases="$(basename "${aliases}" .aliases)"
+            _basename "${aliases}" .aliases && baliases="${retval}"
             if _aliazator_list_sourced "${baliases}"; then
                 printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
@@ -82,7 +76,7 @@ _aliazator_list()
 
         printf "\\n"
         for aliases in "${ALIAZATOR_PATH}"/extra/*; do
-            baliases="$(basename "${aliases}" .aliases)"
+            _basename "${aliases}" .aliases && baliases="${retval}"
             if _aliazator_list_sourced "${baliases}"; then
                 printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${baliases}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
@@ -100,18 +94,19 @@ _aliazator_disable()
     _aliazator_desource()
     {
         [ -z "${1}" ] && return
-        _aliazator_desource_var_plugin="$(basename "${1}" .aliases)"
+        _basename "${1}" .aliases && _aliazator_desource_var_plugin="${retval}"
         ALIAZATOR_PLUGINS_ARRAY="$(printf "%s" "${ALIAZATOR_PLUGINS_ARRAY}"|sed -e "s:${_aliazator_desource_var_plugin},::g")"
         #TODO 01-11-2013 04:35 >> avoid using files
         sed -e "s:\<alias:unalias:g" -e "s:=.*::g" "${1}" > /tmp/"${_aliazator_desource_var_plugin}".disable
-        . /tmp/"${_aliazator_desource_var_plugin}".disable >/dev/null 2>/dev/null
+        . /tmp/"${_aliazator_desource_var_plugin}".disable >/dev/null 2>&1
         \rm -f /tmp/"${_aliazator_desource_var_plugin}".disable
     }
 
     case "${1}" in
         minimal)
             for aliases in "${ALIAZATOR_PATH}"/default/*; do
-                case "$(basename "${aliases}" .aliases)" in
+                _basename "${aliases}" .aliases
+                case "${retval}" in
                     general|zcustom|${OSTYPE}) [ -f "${aliases}" ] && _aliazator_desource "${aliases}" ;;
                     osx) #special case, OSTYPE returns string + version on osx systems, wtf
                         case "${OSTYPE}" in darwin*) [ -f "${aliases}" ] && _aliazator_desource "${aliases}".aliases;; esac ;;
@@ -121,9 +116,10 @@ _aliazator_disable()
         installed)
             _aliazator_disable minimal
             for aliases in "${ALIAZATOR_PATH}"/extra/*; do
-                case "$(basename "${aliases}" .aliases)" in
+                _basename "${aliases}" .aliases
+                case "${retval}" in
                     *)
-                        if type "$(basename "${aliases}" .aliases)" 1> /dev/null 2> /dev/null; then
+                        if type "${retval}" 1> /dev/null 2>&1; then
                             _aliazator_desource "${aliases}"
                         fi
                         ;;
@@ -132,13 +128,14 @@ _aliazator_disable()
         all)
             _aliazator_disable minimal
             for aliases in "${ALIAZATOR_PATH}"/extra/*; do
-                case "$(basename "${aliases}" .aliases)" in
+                _basename "${aliases}" .aliases
+                case "${retval}" in
                     *) [ -f "${aliases}" ] && _aliazator_desource "${aliases}" ;;
                 esac
             done
             ;;
         *)
-            [ -f "${ALIAZATOR_PATH}/extra/${1}.aliases" ]   && { _aliazator_desource "${ALIAZATOR_PATH}/extra/${1}.aliases"; return 0; }
+            [ -f "${ALIAZATOR_PATH}/extra/${1}.aliases" ]   && { _aliazator_desource "${ALIAZATOR_PATH}/extra/${1}.aliases";   return 0; }
             [ -f "${ALIAZATOR_PATH}/default/${1}.aliases" ] && { _aliazator_desource "${ALIAZATOR_PATH}/default/${1}.aliases"; return 0; }
         ;;
     esac

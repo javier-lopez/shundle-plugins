@@ -1,9 +1,26 @@
 [ "${#}" -eq "0" ] && return
 
+_basename()
+{
+    [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
+    [ -z "${2}" ] || _basename_var_suffix="${2}"
+    case "${_basename_var_name}" in
+        /*|*/*) _basename_var_name="${_basename_var_name##*/}"
+    esac
+
+    if [ -n "${_basename_var_suffix}" ] && [ "${#_basename_var_name}" -gt "${#2}" ]; then
+        _basename_var_name="${_basename_var_name%$_basename_var_suffix}"
+    fi
+
+    retval="${_basename_var_name}"
+    #printf "%s" "${_basename_var_name}"
+}
+
 _aliazator_source()
 {
     [ -z "${1}" ] && return
-    ALIAZATOR_PLUGINS_ARRAY="${ALIAZATOR_PLUGINS_ARRAY}$(basename "${1}" .aliases),"
+    _basename "${1}" .aliases
+    ALIAZATOR_PLUGINS_ARRAY="${ALIAZATOR_PLUGINS_ARRAY}${retval},"
     . "${1}"
 }
 
@@ -22,7 +39,8 @@ _aliazator_enable()
             ;;
         installed)
             for aliases in "${ALIAZATOR_PATH}"/extra/*; do
-                if command -v "$(basename "${aliases}" .aliases)" 1> /dev/null 2>&1; then
+                _basename "${aliases}" .aliases
+                if command -v "${retval}" 1> /dev/null 2>&1; then
                     _aliazator_source "${aliases}"
                 fi
             done
@@ -36,7 +54,8 @@ _aliazator_enable()
             ;;
         custom*)
             #http://stackoverflow.com/a/15988793/1724603
-            _aliazator_enable_var_aplugin="$(printf "%s" "${1}" | grep "custom:" | cut -d: -f2)"
+            #_aliazator_enable_var_aplugin="$(printf "%s" "${1}" | awk  -F":" '/custom:/ {print $2}')"
+            _aliazator_enable_var_aplugin="$(printf "%s" "${1}" | grep "custom:" | cut -d: -f2)" #faster
             while [ "${_aliazator_enable_var_aplugin}" ] ;do
                 _aliazator_enable_var_option="${_aliazator_enable_var_aplugin%%,*}"
                 case "${_aliazator_enable_var_option}" in

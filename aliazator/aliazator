@@ -19,7 +19,6 @@
 #================================== Plugin =====================================
 #===============================================================================
 
-#TODO 10-10-2013 06:02 >> add support for non bash shells
 export ALIAZATOR_PATH=""${plugin}"/aliazator/aliases"
 export ALIAZATOR_CACHE="${ALIAZATOR_PLUGINS}"
 
