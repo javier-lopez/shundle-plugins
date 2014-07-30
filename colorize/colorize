@@ -2,7 +2,7 @@
 # Author:       Javier Lopez <m@javier.io>
 # Description:  colorize plugin, set terminal + ps
 # License:      wtfpl
-# Home:         http://github.com/chilicuil/shundle-plugins/colorize
+# Source:       http://github.com/chilicuil/shundle-plugins/colorize
 # Version:      0.1
 # Shell:        sh
 # Depends:      none
