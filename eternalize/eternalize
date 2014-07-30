@@ -17,8 +17,7 @@
 #================================== Plugin =====================================
 #===============================================================================
 
-#TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed
-#on the fly
+#TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed on the fly
 
 export HISTCONTROL="${HISTCONTROL}${HISTCONTROL+,}ignoredups"
 export HISTCONTROL="ignoreboth"
@@ -29,7 +28,7 @@ case "$(history 1)" in
     *\ cd\ *|*\ ls|*\ gs|*\ bashrc|*\ getpass*|*\ pg|*\ \.\.) et="1" ;;
     *\ cd|*\ ll|*\ man|*\ translate|*\ yowsup|*mail*|*\ l)    et="1" ;;
     *\ c|*\ gps|*\ g|*\ gl|*\ mpc\ *|*\ pwd|*\ tls|*\ tadd)   et="1" ;;
-    *\ tdone|*eternalize*|*history*|*ussh*|*htop*)  et="1";;
+    *\ tdone|*eternalize*|*history*|*ussh*|*htop*|p *)  et="1";;
 esac
 
 if [ X"${et}" = X"0" ]; then

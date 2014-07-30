@@ -11,8 +11,8 @@
 #================================ Settings =====================================
 #===============================================================================
 #Don't modify this section directly, instead set options in your shell init file
-[ -z "$REMEMBERATOREVERY" ] && REMEMBERATOREVERY=5
-[ -z "$REMEMBERATASKS" ] && REMEMBERATASKS=3
+[ -z "${REMEMBERATOREVERY}" ] && REMEMBERATOREVERY=5
+[ -z "${REMEMBERATASKS}" ]    && REMEMBERATASKS=3
 
 #===============================================================================
 #================================== Plugin =====================================
@@ -21,11 +21,11 @@
 _todo_rememberator()
 {
     if command -v "todo" > /dev/null 2>&1; then
-        if [ -d "$HOME/.todo" ]; then
+        if [ -d "${HOME}/.todo" ]; then
             #TODO 26-10-2013 05:42 >> improve randomness
-            _todo_rememberator_var_rnumber=$(expr $$ % $REMEMBERATOREVERY)
-            if [ X"$_todo_rememberator_var_rnumber" = X"0" ]; then
-                todo ls | head -$REMEMBERATASKS -v
+            _todo_rememberator_var_rnumber=$(expr $$ % ${REMEMBERATOREVERY})
+            if [ X"${_todo_rememberator_var_rnumber}" = X"0" ]; then
+                todo ls | head -${REMEMBERATASKS} -v
             fi
         else
             printf "%s\\n" "todo-rememberator: 0 tasks to do, why don't you add some?"
