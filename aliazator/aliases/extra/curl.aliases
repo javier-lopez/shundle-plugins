@@ -1,3 +1,4 @@
 #curl
 alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
 alias down4me=sh\ -c\ \''curl -s "http://www.downforeveryoneorjustme.com/$1" | sed "/just you/!d;s/<[^>]*>//g;s:&#x2F;:/:g" '\'\ -
+alias github-pair='sh -c '\''curl -s https://github.com/"${1}".keys >>  ~/.ssh/authorized_key'\'' -'
