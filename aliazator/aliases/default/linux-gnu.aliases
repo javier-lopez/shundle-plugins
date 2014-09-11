@@ -5,6 +5,7 @@ alias less.color='less -R'
 #ls
 alias lñ='ls --color=auto'
 alias ls='ls --color=auto'
+alias lls='ls --color=auto'
 alias ñ='ls --color=auto'
 alias kl='ls --color=auto'
 alias lss='ls --color=auto'
