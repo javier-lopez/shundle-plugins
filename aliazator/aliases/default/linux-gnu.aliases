@@ -34,6 +34,7 @@ alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i
 
 #other single command aliases which don't deserve their own file
 alias grep='grep --color'
+alias alert='m="$([ X"${?}" = X"0" ] && echo "[+]" || echo "[-]") $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"; xm="$(command -v gxmessage)" || xm=xmessage; $xm -center "${m}"'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
 alias key.lookup="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
