@@ -21,7 +21,7 @@ alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.ado
 alias cls='clear'
 alias edit="$EDITOR"
 alias find='_find() { find "$@"; set +f; unset _find; }; set -f; _find'
-alias find.file=sh\ -c\ \''find . -iname \*"$1"\*'\'\ -
+alias find.file=sh\ -c\ \''\find . -iname \*"$1"\*'\'\ -
 alias dmesg.tail='dmesg|tail'
 alias date.stamp='date +%d-%m-%Y'
 alias h='history'
@@ -32,7 +32,7 @@ alias rd='rmdir'
 alias rm.rf='rm -rf'
 alias size='du -sh'
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
-alias tree="_tree(){ ([ -z \"\$1\" ] || \cd \$1 2>/dev/null && find . -print | sort | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g';)}; _tree"
+alias tree="_tree(){ ([ -z \"\$1\" ] || \cd \$1 2>/dev/null && \find . -print | sort | sed -e '1s/.*/┬/' -e 's;[^/]*/;│   ;g;s;│   \([^│]\);├── \1;g';)}; _tree"
 alias tune='printf "%s\\n" "main(i){for(i=0;;i++)putchar(((i*(i>>8|i>>9)&46&i>>8))^(i&i>>13|i>>6));}" | gcc -x c - && ./a.out | aplay'
 
 alias rb='ruby'
