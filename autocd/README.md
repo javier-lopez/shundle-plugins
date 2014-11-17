@@ -28,7 +28,7 @@
 
 ## Usage
 
-[Autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) stores the current working directory on every enter (just as history does anyway) and uses the result to jump to it when a new bash session is open
+[Autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) stores the current working directory on every enter (just as history does anyway) and uses the result to jump to it when a new bash session is open.
 
 After completing the installation, no action is required, it will start logging every single change in the working directory, including those who are executed from different sessions.
 
@@ -46,7 +46,7 @@ See [autocd contributors](https://github.com/chilicuil/shundle-plugins/graphs/co
 
 ## Also
 
-* autocd was developed and tested with [Bash](http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29) 4.2 on Linux
+* autocd was developed and tested with [Bash](http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29) 4.2 and [tabbedex](https://github.com/minos-org/minos-tools/blob/master/urxvt/tabbedex) on Linux
 * autocd will try to run in as many platforms & shells as possible
 * autocd tries to be as [KISS](http://en.wikipedia.org/wiki/KISS_principle) as possible
 

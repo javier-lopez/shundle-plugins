@@ -26,4 +26,6 @@ PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
 '
 pwd > ${AUTOCD_FILE}'
 
+#[ -z "${ZSH_NAME}" ] || autocdcmd() { eval "${PROMPT_COMMAND}"; }; precmd_functions=(autocdcmd)
+
 # vim: set ts=8 sw=4 tw=0 ft=sh :
