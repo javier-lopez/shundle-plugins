@@ -1,0 +1,29 @@
+# Name:         autocd
+# Author:       Javier Lopez <m@javier.io>
+# Description:  autocd helps to launch terminal sessions "from here"
+# License:      wtfpl
+# Source:       http://github.com/chilicuil/shundle-plugins/autocd
+# Version:      0.1
+# Shell:        bash
+# Depends:      none
+
+#===============================================================================
+#================================ Settings =====================================
+#===============================================================================
+#Don't modify this section directly, instead set options in your shell init file
+[ -z "${AUTOCD_FILE}" ] && AUTOCD_FILE="/tmp/autocd.59YlpZ50"
+
+#===============================================================================
+#================================== Plugin =====================================
+#===============================================================================
+
+#TODO 17-11-2014 11:36 >> Add support for zsh and fish at least
+#http://superuser.com/questions/735660/whats-the-zsh-equivalent-of-bashs-prompt-command
+
+[ X"${PWD}" == X"${HOME}" ] && [ -f "${AUTOCD_FILE}" ] && \cd "$(cat "${AUTOCD_FILE}")"
+
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
+'
+pwd > ${AUTOCD_FILE}'
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :
