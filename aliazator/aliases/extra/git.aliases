@@ -3,7 +3,10 @@ alias g='git'
 alias gcf='git clone --depth=1'
 alias gcl='git clone'
 alias ga='git add'
-alias gall='git add .'
+alias gal='git add .'
+alias gall='git add -u'
+alias grm="git rm"
+alias grmf="git ls-files -d -z | xargs -0 git update-index --remove"
 alias gsh='git show'
 alias gs='git status'
 alias gst='git status'
@@ -39,5 +42,3 @@ alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset 
 alias gls="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --stat"
 alias gw="git whatchanged"
 alias gmv='git mv'
-alias grm="git rm"
-alias grmf="git ls-files -d -z | xargs -0 git update-index --remove"
