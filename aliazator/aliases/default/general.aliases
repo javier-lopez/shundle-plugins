@@ -19,6 +19,7 @@ alias unbuf=sh\ -c\ \''mv "$1" "${1%.*}"'\'\ -
 alias debuf=sh\ -c\ \''mv "$1" "${1%.*}"'\'\ -
 alias banish.flashcookies='rm -rf ~/.macromedia ~/.adobe; ln -s /dev/null ~/.adobe; ln -s /dev/null ~/.macromedia'
 alias cls='clear'
+alias hr='_hr() { for c in "${@:--}"; do cols="$(tput cols)"; [ "${cols}" -le "0" ] && cols="80"; printf "%*s" "${cols}" "" | tr " " "$(printf "%c" "${c}")"; done }; _hr'
 alias edit="$EDITOR"
 alias find='_find() { find "$@"; set +f; unset _find; }; set -f; _find'
 alias find.file=sh\ -c\ \''\find . -iname \*"$1"\*'\'\ -
