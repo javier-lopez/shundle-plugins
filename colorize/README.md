@@ -28,74 +28,36 @@
 
 ## Usage
 
-[Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) provides ps themes for your cli needs. More themes are welcome, fork and push back!
+[Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) provides color themes for your cli needs. More themes are welcome, fork and push back!
 
-By default it will enable the `yujie` ps sheme, you can however choose from a bunch of themes.
+By default it will enable the `yujie`(ps), `default-dark`(theme) and `sky`(utils) items, but you set|define your favorites:
 
-Use the `colorize` command to list and preview colorthemes:
+Use the `colorize` command to list, preview and study the color themes:
 
    ```
-   $ colorize list
-   $ colorize enable italian
+   $ colorize list #shortcut: colorize l
+   $ colorize enable italian #shorcut: colorize e italian
+   $ colorize enable theme brewer-dark #shortcut: colorize e t brewer-dark
+   $ colorize show utils sky #shortcut: colorize s u sky
    ```
 
-Once you decide which theme to use, define `COLORIZE_THEME` and `COLORIZE_PS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
+Colorthemes are separated by category:
+
+ 1. **ps**: control the ps variables (make your prompt awesome ;)
+ 2. **theme**: define the general colors for your terminal
+ 3. **utils**: set a theme for special utilities such as `ls`, `less`, `grep`, etc
+
+Once you decide which theme to use, define `COLORIZE_PS`, `COLORIZE_THEME` and `COLORIZE_UTILS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
 
    ```sh
-   COLORIZE_THEME="blacky"
-   COLORIZE_PS="yujie"
+   Bundle="github:chilicuil/shundle-plugins/colorize"
+       COLORIZE_PS="yujie"
+       #COLORIZE_PS="$HOME/you-can-also-set-custom-file"
+       COLORIZE_THEME="default-black"
+       #COLORIZE_THEME="$HOME/you-can-also-set-custom-file"
+       COLORIZE_UTILS="sky"
+       #COLORIZE_UTILS="$HOME/you-can-also-set-custom-file"
    ```
-
-`COLORIZE_THEME` recognize the following options:
-
-- none
- - no colorshme loaded
-- blacky (default)
- - define ls,man,less output
-
-`COLORIZE_PS` recognize the following options:
-
-- approval
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-approval.png" alt="approval"/>
-</p>
-- arch
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-arch.png" alt="arch"/>
-</p>
-- italian
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-italian.png" alt="italian"/>
-</p>
-- load
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-load.png" alt="load"/>
-</p>
-- msdos
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-msdos.png" alt="msdos"/>
-</p>
-- prome7hius
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-prome7hius.png" alt="prome7hius"/>
-</p>
-- sergio
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-sergio.png" alt="sergio"/>
-</p>
-- walk
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-walk.png" alt="walk"/>
-</p>
-- yujie
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-yujie.png" alt="yujie"/>
-</p>
-- zork
-<p align="center">
-<img src="http://javier.io/assets/img/colorize-zork.png" alt="zork"/>
-</p>
-- and more!
 
 ## Contributors
 
