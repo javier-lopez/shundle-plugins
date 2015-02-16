@@ -12,15 +12,17 @@
 #===============================================================================
 #Don't modify this section directly, instead set them in your shell init file
 [ -z "${COLORIZE_PATH}" ]  && COLORIZE_PATH="${plugin}/colorize"
-[ -z "${COLORIZE_THEME}" ] && COLORIZE_THEME="blacky"
+[ -z "${COLORIZE_THEME}" ] && COLORIZE_THEME="default-dark"
 [ -z "${COLORIZE_PS}" ]    && COLORIZE_PS="yujie"
+[ -z "${COLORIZE_UTILS}" ] && COLORIZE_UTILS="sky"
 
 #===============================================================================
 #================================== Plugin =====================================
 #===============================================================================
 
-[ -f "${COLORIZE_PATH}"/theme/"${COLORIZE_THEME}".theme ] && . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme"
-[ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]            && . "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps"
+[ -f "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme" ] && . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme"
+[ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]          && . "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps"
+[ -f "${COLORIZE_PATH}/utils/${COLORIZE_UTILS}.utils" ] && . "${COLORIZE_PATH}/utils/${COLORIZE_UTILS}.utils"
 
 _shundle_expose colorize=". ${plugin}/colorize/bin/colorize"
 
