@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 _basename()
 {
@@ -20,9 +20,9 @@ _usage()
 {   #prints an usage msg and exits with 0
     printf "%s\\n" "Usage: colorize OPTION [ARGS]"
     printf "\\n"
-    printf "%s\\n" "  enable            enable theme"
-    printf "%s\\n" "  list              list available themes"
-    printf "%s\\n" "  show              show theme source"
+    printf "%s\\n" "  enable            enable ps|theme"
+    printf "%s\\n" "  list [ps|theme]   list available ps|themes"
+    printf "%s\\n" "  show              show ps|theme source"
     return 1
 }
 
@@ -48,28 +48,35 @@ _colorize_list()
         return 1
     }
 
-    printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "ps" "${_BIN_SHUNDLE_ENV_NORMAL}"
-    for ps in "${COLORIZE_PATH}"/ps/*; do
-        _basename "${ps}" .ps
-        bps="${retval}"
-        if _colorize_list_sourced "${bps}"; then
-            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${bps}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-        else
-            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" "  ${bps}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-        fi
-    done
+    _colorize_list_show()
+    {
+        [ -z "${1}" ] && return 1
+        printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "${1}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+        for item in "${COLORIZE_PATH}"/"${1}"/*; do
+            _basename "${item}" ."${1}"
+            bitem="${retval}"
+            if _colorize_list_sourced "${bitem}"; then
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+            else
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" "  ${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+            fi
+        done
+    }
 
-    printf "\\n"
-    printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "theme" "${_BIN_SHUNDLE_ENV_NORMAL}"
-    for theme in "${COLORIZE_PATH}"/theme/*; do
-        _basename "${theme}" .theme
-        btheme="${retval}"
-        if _colorize_list_sourced "${btheme}"; then
-            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${btheme}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-        else
-            printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" "  ${btheme}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-        fi
-    done
+    if [ -z "${1}" ]; then
+        _colorize_list_show ps
+        printf "\\n"
+        _colorize_list_show theme
+        printf "\\n"
+        _colorize_list_show utils
+    else
+        case "${1}" in
+            p*) _colorize_list_show ps    ;;
+            t*) _colorize_list_show theme ;;
+            u*) _colorize_list_show utils ;;
+            *)  _colorize_list       ;;
+        esac
+    fi
 }
 
 _colorize_enable()
@@ -92,11 +99,11 @@ if [ "${#}" -lt "1" ]; then
    _usage
 else
     case "${1}" in
-        l*) _colorize_list         ;;
+        l*) _colorize_list   "${2}";;
         s*) _colorize_show   "${2}";;
         e*) _colorize_enable "${2}";;
         *)  _usage                 ;;
     esac
 fi
 
-# vim: set ts=8 sw=4 tw=0 ft=sh : 
+# vim: set ts=8 sw=4 tw=0 ft=sh :
