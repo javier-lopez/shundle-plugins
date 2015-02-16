@@ -20,19 +20,20 @@ _usage()
 {   #prints an usage msg and exits with 0
     printf "%s\\n" "Usage: colorize OPTION [ARGS]"
     printf "\\n"
-    printf "%s\\n" "  enable            enable ps|theme"
-    printf "%s\\n" "  list [ps|theme]   list available ps|themes"
-    printf "%s\\n" "  show              show ps|theme source"
+    printf "%s\\n" "  enable [ps|theme|utils] enable item"
+    printf "%s\\n" "  list   [ps|theme|utils] list available items"
+    printf "%s\\n" "  show   [ps|theme|utils] show item source"
     return 1
 }
 
 _colorize_source()
 {
-    [ -z "${1}" ] && return
+    [ -z "${1}" ] && return 1
 
     case "${1}" in
-        *.ps)    _basename "${1}" .ps;   COLORIZE_PS="${retval}"     ;;
+        *.ps)    _basename "${1}" .ps;    COLORIZE_PS="${retval}"    ;;
         *.theme) _basename "${1}" .theme; COLORIZE_THEME="${retval}" ;;
+        *.utils) _basename "${1}" .utils; COLORIZE_UTILS="${retval}" ;;
     esac
     . "${1}"
 }
@@ -43,12 +44,12 @@ _colorize_list()
     {
         [ -z "${1}" ] && return 1
         case "${1}" in
-            "${COLORIZE_THEME}"|"${COLORIZE_PS}") return 0 ;;
+            "${COLORIZE_THEME}"|"${COLORIZE_PS}"|"${COLORIZE_UTILS}") return 0 ;;
         esac
         return 1
     }
 
-    _colorize_list_show()
+    _colorize_list_item()
     {
         [ -z "${1}" ] && return 1
         printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "${1}" "${_BIN_SHUNDLE_ENV_NORMAL}"
@@ -64,16 +65,16 @@ _colorize_list()
     }
 
     if [ -z "${1}" ]; then
-        _colorize_list_show ps
+        _colorize_list_item ps
         printf "\\n"
-        _colorize_list_show theme
+        _colorize_list_item theme
         printf "\\n"
-        _colorize_list_show utils
+        _colorize_list_item utils
     else
         case "${1}" in
-            p*) _colorize_list_show ps    ;;
-            t*) _colorize_list_show theme ;;
-            u*) _colorize_list_show utils ;;
+            p*) _colorize_list_item ps    ;;
+            t*) _colorize_list_item theme ;;
+            u*) _colorize_list_item utils ;;
             *)  _colorize_list       ;;
         esac
     fi
@@ -82,26 +83,45 @@ _colorize_list()
 _colorize_enable()
 {
     [ -z "${1}" ] && _usage
-
-    [ -f "${COLORIZE_PATH}/ps/${1}.ps" ]       && { _colorize_source "${COLORIZE_PATH}/ps/${1}.ps";       return 0; }
-    [ -f "${COLORIZE_PATH}/theme/${1}.theme" ] && { _colorize_source "${COLORIZE_PATH}/theme/${1}.theme"; return 0; }
+    if [ -z "${2}" ]; then
+        for item in ps theme utils; do
+            [ -f "${COLORIZE_PATH}/${item}/${1}.${item}" ] && { _colorize_source "${COLORIZE_PATH}/${item}/${1}.${item}"; return 0; }
+        done
+    else
+        case "${1}" in
+            p*) [ -f "${COLORIZE_PATH}/ps/${2}.ps" ]       && _colorize_source "${COLORIZE_PATH}/ps/${2}.ps" ;;
+            t*) [ -f "${COLORIZE_PATH}/theme/${2}.theme" ] && _colorize_source "${COLORIZE_PATH}/theme/${2}.theme" ;;
+            u*) [ -f "${COLORIZE_PATH}/utils/${2}.utils" ] && _colorize_source "${COLORIZE_PATH}/utils/${2}.utils" ;;
+            *)  _colorize_enable "${2}"
+        esac
+    fi
 }
 
 _colorize_show()
 {
     [ -z "${1}" ] && _usage
 
-    [ -f "${COLORIZE_PATH}/ps/${1}.ps" ]       && { cat "${COLORIZE_PATH}/ps/${1}.ps";       return 0; }
-    [ -f "${COLORIZE_PATH}/theme/${1}.theme" ] && { cat "${COLORIZE_PATH}/theme/${1}.theme"; return 0; }
+    if [ -z "${2}" ]; then
+        for item in ps theme utils; do
+            [ -f "${COLORIZE_PATH}/${item}/${1}.${item}" ] && { cat "${COLORIZE_PATH}/${item}/${1}.${item}"; return 0; }
+        done
+    else
+        case "${1}" in
+            p*) [ -f "${COLORIZE_PATH}/ps/${2}.ps" ]       && cat "${COLORIZE_PATH}/ps/${2}.ps" ;;
+            t*) [ -f "${COLORIZE_PATH}/theme/${2}.theme" ] && cat "${COLORIZE_PATH}/theme/${2}.theme" ;;
+            u*) [ -f "${COLORIZE_PATH}/utils/${2}.utils" ] && cat "${COLORIZE_PATH}/utils/${2}.utils" ;;
+            *)  _colorize_show "${2}"
+        esac
+    fi
 }
 
 if [ "${#}" -lt "1" ]; then
    _usage
 else
     case "${1}" in
-        l*) _colorize_list   "${2}";;
-        s*) _colorize_show   "${2}";;
-        e*) _colorize_enable "${2}";;
+        l*) shift; _colorize_list   "${@}";;
+        s*) shift; _colorize_show   "${@}";;
+        e*) shift; _colorize_enable "${@}";;
         *)  _usage                 ;;
     esac
 fi
