@@ -1,5 +1,15 @@
 #!/bin/sh
 
+_usage()
+{
+    printf "%s\\n" "Usage: colorize OPTION [ARGS]"
+    printf "\\n"
+    printf "%s\\n" "  enable [ps|theme|utils] item|file   enable item"
+    printf "%s\\n" "  list   [ps|theme|utils]             list available items"
+    printf "%s\\n" "  show   [ps|theme|utils] item|file   show item source"
+    return 1
+}
+
 _basename()
 {
     [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
@@ -14,28 +24,6 @@ _basename()
 
     retval="${_basename_var_name}"
     #printf "%s" "${_basename_var_name}"
-}
-
-_usage()
-{   #prints an usage msg and exits with 0
-    printf "%s\\n" "Usage: colorize OPTION [ARGS]"
-    printf "\\n"
-    printf "%s\\n" "  enable [ps|theme|utils] enable item"
-    printf "%s\\n" "  list   [ps|theme|utils] list available items"
-    printf "%s\\n" "  show   [ps|theme|utils] show item source"
-    return 1
-}
-
-_colorize_source()
-{
-    [ -z "${1}" ] && return 1
-
-    case "${1}" in
-        *.ps)    _basename "${1}" .ps;    COLORIZE_PS="${retval}"    ;;
-        *.theme) _basename "${1}" .theme; COLORIZE_THEME="${retval}" ;;
-        *.utils) _basename "${1}" .utils; COLORIZE_UTILS="${retval}" ;;
-    esac
-    . "${1}"
 }
 
 _colorize_list()
@@ -57,11 +45,16 @@ _colorize_list()
             _basename "${item}" ."${1}"
             bitem="${retval}"
             if _colorize_list_sourced "${bitem}"; then
-                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}"    " +${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
                 printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" "  ${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             fi
         done
+        case "${1}" in
+            ps)    [ -f "${COLORIZE_PS}" ]    && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_PS}"    "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
+            theme) [ -f "${COLORIZE_THEME}" ] && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_THEME}" "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
+            utils) [ -f "${COLORIZE_UTILS}" ] && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_UTILS}" "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
+        esac
     }
 
     if [ -z "${1}" ]; then
@@ -75,43 +68,31 @@ _colorize_list()
             p*) _colorize_list_item ps    ;;
             t*) _colorize_list_item theme ;;
             u*) _colorize_list_item utils ;;
-            *)  _colorize_list       ;;
+            *)  _colorize_list            ;;
         esac
     fi
 }
 
-_colorize_enable()
+_colorize()
 {
-    [ -z "${1}" ] && _usage
-    if [ -z "${2}" ]; then
+    [ -z "${1}" ] && { _usage; return 1; }
+    if [ -z "${3}" ]; then
         for item in ps theme utils; do
-            [ -f "${COLORIZE_PATH}/${item}/${1}.${item}" ] && { _colorize_source "${COLORIZE_PATH}/${item}/${1}.${item}"; return 0; }
+            [ -f "${COLORIZE_PATH}/${item}/${2}.${item}" ] && { _colorize "${1}" "${item}" "${2}"; return "${?}"; }
         done
+        _colorize "${1}" local "${2}"
     else
         case "${1}" in
-            p*) [ -f "${COLORIZE_PATH}/ps/${2}.ps" ]       && _colorize_source "${COLORIZE_PATH}/ps/${2}.ps" ;;
-            t*) [ -f "${COLORIZE_PATH}/theme/${2}.theme" ] && _colorize_source "${COLORIZE_PATH}/theme/${2}.theme" ;;
-            u*) [ -f "${COLORIZE_PATH}/utils/${2}.utils" ] && _colorize_source "${COLORIZE_PATH}/utils/${2}.utils" ;;
-            *)  _colorize_enable "${2}"
+            enable) _colorize_action__cmd="."   ;;
+            show)   _colorize_action__cmd="cat" ;;
         esac
-    fi
-}
-
-_colorize_show()
-{
-    [ -z "${1}" ] && _usage
-
-    if [ -z "${2}" ]; then
-        for item in ps theme utils; do
-            [ -f "${COLORIZE_PATH}/${item}/${1}.${item}" ] && { cat "${COLORIZE_PATH}/${item}/${1}.${item}"; return 0; }
-        done
-    else
-        case "${1}" in
-            p*) [ -f "${COLORIZE_PATH}/ps/${2}.ps" ]       && cat "${COLORIZE_PATH}/ps/${2}.ps" ;;
-            t*) [ -f "${COLORIZE_PATH}/theme/${2}.theme" ] && cat "${COLORIZE_PATH}/theme/${2}.theme" ;;
-            u*) [ -f "${COLORIZE_PATH}/utils/${2}.utils" ] && cat "${COLORIZE_PATH}/utils/${2}.utils" ;;
-            *)  _colorize_show "${2}"
+        case "${2}" in
+            p*) item="ps"   ; [ X"${1}" = X"enable" ] && COLORIZE_PS="${3}"    ;;
+            t*) item="theme"; [ X"${1}" = X"enable" ] && COLORIZE_THEME="${3}" ;;
+            u*) item="utils"; [ X"${1}" = X"enable" ] && COLORIZE_UTILS="${3}" ;;
+            *) [ -f "${3}" ] && { "$_colorize_action__cmd" "${3}"; return "${?}"; } || return 1 ;;
         esac
+        [ -f "${COLORIZE_PATH}/${item}/${3}.${item}" ] && "${_colorize_action__cmd}" "${COLORIZE_PATH}/${item}/${3}.${item}" || _colorize "${1}" local "${3}"
     fi
 }
 
@@ -120,9 +101,9 @@ if [ "${#}" -lt "1" ]; then
 else
     case "${1}" in
         l*) shift; _colorize_list   "${@}";;
-        s*) shift; _colorize_show   "${@}";;
-        e*) shift; _colorize_enable "${@}";;
-        *)  _usage                 ;;
+        s*) shift; _colorize show   "${@}";;
+        e*) shift; _colorize enable "${@}";;
+        *)  _usage ;;
     esac
 fi
 
