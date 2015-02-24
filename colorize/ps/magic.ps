@@ -5,5 +5,7 @@ _magic_next() {
     printf "%b" "\e[1;${color}m"    # change 1 to 0 for darker colors
 }
 
-PROMPT_COMMAND="${PROMPT_COMMAND}; _magic_next"
+PROMPT_COMMAND="_magic_next; $PROMPT_COMMAND"
 PS1="\$\[\e[0m\] "
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :
