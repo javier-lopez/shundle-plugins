@@ -42,6 +42,7 @@ alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
 
 #net
 alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
-alias listen.ports='sudo lsof -i -P | grep -i listen'
+alias list.open.ports="watch -d -n1 'sudo lsof -i -P | grep -i listen'"
+alias list.active.connections="watch -d -n1 'netstat -an | grep ESTABLISHED'"
 alias route.add.default.gw='sudo route add default gw'
 alias traceroute='traceroute -T -p 80'
