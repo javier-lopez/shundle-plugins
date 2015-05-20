@@ -37,6 +37,8 @@ alias grep='grep --color'
 alias alert='m="$([ X"${?}" = X"0" ] && echo "[+]" || echo "[-]") $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"; xm="$(command -v gxmessage)" || xm=xmessage; $xm -center "${m}"'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
+alias list.fonts="fc-list"
+alias fonts.list="fc-list"
 alias key.lookup="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
 
