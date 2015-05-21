@@ -14,6 +14,12 @@
    Bundle='chilicuil/shundle-plugins/colorize'
    ```
 
+   And optionally to **~/.Xresources** or **~/.Xdefaults** to syncronize other X11 cli applications
+
+   ```
+   #include ".Xdefaults-theme-colorize"
+   ```
+
 2. Install it:
 
    ```
