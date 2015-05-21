@@ -25,7 +25,9 @@ if [ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]; then
 else . "${plugin}/colorize/bin/colorize" e "${COLORIZE_PS}"; fi
 
 if [ -f "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme" ]; then
-     . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme"
+    [ -f ~/.Xdefaults-theme-colorize ] && \
+        . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme" || \
+        . "${plugin}/colorize/bin/colorize" e "${COLORIZE_THEME}"
 else . "${plugin}/colorize/bin/colorize" e "${COLORIZE_THEME}"; fi
 
 if [ -f "${COLORIZE_PATH}/utils/${COLORIZE_UTILS}.utils" ]; then
