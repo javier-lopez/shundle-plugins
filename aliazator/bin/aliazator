@@ -2,18 +2,18 @@
 
 _basename()
 {
-    [ -z "${1}" ] && return 1 || _basename_var_name="${1}"
-    [ -z "${2}" ] || _basename_var_suffix="${2}"
-    case "${_basename_var_name}" in
-        /*|*/*) _basename_var_name="${_basename_var_name##*/}"
+    [ -z "${1}" ] && return 1 || _basename__name="${1}"
+    [ -z "${2}" ] || _basename__suffix="${2}"
+    case "${_basename__name}" in
+        /*|*/*) _basename__name="${_basename__name##*/}"
     esac
 
-    if [ -n "${_basename_var_suffix}" ] && [ "${#_basename_var_name}" -gt "${#2}" ]; then
-        _basename_var_name="${_basename_var_name%$_basename_var_suffix}"
+    if [ -n "${_basename__suffix}" ] && [ "${#_basename__name}" -gt "${#2}" ]; then
+        _basename__name="${_basename__name%$_basename__suffix}"
     fi
 
-    retval="${_basename_var_name}"
-    #printf "%s" "${_basename_var_name}"
+    retval="${_basename__name}"
+    #printf "%s" "${_basename__name}"
 }
 
 _usage()
@@ -29,32 +29,32 @@ _usage()
 
 _aliazator_list()
 {
-    _aliazator_list_var_aplugin="none,minimal,installed,all"
+    _aliazator_list__aplugin="none,minimal,installed,all"
 
     _aliazator_list_meta()
     {
         [ -z "${ALIAZATOR_PLUGINS}" ] && ALIAZATOR_PLUGINS="${ALIAZATOR_CACHE}"
-        while [ "${_aliazator_list_var_aplugin}" ]; do
-            _aliazator_list_var_option="${_aliazator_list_var_aplugin%%,*}"
-            if [ X"${ALIAZATOR_PLUGINS}" = X"${_aliazator_list_var_option}" ]; then
-                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${_aliazator_list_var_option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+        while [ "${_aliazator_list__aplugin}" ]; do
+            _aliazator_list__option="${_aliazator_list__aplugin%%,*}"
+            if [ X"${ALIAZATOR_PLUGINS}" = X"${_aliazator_list__option}" ]; then
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}" " +${_aliazator_list__option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             else
-                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_YELLOW}" "  ${_aliazator_list_var_option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_YELLOW}" "  ${_aliazator_list__option}" "${_BIN_SHUNDLE_ENV_NORMAL}"
             fi
-            [ X"${_aliazator_list_var_aplugin}" = X"${_aliazator_list_var_option}" ] && \
-                _aliazator_list_var_aplugin='' || _aliazator_list_var_aplugin="${_aliazator_list_var_aplugin#*,}"
+            [ X"${_aliazator_list__aplugin}" = X"${_aliazator_list__option}" ] && \
+                _aliazator_list__aplugin='' || _aliazator_list__aplugin="${_aliazator_list__aplugin#*,}"
         done
     }
 
     _aliazator_list_sourced()
     {
         [ -z "${1}" ] && return 1
-        _aliazator_list_sourced_var_l="${ALIAZATOR_PLUGINS_ARRAY}"
-        while [ "${_aliazator_list_sourced_var_l}" ]; do
-            _aliazator_list_sourced_var_option="${_aliazator_list_sourced_var_l%%,*}"
-            [ X"${1}" = X"${_aliazator_list_sourced_var_option}" ] && return 0
-            [ X"${_aliazator_list_sourced_var_l}" = X"${_aliazator_list_sourced_var_option}" ] &&\
-                _aliazator_list_sourced_var_l='' || _aliazator_list_sourced_var_l="${_aliazator_list_sourced_var_l#*,}"
+        _aliazator_list_sourced__l="${ALIAZATOR_PLUGINS_ARRAY}"
+        while [ "${_aliazator_list_sourced__l}" ]; do
+            _aliazator_list_sourced__option="${_aliazator_list_sourced__l%%,*}"
+            [ X"${1}" = X"${_aliazator_list_sourced__option}" ] && return 0
+            [ X"${_aliazator_list_sourced__l}" = X"${_aliazator_list_sourced__option}" ] &&\
+                _aliazator_list_sourced__l='' || _aliazator_list_sourced__l="${_aliazator_list_sourced__l#*,}"
         done
         return 1
     }
@@ -94,12 +94,12 @@ _aliazator_disable()
     _aliazator_desource()
     {
         [ -z "${1}" ] && return
-        _basename "${1}" .aliases && _aliazator_desource_var_plugin="${retval}"
-        ALIAZATOR_PLUGINS_ARRAY="$(printf "%s" "${ALIAZATOR_PLUGINS_ARRAY}"|sed -e "s:${_aliazator_desource_var_plugin},::g")"
+        _basename "${1}" .aliases && _aliazator_desource__plugin="${retval}"
+        ALIAZATOR_PLUGINS_ARRAY="$(printf "%s" "${ALIAZATOR_PLUGINS_ARRAY}"|sed -e "s:${_aliazator_desource__plugin},::g")"
         #TODO 01-11-2013 04:35 >> avoid using files
-        sed -e "s:\<alias:unalias:g" -e "s:=.*::g" "${1}" > /tmp/"${_aliazator_desource_var_plugin}".disable
-        . /tmp/"${_aliazator_desource_var_plugin}".disable >/dev/null 2>&1
-        \rm -f /tmp/"${_aliazator_desource_var_plugin}".disable
+        sed -e "s:\<alias:unalias:g" -e "s:=.*::g" "${1}" > /tmp/"${_aliazator_desource__plugin}".disable
+        . /tmp/"${_aliazator_desource__plugin}".disable >/dev/null 2>&1
+        \rm -f /tmp/"${_aliazator_desource__plugin}".disable
     }
 
     case "${1}" in
