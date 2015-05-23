@@ -32,11 +32,11 @@ case "$(history 1)" in
 esac
 
 if [ X"${et}" = X"0" ]; then
-    if [ X"$(printf "%s\\n" "${eternalize_var_lastcmd}" | cut -d" " -f5-)" \
+    if [ X"$(printf "%s\\n" "${eternalize__lastcmd}" | cut -d" " -f5-)" \
        != X"$(history 1 | cut -d" " -f5-)" ]; then
-       export eternalize_var_lastcmd="$(history 1)"
-       eternalize_var_lastcmd_format="$(printf "%s\\n" "${eternalize_var_lastcmd}"|cut -d" " -f3-)"
-       printf "%s\\n" "${USER}:${eternalize_var_lastcmd_format}" >> ${ETERNALIZE_PATH}
+       export eternalize__lastcmd="$(history 1)"
+       eternalize__lastcmd_format="$(printf "%s\\n" "${eternalize__lastcmd}"|cut -d" " -f3-)"
+       printf "%s\\n" "${USER}:${eternalize__lastcmd_format}" >> ${ETERNALIZE_PATH}
     fi
 fi
 '
