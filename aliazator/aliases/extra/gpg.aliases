@@ -1,6 +1,9 @@
 # gnupg
 alias gpg.genkey='gpg --gen-key'
+alias gpg.export.public.key='gpg --armor --export'
+alias gpg.export.private.key='gpg --armor --export-secret-key'
 alias gpg.delete='gpg --delete-key'
 alias gpg.listkeys='gpg --list-keys'
 alias gpg.encrypt='gpg -v --encrypt --recipient $GPGKEY'
+alias gpg.encrypt.passwd='gpg -v --cipher-algo AES256 --symmetric'
 alias gpg.decrypt='gpg -v --decrypt'

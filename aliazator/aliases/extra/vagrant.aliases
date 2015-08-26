@@ -9,6 +9,7 @@ alias vgrt.ssh="vagrant ssh"
 alias vgrt.status="vagrant status"
 alias vgrt.provision="vagrant provision"
 alias vgrt.destroy="vagrant destroy"
+alias vgrt.destroy.force="vagrant destroy -f"
 
 alias vgrt.up.vbox="vagrant up --provider=virtualbox"
 alias vgrt.up.digitalocean="vagrant up --provider=digital_ocean"
