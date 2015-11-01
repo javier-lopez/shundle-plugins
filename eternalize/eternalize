@@ -19,29 +19,26 @@
 
 #TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed on the fly
 
-export HISTCONTROL="${HISTCONTROL}${HISTCONTROL+,}ignoredups"
 export HISTCONTROL="ignoreboth"
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
 '
-et="0"
-case "$(history 1)" in
-    *\ cd\ *|*\ ls|*\ gs|*\ bashrc|*\ getpass*|*\ pg|*\ \.\.) et="1" ;;
-    *\ cd|*\ ll|*\ man|*\ translate|*\ yowsup|*mail*|*\ l)    et="1" ;;
-    *\ c|*\ gps|*\ g|*\ gl|*\ mpc\ *|*\ pwd|*\ tls|*\ tadd)   et="1" ;;
-    *\ tdone|*eternalize*|*history*|*ussh*|*htop*|p\ *)  et="1";;
+_ehistory="$(history 1|cut -d" " -f5-)"
+_estatus="0"; case "${_ehistory}" in
+    ""|cd|cd\ *|ls|ls\ *|gs|gd|gl|getpass*|pg|\.\.|ll|man\ *|bashrc) _estatus="1" ;;
+    mail*|l\ *|c|gps|g|mpc\ *|pwd|tls|tadd|tdone|eternalize*|vi|vim) _estatus="1" ;;
+    ussh\ *|htop|mutt|translate\ *|history|rm.rf\ *|tmux|find.file*) _estatus="1" ;;
 esac
 
-if [ X"${et}" = X"0" ]; then
-    if [ X"$(printf "%s\\n" "${eternalize__lastcmd}" | cut -d" " -f5-)" \
-       != X"$(history 1 | cut -d" " -f5-)" ]; then
-       export eternalize__lastcmd="$(history 1)"
-       eternalize__lastcmd_format="$(printf "%s\\n" "${eternalize__lastcmd}"|cut -d" " -f3-)"
-       printf "%s\\n" "${USER}:${eternalize__lastcmd_format}" >> ${ETERNALIZE_PATH}
+if [ X"${_estatus}" = X"0" ]; then
+    if [ X"${_ehistory}" != X"${_ehistory__last}" ]; then
+       export _ehistory__last="${_ehistory}"
+       printf "%s\\n" "${_ehistory}" >> ${ETERNALIZE_PATH}
     fi
 fi
 '
-#'printf "%s\\n" "$USER      $(history 1)" >> $ETERNALIZE_PATH'
 
-[ -n "${EDITOR}" ] && _shundle_expose eternalize="${EDITOR} ${ETERNALIZE_PATH}" || _shundle_expose eternalize="vi ${ETERNALIZE_PATH}"
+[ -z "${EDITOR}" ] && \
+    _shundle_expose eternalize="vi ${ETERNALIZE_PATH}" || \
+    _shundle_expose eternalize="${EDITOR} ${ETERNALIZE_PATH}"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :
