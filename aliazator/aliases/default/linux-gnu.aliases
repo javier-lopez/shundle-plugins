@@ -27,8 +27,8 @@ alias lsgrep='ls|grep'
 
 #top
 alias top.cpu='ps auxf | sort -nr -k 3 | head'
-alias top.mem='ps -eo size,pid,user,command --sort -size | awk '\''{ hr=$1/1024 ; printf("%13.2f Mb ",hr) } { for ( x=4 ; x<=NF ; x++ ) { printf("%s ",$x) } print "" }'\'' | head -11'
-alias top.mem.detailed='ps auxf | sort -nr -k 4 | head'
+alias top.mem='ps -e -orss=,args= --sort=%mem  | awk '\''{a[i++]=$0} END {for (j=i-1; j>=0;) {al=split(a[j--],aa); for (k=1; k<=al; k++) {if (k == 1) {hr=aa[k]/1024; printf("%8.2f Mb ",hr)} else {printf("%s ",aa[k])}} print ""}}'\''|head'
+alias top.mem.detailed='ps auxf | sort -nr -k 4 | head -20'
 alias top.inode=sh\ -c\ \''cd "${1}"; for i in $(ls -1A); do printf "%s\n" "$(find ${i} | sort -u | wc -l) ${i}"; done | sort -rn | head '\'\ -
 alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i} | sort -nr -k 1; done | head'\'\ -
 
