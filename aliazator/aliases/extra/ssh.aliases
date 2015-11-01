@@ -1,4 +1,4 @@
 #ssh
-alias ussh='_ussh(){ printf "Unsafe SSH - Do not trust any messages about the key being saved. It wont be :)\\n"; mosh --ssh="ssh -o UserKnownHostsFile=/dev/null -o CheckHostIP=no -o StrictHostKeyChecking=no" "${*}" 2>/dev/null || ssh -o UserKnownHostsFile=/dev/null -o CheckHostIP=no -o StrictHostKeyChecking=no "${*}"; }; _ussh'
+alias ussh='_ussh(){ printf "Unsafe SSH - Do not trust any messages about the key being saved. It wont be :)\\n"; mosh --ssh="ssh -o UserKnownHostsFile=/dev/null -o CheckHostIP=no -o StrictHostKeyChecking=no" $@ 2>/dev/null || ssh -o UserKnownHostsFile=/dev/null -o CheckHostIP=no -o StrictHostKeyChecking=no $@; }; _ussh'
 alias ssh.x='ssh -c arcfour,blowfish-cbc -XC'
 alias ssh.list='cat ~/.ssh/config | grep -i "host "|cut -d" " -f2'
