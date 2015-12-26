@@ -43,6 +43,7 @@ alias gexport='git archive --format zip --output'
 alias gbrm='git branch -D'
 alias gmu='git fetch origin -v; git fetch upstream -v; git merge upstream/master'
 alias gl='git log --graph --pretty=oneline --abbrev-commit'
+alias gll='git log --pretty=full'
 alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative"
 alias gls="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --stat"
 alias glp='git log --graph --pretty=oneline --abbrev-commit -p'
