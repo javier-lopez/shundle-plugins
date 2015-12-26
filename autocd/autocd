@@ -20,11 +20,12 @@
 #TODO 17-11-2014 11:36 >> Add support for zsh and fish at least
 #http://superuser.com/questions/735660/whats-the-zsh-equivalent-of-bashs-prompt-command
 
-[ X"${PWD}" == X"${HOME}" ] && [ -f "${AUTOCD_FILE}" ] && { \cd "$(cat "${AUTOCD_FILE}")" 2>/dev/null; :; }
+#autocd on startup
+[ X"${PWD}" == X"${HOME}" ] && [ -f "${AUTOCD_FILE}" ] && \
+    { \cd "$(cat "${AUTOCD_FILE}")" 2>/dev/null; :; }
 
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
-'
-pwd > ${AUTOCD_FILE}'
+#autocd hook
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"'pwd > ${AUTOCD_FILE}'
 
 #[ -z "${ZSH_NAME}" ] || autocdcmd() { eval "${PROMPT_COMMAND}"; }; precmd_functions=(autocdcmd)
 
