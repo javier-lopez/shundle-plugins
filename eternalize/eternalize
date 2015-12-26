@@ -20,9 +20,8 @@
 #TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed on the fly
 
 export HISTCONTROL="ignoreboth"
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND ; }"\
-'
-_ehistory="$(history 1|cut -d" " -f5-)"
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"\
+'_ehistory="$(history 1|cut -d" " -f5-)"
 _estatus="0"; case "${_ehistory}" in
     ""|cd|cd\ *|ls|ls\ *|gs|gd|gl|getpass*|pg|\.\.|ll|man\ *|bashrc) _estatus="1" ;;
     mail*|l\ *|c|gps|g|mpc\ *|pwd|tls|tadd|tdone|eternalize*|vi|vim) _estatus="1" ;;
@@ -34,8 +33,7 @@ if [ X"${_estatus}" = X"0" ]; then
        export _ehistory__last="${_ehistory}"
        printf "%s\\n" "${_ehistory}" >> ${ETERNALIZE_PATH}
     fi
-fi
-'
+fi'
 
 [ -z "${EDITOR}" ] && \
     _shundle_expose eternalize="vi ${ETERNALIZE_PATH}" || \
