@@ -3,26 +3,27 @@ alias dir='ls -d */'
 alias less.color='less -R'
 
 #ls
-alias lñ='ls --color=auto'
 alias ls='ls --color=auto'
-alias lls='ls --color=auto'
-alias ñ='ls --color=auto'
-alias kl='ls --color=auto'
-alias lss='ls --color=auto'
-alias ks='ls --color=auto'
-alias l='ls -CF --color=auto'
-alias k='ls -CF --color=auto'
-alias s='ls -CF --color=auto'
-alias lh='ls -lah --color=auto'
+alias lñ=ls
+alias lls=ls
+alias ñ=ls
+alias kl=ls
+alias lss=ls
+alias ks=ls
+alias k=ls
+alias s=ls
 alias la='ls -lA --color=auto'
-alias lA='ls -lA --color=auto'
-alias al='ls -lA --color=auto'
-alias Al='ls -lA --color=auto'
-alias ll='ls -lah --color=auto'
+alias lA=la
+alias al=la
+alias Al=la
+alias l='ls --no-group -d . >/dev/null 2>&1 && ng="--no-group"; ls --group-directories-first -d . >/dev/null 2>&1 && gdf="--group-directories-first"; ls -lhrtq "${ng}" "${gdf}" --color=auto'
+alias ll=l
+alias lh=l
 alias lc='wc -l'
-alias cl='wc -l'
+alias cl=lc
 alias l1='ls -1 --color=auto'
 alias lsdot='ls --color=auto -ld .*'
+#alias lsmode='_lsmode() { [ "$#" = "0" ] && f="." || f="$1"; stat "$f" | awk "/^Access:/ {gsub(/\(|\)/,\"\"); printf \$2 \" \"; exit}"; printf "%s\\n" "$f"; }; _lsmode'
 alias lsgrep='ls|grep'
 
 #top
@@ -38,7 +39,7 @@ alias alert='m="$([ X"${?}" = X"0" ] && echo "[+]" || echo "[-]") $(history|tail
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
 alias list.fonts="fc-list"
-alias fonts.list="fc-list"
+alias fonts.list=list.fonts
 alias key.lookup="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
 
