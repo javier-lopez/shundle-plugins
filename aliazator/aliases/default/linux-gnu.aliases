@@ -34,6 +34,7 @@ alias top.inode=sh\ -c\ \''cd "${1}"; for i in $(ls -1A); do printf "%s\n" "$(fi
 alias top.size=sh\ -c\ \''cd "${1}"; for i in G M K; do du -ah * | grep [0-9]${i} | sort -nr -k 1; done | head'\'\ -
 
 #other single command aliases which don't deserve their own file
+alias psgrep='ps aux|grep'
 alias grep='grep --color'
 alias alert='m="$([ X"${?}" = X"0" ] && echo "[+]" || echo "[-]") $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"; xm="$(command -v gxmessage)" || xm=xmessage; $xm -center "${m}"'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
