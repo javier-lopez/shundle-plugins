@@ -43,6 +43,7 @@ alias list.fonts="fc-list"
 alias fonts.list=list.fonts
 alias key.lookup="xev | grep -A2 --line-buffered '^KeyRelease' | sed -n '/keycode /s/^.*keycode \([0-9]*\).* (.*, \(.*\)).*$/\1 \2/p'"
 alias x.nested='Xephyr -ac -br -noreset -host-cursor -screen 800x600'
+alias notify-log="_notify_log() { tail -f -n0 \"\${1}\" | while read -r a b; do notify-send -t 1500 \"\$a\" \"\$b\"; echo \$a \$b; done; }; _notify_log"
 
 #net
 alias ips='ifconfig | grep "inet " | cut -d: -f2 | cut -d " " -f1'
