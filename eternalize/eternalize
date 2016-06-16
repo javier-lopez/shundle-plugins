@@ -35,8 +35,14 @@ if [ X"${_estatus}" = X"0" ]; then
     fi
 fi'
 
-[ -z "${EDITOR}" ] && \
-    _shundle_expose eternalize="vi ${ETERNALIZE_PATH}" || \
-    _shundle_expose eternalize="${EDITOR} ${ETERNALIZE_PATH}"
+if [ -z "${EDITOR}" ]; then
+    _shundle_expose eternalize="vi ${ETERNALIZE_PATH}"
+else
+    if command -v "${EDITOR}" >/dev/null 2>&1; then
+        _shundle_expose eternalize="${EDITOR} ${ETERNALIZE_PATH}"
+    else
+        _shundle_expose eternalize="vi ${ETERNALIZE_PATH}"
+    fi
+fi
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :
