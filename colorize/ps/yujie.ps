@@ -66,7 +66,8 @@ if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # the first $DIR_COLOR can be removed
-PS1="$NORMAL_COLOR╔═${debian_chroot:+($debian_chroot)}[$DATE_COLOR\D{%R %a(%d).%b}$NORMAL_COLOR] $USER_COLOR\u$NORMAL_COLOR@$HOST_COLOR\h$NORMAL_COLOR [$STATUS$NORMAL_COLOR:$DIR_COLOR$NEW_PWD$NORMAL_COLOR]\n╚═[\$] "
+PS1="$NORMAL_COLOR╔═${debian_chroot:+($debian_chroot)}[$DATE_COLOR\D{%R %a(%d).%b}$NORMAL_COLOR] $USER_COLOR\u$NORMAL_COLOR@$HOST_COLOR\h$NORMAL_COLOR [$STATUS$NORMAL_COLOR:$DIR_COLOR$NEW_PWD$NORMAL_COLOR]
+╚═[\$] "
 
 unset STR_MAX_LENGTH DIR_COLOR DIR_HOME_COLOR DIR_SEP_COLOR ABBR_DIR_COLOR USER_COLOR NEW_PWD PS1_ERROR
 
