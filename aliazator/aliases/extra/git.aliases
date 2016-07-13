@@ -7,6 +7,7 @@ alias gal='git add .'
 alias gall='git add -u'
 alias grm="git rm"
 alias grmf="git ls-files -d -z | xargs -0 git update-index --remove"
+alias grmall="git ls-files --deleted -z | xargs -0 git rm"
 alias gsh='git show'
 alias gs='git status'
 alias gst='git status'
