@@ -31,7 +31,7 @@ esac
 if [ X"${_estatus}" = X"0" ]; then
     if [ X"${_ehistory}" != X"${_ehistory__last}" ]; then
        export _ehistory__last="${_ehistory}"
-       printf "%s\\n" "${_ehistory}" >> ${ETERNALIZE_PATH}
+       printf "%s\\n" "${_ehistory}" >> "${ETERNALIZE_PATH}"
     fi
 fi'
 
