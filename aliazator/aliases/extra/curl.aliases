@@ -3,4 +3,4 @@ alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
 alias down4me=sh\ -c\ \''curl -s "http://www.downforeveryoneorjustme.com/${1}" | sed "/just you/!d;s/<[^>]*>//g;s:&#x2F;:/:g" '\'\ -
 alias github-pair='sh -c '\''curl -s https://github.com/"${1}".keys | grep -vi "not found" >>  ~/.ssh/authorized_keys'\'' -'
 alias github-unpair='sh -c '\''curl -s https://github.com/"${1}".keys | grep -vi "not found" | grep -vf /dev/stdin .ssh/authorized_keys > /tmp/authorized_keys.tmp; mv /tmp/authorized_keys.tmp .ssh/authorized_keys'\'' -'
-alias uploadpie='sh -c '\'' curl --upload-file "${1}"  https://transfer.sh/$(basename "${1}")'\'' -'
+alias uploadpie='sh -c '\'' curl --progress-bar --upload-file "${1}"  https://transfer.sh/$(basename "${1}")'\'' -'
