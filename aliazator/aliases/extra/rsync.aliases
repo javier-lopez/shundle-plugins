@@ -1,0 +1,2 @@
+#rsync
+alias rsync.huge-file="rsync --append --partial --info=progress -avz"
