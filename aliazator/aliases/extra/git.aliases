@@ -1,7 +1,7 @@
 #git
 alias g='git'
-alias gcf='git clone --depth=1'
-alias gcl='git clone'
+alias gcf='_gcf() { git clone --depth=1 "${@}" && cd "$(basename "${1}")"; }; _gcf'
+alias gcl='_gcl() { git clone "${@}" && cd "$(basename "${1}")"; }; _gcl'
 alias ga='git add'
 alias gal='git add .'
 alias gall='git add -u'
