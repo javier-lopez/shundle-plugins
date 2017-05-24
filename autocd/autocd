@@ -2,7 +2,7 @@
 # Author:       Javier Lopez <m@javier.io>
 # Description:  autocd helps to launch terminal sessions "from here"
 # License:      wtfpl
-# Source:       http://github.com/chilicuil/shundle-plugins/autocd
+# Source:       http://github.com/javier-lopez/shundle-plugins/autocd
 # Version:      0.1
 # Shell:        bash
 # Depends:      none

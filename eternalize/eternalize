@@ -2,7 +2,7 @@
 # Author:       Javier Lopez <m@javier.io>
 # Description:  eternalize creates an eternal bash history file
 # License:      wtfpl
-# Source:       http://github.com/chilicuil/shundle-plugins/eternalize
+# Source:       http://github.com/javier-lopez/shundle-plugins/eternalize
 # Version:      0.1
 # Shell:        bash
 # Depends:      none

@@ -1,3 +1,3 @@
 ## About
 
-Common plugins for [Shundle](https://github.com/chilicuil/shundle/)
+Common plugins for [Shundle](https://github.com/javier-lopez/shundle/)

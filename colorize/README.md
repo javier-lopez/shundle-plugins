@@ -1,6 +1,6 @@
 ## About
 
-[Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) is a plugin for [Shundle](https://github.com/chilicuil/shundle) who manages ps and other color variables.
+[Colorize](https://github.com/javier-lopez/shundle-plugins/tree/master/colorize) is a plugin for [Shundle](https://github.com/javier-lopez/shundle) who manages ps and other color variables.
 
 <p align="center">
 <img src="http://javier.io/assets/img/colorize.gif" alt="colorize"/>
@@ -8,10 +8,10 @@
 
 ## Quick start
 
-1. Add [colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) to your shundle configuration:
+1. Add [colorize](https://github.com/javier-lopez/shundle-plugins/tree/master/colorize) to your shundle configuration:
 
    ```sh
-   Bundle='chilicuil/shundle-plugins/colorize'
+   Bundle='javier-lopez/shundle-plugins/colorize'
    ```
 
    And optionally to **~/.Xresources** or **~/.Xdefaults** to syncronize other X11 cli applications
@@ -34,7 +34,7 @@
 
 ## Usage
 
-[Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) provides color themes for your cli needs. More themes are welcome, fork and push back!
+[Colorize](https://github.com/javier-lopez/shundle-plugins/tree/master/colorize) provides color themes for your cli needs. More themes are welcome, fork and push back!
 
 By default it will enable the `yujie`(ps), `default-dark`(theme) and `sky`(utils) items, but you set|define your favorites:
 
@@ -56,7 +56,7 @@ Colorthemes are separated by category:
 Once you decide which theme to use, define `COLORIZE_PS`, `COLORIZE_THEME` and `COLORIZE_UTILS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
 
    ```sh
-   Bundle="github:chilicuil/shundle-plugins/colorize"
+   Bundle="github:javier-lopez/shundle-plugins/colorize"
        COLORIZE_PS="yujie"
        #COLORIZE_PS="$HOME/you-can-also-set-custom-file"
        COLORIZE_THEME="default-black"
@@ -67,7 +67,7 @@ Once you decide which theme to use, define `COLORIZE_PS`, `COLORIZE_THEME` and `
 
 ## Contributors
 
-See [Colorize contributors](https://github.com/chilicuil/shundle-plugins/graphs/contributors)
+See [Colorize contributors](https://github.com/javier-lopez/shundle-plugins/graphs/contributors)
 
 *Thank you!*
 
@@ -78,7 +78,7 @@ See [Colorize contributors](https://github.com/chilicuil/shundle-plugins/graphs/
 * Colorize tries to be as [KISS](http://en.wikipedia.org/wiki/KISS_principle) as possible
 
 ## TODO:
-[Colorize](https://github.com/chilicuil/shundle-plugins/tree/master/colorize) is a work in progress, so any ideas and patches are appreciated.
+[Colorize](https://github.com/javier-lopez/shundle-plugins/tree/master/colorize) is a work in progress, so any ideas and patches are appreciated.
 
 * write documentation
 * tests
