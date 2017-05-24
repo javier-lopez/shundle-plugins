@@ -2,7 +2,7 @@
 # Author:       Javier Lopez <m@javier.io>
 # Description:  noisy rememberator
 # License:      wtfpl
-# Source:       http://github.com/chilicuil/shundle-plugins/todo-rememberator
+# Source:       http://github.com/javier-lopez/shundle-plugins/todo-rememberator
 # Version:      0.1
 # Shell:        sh
 # Depends:      none

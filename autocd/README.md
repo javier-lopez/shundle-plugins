@@ -1,6 +1,6 @@
 ## About
 
-[Autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) is a plugin for [Shundle](https://github.com/chilicuil/shundle) who helps to launch terminal sessions "from here"
+[Autocd](https://github.com/javier-lopez/shundle-plugins/tree/master/autocd) is a plugin for [Shundle](https://github.com/javier-lopez/shundle) who helps to launch terminal sessions "from here"
 
 <p align="center">
 <img src="http://javier.io/assets/img/autocd-1.gif" alt="autocd"/>
@@ -8,10 +8,10 @@
 
 ## Quick start
 
-1. Add [autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) to your shundle configuration:
+1. Add [autocd](https://github.com/javier-lopez/shundle-plugins/tree/master/autocd) to your shundle configuration:
 
    ```sh
-   Bundle='chilicuil/shundle-plugins/autocd'
+   Bundle='javier-lopez/shundle-plugins/autocd'
    ```
 
 2. Install it:
@@ -28,7 +28,7 @@
 
 ## Usage
 
-[Autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) stores the current working directory on every enter (just as history does anyway) and uses the result to jump to it when a new bash session is open.
+[Autocd](https://github.com/javier-lopez/shundle-plugins/tree/master/autocd) stores the current working directory on every enter (just as history does anyway) and uses the result to jump to it when a new bash session is open.
 
 After completing the installation, no action is required, it will start logging every single change in the working directory, including those who are executed from different sessions.
 
@@ -40,7 +40,7 @@ By default autocd uses /tmp to store data, this allows to start fresh after ever
 
 ## Contributors
 
-See [autocd contributors](https://github.com/chilicuil/shundle-plugins/graphs/contributors)
+See [autocd contributors](https://github.com/javier-lopez/shundle-plugins/graphs/contributors)
 
 *Thank you!*
 
@@ -52,7 +52,7 @@ See [autocd contributors](https://github.com/chilicuil/shundle-plugins/graphs/co
 
 ## TODO:
 
-[autocd](https://github.com/chilicuil/shundle-plugins/tree/master/autocd) is a work in progress, so any ideas and patches are appreciated.
+[autocd](https://github.com/javier-lopez/shundle-plugins/tree/master/autocd) is a work in progress, so any ideas and patches are appreciated.
 
 * write documentation
 * tests
