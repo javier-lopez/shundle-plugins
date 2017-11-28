@@ -44,7 +44,9 @@ alias test.stress.io='dd if=/dev/zero of=/dev/null bs=1024k'
 
 alias p='ping'
 alias pg='ping google.com'
-alias show.external.ip='dig -4 +short myip.opendns.com @resolver1.opendns.com'
+alias p8='ping 8.8.8.8'
+alias r8='echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf'
+alias show.external.ip='dig -3 +short myip.opendns.com @resolver1.opendns.com'
 alias py.simple.http.server='sudo python -m SimpleHTTPServer'
 
 alias zz='exit'
