@@ -1,2 +1,3 @@
 #gotty
-alias gotty.tmux.session='_gotty_tmux_session() { unset l; for l in $@; do :; done; gotty ${@:1:$(($#-1))} -w tmux new -A -s ${l:-gotty}; }; _gotty_tmux_session'
+alias gotty.tmux.new.session='_gotty_tmux_session() { unset l; for l in $@; do :; done; gotty ${@:1:$(($#-1))} -w tmux new -A -s ${l:-gotty}; }; _gotty_tmux_session'
+alias gotty.tmux.current.session='tmux new-window "gotty tmux attach -t $(tmux display -p "#S")"'
