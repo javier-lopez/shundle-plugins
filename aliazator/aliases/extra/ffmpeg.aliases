@@ -1,0 +1,2 @@
+alias strip.idtags='sh -c '\''ffmpeg -i "${1}" -acodec copy -vcodec copy -map_metadata -1 "${1}".tagsless."${1##*.}" && mv "${1}".tagsless."${1##*.}" "${1}"'\'' -'
+alias any2mp3='_any2mp3(){ ffmpeg -i "$1" -vn -ar 44100 -ac 2 -ab 192k -f mp3 "$1".mp3; }; _any2mp3'
