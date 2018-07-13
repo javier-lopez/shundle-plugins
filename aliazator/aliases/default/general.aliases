@@ -23,7 +23,7 @@ alias bar='hr'
 alias edit="$EDITOR"
 alias find='_find() { find "$@"; set +f; unset _find; }; set -f; _find'
 alias find.file='_find.file() { _fa1="${1}"; test -z "${_fa1}" || shift; find . -iname *"${_fa1}"* ${@}; }; _find.file'
-alias find.and.play.mp3s='_find.and.play.mp3s() { printf "%s\\n" "find \"${1:-.}\" -iname \"*.m*\" -print0 | xargs -0 mplayer"; find "${1:-.}" -iname "*.m*" -print0 | xargs -0 mplayer; }; _find.and.play.mp3s'
+alias find.and.play.mp3s='_find.and.play.mp3s() { printf "%s\\n" "find $(echo ${@:-.}|tr -d "\n") -iname \"*.m*\" -print0 | xargs -0 mplayer"; find ${@:-.} -iname "*.m*" -print0 | xargs -0 mplayer; }; _find.and.play.mp3s'
 alias find.large.files='_find_large_files() { \sudo \find "${1:-.}" -type f -exec du -Sh {} + 2>/dev/null | sort -rh; }; _find_large_files'
 alias dmesg.tail='dmesg|tail'
 alias date.stamp='date +%d-%m-%Y'
