@@ -1,2 +1,2 @@
 #docker
-alias docker.garbage.collector='docker rmi $(docker images -f "dangling=true" -q)'
+alias docker.garbage.collector='docker system prune --volumes'
