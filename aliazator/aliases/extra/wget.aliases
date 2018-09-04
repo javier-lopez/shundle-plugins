@@ -2,3 +2,4 @@
 alias wget='wget -c'
 alias test.broadband='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test500.zip'
 alias wcat='wget -q -O -'
+alias wget.mirror.site='wget --random-wait -r -p -e robots=off -U mozilla'
