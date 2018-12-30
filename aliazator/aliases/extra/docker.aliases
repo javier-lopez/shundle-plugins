@@ -1,2 +1,6 @@
 #docker
 alias docker.garbage.collector='docker system prune --volumes'
+alias docker.exec='_docker_exec(){ docker exec -it "${1}" "${2:-bash}"; }; _docker_exec'
+alias dexec='docker.exec'
+alias docker.ps='docker ps'
+alias dps='docker.ps'
