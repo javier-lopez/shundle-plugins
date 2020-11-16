@@ -5,3 +5,12 @@ alias vin='vim -N -u NONE -U NONE'
 alias vrc='vim $HOME/.vimrc'
 alias vi='vim'
 alias v='vim'
+alias agvim='_agvim() {
+    if command -v "ag" >/dev/null 2>&1; then
+        f="$(ag --nogroup "${@}" | cut -d: -f1 | uniq)"
+        [ -z "${f}" ] || vim -p -c "silent! /${@}" -c ":normal n" ${f}
+    else
+        f="$(grep -Rn "${@}" | cut -d: -f1 | uniq)"
+        [ -z "${f}" ] || vim -p -c "silent! /${@}" -c ":normal n" ${f}
+    fi
+}; _agvim'
