@@ -48,7 +48,6 @@ alias pg='ping google.com'
 alias p8='ping 8.8.8.8'
 alias r8='echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf'
 alias show.external.ip='dig -3 +short myip.opendns.com @resolver1.opendns.com'
-alias py.simple.http.server="sudo python -m $(python -c 'import sys; print("http.server" if sys.version_info[:2] > (2,7) else "SimpleHTTPServer")')"
 
 alias zz='exit'
 alias q='exit'
