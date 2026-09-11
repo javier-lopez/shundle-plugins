@@ -23,7 +23,6 @@ alias find.large.files='_find_large_files() { \sudo \find "${1:-.}" -type f -exe
 alias dmesg.tail='dmesg|tail'
 alias date.stamp='date +%d-%m-%Y'
 alias mkcd='_mkcd() { mkdir "${1}" && cd "${1}"; }; _mkcd'
-alias pager="$PAGER"
 alias rm.rf='rm -rf'
 alias size='du -sh'
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'

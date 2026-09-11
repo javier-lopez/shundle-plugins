@@ -101,7 +101,7 @@ on one system and partially on another. Skipped names are listed in
 
    ```
    $ echo "${ALIAZATOR_SKIPPED}"
-   install,gs,ussh,vi,pager,size,dir,
+   install,gs,ussh,vi,size,
    ```
 
 If an earlier set had already defined a skipped name, that earlier definition

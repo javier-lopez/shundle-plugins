@@ -1,5 +1,4 @@
 #linux-gnu
-alias dir='ls -d */'
 
 #ls
 alias ls='ls --color=auto'
