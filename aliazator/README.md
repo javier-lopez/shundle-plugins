@@ -116,6 +116,23 @@ To let an alias hide a command on purpose, list its name in `ALIAZATOR_SHADOW`:
 An alias only exists in the interactive shell, so scripts and `make` keep
 running the real command.
 
+### Which aliases are used
+
+`aliazator stats` counts aliases in the shell history (`ETERNALIZE_PATH` when
+eternalize is loaded, `HISTFILE` otherwise): every command position counts,
+including the word after `sudo`. Without arguments it prints used/defined per
+set (`+` marks the loaded ones); with a set, every alias in it, most used
+first:
+
+   ```
+   $ aliazator stats
+   $ aliazator stats git
+   ```
+
+Command lookups ignore WSL's Windows directories (`/mnt/<drive>/...` in
+`PATH`): a failed lookup costs ~40ms there against ~0.1ms in Linux
+directories, and aliazator runs hundreds of them.
+
 ## Contributors
 
 See [Aliazator contributors](https://github.com/javier-lopez/shundle-plugins/graphs/contributors)

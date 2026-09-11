@@ -24,6 +24,7 @@ _usage()
     printf "%s\\n" "  disable [subset]  disable plugins"
     printf "%s\\n" "  list    [subset]  list available plugins"
     printf "%s\\n" "  search  [pattern] look up where an alias is been sourced from, or if's managed by aliazator"
+    printf "%s\\n" "  stats   [subset]  count how often aliases are used in the shell history"
     return 1
 }
 
@@ -147,6 +148,64 @@ _aliazator_search()
     grep -rin "${1}" "${ALIAZATOR_PATH}"
 }
 
+_aliazator_stats()
+{   #how often aliases show up in the shell history: every command position
+    #counts ("ga . && gcm x | less" -> ga, gcm, less), and so does the word
+    #after sudo. Without arguments: used/defined per set (+ = loaded); with a
+    #set: every alias of it, most used first
+    _aliazator_stats__history="${ETERNALIZE_PATH}"
+    [ -r "${_aliazator_stats__history}" ] || _aliazator_stats__history="${HISTFILE:-${HOME}/.bash_history}"
+    if [ ! -r "${_aliazator_stats__history}" ]; then
+        printf "%s\\n" "aliazator: no readable history (ETERNALIZE_PATH or HISTFILE)" >&2
+        return 1
+    fi
+
+    if [ -n "${1}" ]; then
+        _aliazator_stats__files="${ALIAZATOR_PATH}/extra/${1}.aliases"
+        [ -f "${_aliazator_stats__files}" ] || _aliazator_stats__files="${ALIAZATOR_PATH}/default/${1}.aliases"
+        if [ ! -f "${_aliazator_stats__files}" ]; then
+            printf "%s\\n" "aliazator: no '${1}' set" >&2
+            return 1
+        fi
+        set -- "${_aliazator_stats__files}"
+    else
+        set -- "${ALIAZATOR_PATH}"/default/*.aliases "${ALIAZATOR_PATH}"/extra/*.aliases
+    fi
+
+    printf "%s\\n" "history: ${_aliazator_stats__history}"
+    awk -v hist="${_aliazator_stats__history}" -v loaded=",${ALIAZATOR_PLUGINS_ARRAY}," -v one="${_aliazator_stats__files}" '
+        FILENAME == hist {
+            n = split($0, seg, /&&|\|\||;|\|/)
+            for (i = 1; i <= n; i++) {
+                s = seg[i]; sub(/^[ \t]+/, "", s)
+                m = split(s, w, /[ \t]+/)
+                if (w[1] != "") uses[w[1]]++
+                if (w[1] == "sudo" && m > 1) uses[w[2]]++
+            }
+            commands++
+            next
+        }
+        /^[ \t]*alias / {
+            name = $0; sub(/^[ \t]*alias (-- )?/, "", name)
+            value = name; sub(/=.*/, "", name); sub(/^[^=]*=["\047]?/, "", value)
+            sub(/["\047][ \t]*(#.*)?$/, "", value)
+            set = FILENAME; sub(/.*\//, "", set); sub(/\.aliases$/, "", set)
+            if (!(set in total)) order[++sets] = set
+            total[set]++
+            if (uses[name] > 0) used[set]++
+            if (one != "") printf "%7d  %-12s %s\n", uses[name] + 0, name, substr(value, 1, 58) | "sort -k1,1nr"
+        }
+        END {
+            if (one != "") exit
+            printf "%d commands\n\n", commands
+            for (i = 1; i <= sets; i++) {
+                set = order[i]
+                mark = (index(loaded, "," set ",") > 0) ? "+" : " "
+                printf " %s%-12s %3d/%d\n", mark, set, used[set] + 0, total[set]
+            }
+        }' "${_aliazator_stats__history}" "${@}"
+}
+
 if [ "${#}" -lt "1" ]; then
    _usage
 else
@@ -155,6 +214,7 @@ else
         #enable) . $ALIAZATOR_PATH/../bin/aliazator-enable "$2" ;;
         l*) _aliazator_list    "${2}";;
         d*) _aliazator_disable "${2}";;
+        st*) _aliazator_stats  "${2}";;
         s*) _aliazator_search  "${2}";;
         e*) . "${ALIAZATOR_PATH}/../bin/aliazator-enable" "${2}" ;;
         *) _usage ;;
