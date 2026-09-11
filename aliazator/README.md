@@ -107,9 +107,14 @@ on one system and partially on another. Skipped names are listed in
 If an earlier set had already defined a skipped name, that earlier definition
 is kept.
 
-Command lookups ignore WSL's Windows directories (`/mnt/<drive>/...` in
-`PATH`): a failed lookup costs ~40ms there against ~0.1ms in Linux
-directories, and aliazator runs hundreds of them.
+To let an alias hide a command on purpose, list its name in `ALIAZATOR_SHADOW`:
+
+   ```sh
+   ALIAZATOR_SHADOW="size install gs"
+   ```
+
+An alias only exists in the interactive shell, so scripts and `make` keep
+running the real command.
 
 ## Contributors
 
