@@ -87,6 +87,30 @@ To modify which aliases are loaded by default define `ALIAZATOR_PLUGINS` in your
 - custom
  - let you define which specific aliases to load, e.g. custom:minimal,git,vim (will load the minimal meta-set plus git & vim aliases)
 
+### Aliases never hide commands
+
+An alias named like an existing command is only created when it decorates that
+same command, e.g. `alias ls='ls --color=auto'` or `alias sudo='sudo '`. An
+alias that would run something else under a command's name is skipped: with
+`dd` installed, `alias dd='dot diff'` is not created, and neither is
+`alias gs='git status'` when Ghostscript provides `gs`.
+
+The check runs on the machine that loads the aliases, so a set can load fully
+on one system and partially on another. Skipped names are listed in
+`ALIAZATOR_SKIPPED`:
+
+   ```
+   $ echo "${ALIAZATOR_SKIPPED}"
+   install,gs,ussh,vi,pager,size,dir,
+   ```
+
+If an earlier set had already defined a skipped name, that earlier definition
+is kept.
+
+Command lookups ignore WSL's Windows directories (`/mnt/<drive>/...` in
+`PATH`): a failed lookup costs ~40ms there against ~0.1ms in Linux
+directories, and aliazator runs hundreds of them.
+
 ## Contributors
 
 See [Aliazator contributors](https://github.com/javier-lopez/shundle-plugins/graphs/contributors)

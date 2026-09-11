@@ -16,12 +16,134 @@ _basename()
     #printf "%s" "${_basename_var_name}"
 }
 
+_aliazator_lookup_path()
+{   #PATH without WSL's Windows directories (/mnt/<drive>/...), where a failed
+    #command lookup costs ~40ms against ~0.1ms in Linux directories, and
+    #aliazator runs hundreds of them. Split on IFS: pattern expansions over a
+    #long PATH cost ~8ms per call in bash
+    retval=""
+    case "$-" in
+        *f*) _aliazator_lookup_path_var_glob="off" ;;
+        *)   _aliazator_lookup_path_var_glob="on"; set -f ;;
+    esac
+    _aliazator_lookup_path_var_ifs_set="${IFS+set}"
+    _aliazator_lookup_path_var_ifs="${IFS}"
+    IFS=:
+    for _aliazator_lookup_path_var_dir in ${PATH}; do
+        case "${_aliazator_lookup_path_var_dir}" in
+            /mnt/[a-z]/*|'') continue ;;
+        esac
+        retval="${retval:+${retval}:}${_aliazator_lookup_path_var_dir}"
+    done
+    if [ -n "${_aliazator_lookup_path_var_ifs_set}" ]; then
+        IFS="${_aliazator_lookup_path_var_ifs}"
+    else
+        unset IFS
+    fi
+    if [ X"${_aliazator_lookup_path_var_glob}" = X"on" ]; then
+        set +f
+    fi
+}
+
+_aliazator_first_word()
+{   #first command word of an alias value; skips VAR=value prefixes (quoted
+    #values included) and enters "_fn() { ...; }" wrappers:
+    #'_find() { find "$@"; }; _find' -> find, 'CFLAGS="-g -Wall" make' -> make
+    _aliazator_first_word_var_body="${1}"
+    while :; do
+        _aliazator_first_word_var_body="${_aliazator_first_word_var_body#"${_aliazator_first_word_var_body%%[! 	]*}"}"
+        retval="${_aliazator_first_word_var_body%%[ 	;]*}"
+        case "${retval}" in
+            *'()'*)
+                case "${_aliazator_first_word_var_body}" in
+                    *'{'*) _aliazator_first_word_var_body="${_aliazator_first_word_var_body#*\{}" ;;
+                    *) return 0 ;;
+                esac ;;
+            [A-Za-z_]*=\"*)
+                _aliazator_first_word_var_body="${_aliazator_first_word_var_body#*=\"}"
+                _aliazator_first_word_var_body="${_aliazator_first_word_var_body#*\"}" ;;
+            [A-Za-z_]*=\'*)
+                _aliazator_first_word_var_body="${_aliazator_first_word_var_body#*=\'}"
+                _aliazator_first_word_var_body="${_aliazator_first_word_var_body#*\'}" ;;
+            [A-Za-z_]*=*) _aliazator_first_word_var_body="${_aliazator_first_word_var_body#"${retval}"}" ;;
+            *) return 0 ;;
+        esac
+    done
+}
+
+_aliazator_shadowing()
+{   #aliases in file ${1} that would hide an existing command (retval, a list):
+    #an alias named like a command is kept only when it decorates that same
+    #command (alias ls='ls --color'); alias dd='dot diff' is dropped
+    _aliazator_shadowing_var_names=""
+    while IFS= read -r _aliazator_shadowing_var_line; do
+        _aliazator_shadowing_var_line="${_aliazator_shadowing_var_line#"${_aliazator_shadowing_var_line%%[! 	]*}"}"
+        case "${_aliazator_shadowing_var_line}" in
+            alias\ *=*) ;;
+            *) continue ;;
+        esac
+        _aliazator_shadowing_var_name="${_aliazator_shadowing_var_line#alias }"
+        _aliazator_shadowing_var_name="${_aliazator_shadowing_var_name#-- }" #alias -- -='cd -'
+        _aliazator_shadowing_var_name="${_aliazator_shadowing_var_name%%=*}"
+        _aliazator_shadowing_var_value="${_aliazator_shadowing_var_line#*=}"
+        case "${_aliazator_shadowing_var_value}" in #unquote: 'ls --color' -> ls --color
+            \'*) _aliazator_shadowing_var_value="${_aliazator_shadowing_var_value#?}"
+                 _aliazator_shadowing_var_value="${_aliazator_shadowing_var_value%%\'*}" ;;
+            \"*) _aliazator_shadowing_var_value="${_aliazator_shadowing_var_value#?}"
+                 _aliazator_shadowing_var_value="${_aliazator_shadowing_var_value%%\"*}" ;;
+        esac
+        _aliazator_first_word "${_aliazator_shadowing_var_value}"
+        [ X"${retval}" = X"${_aliazator_shadowing_var_name}" ] && continue
+        _aliazator_shadowing_var_names="${_aliazator_shadowing_var_names} ${_aliazator_shadowing_var_name}"
+    done < "${1}"
+
+    retval=""
+    [ -z "${_aliazator_shadowing_var_names}" ] && return 0
+    #one subshell per file: without aliases (a re-sourced shell already has
+    #them) and with the fast PATH, report which names are real commands
+    retval="$(IFS=' '; PATH="${_aliazator_var_path}"; unalias -a 2>/dev/null
+        for _aliazator_shadowing_var_name in ${_aliazator_shadowing_var_names}; do
+            \command -v "${_aliazator_shadowing_var_name}" >/dev/null 2>&1 && \
+                \printf "%s " "${_aliazator_shadowing_var_name}"
+        done)"
+}
+
 _aliazator_source()
 {
     [ -z "${1}" ] && return
     _basename "${1}" .aliases
     ALIAZATOR_PLUGINS_ARRAY="${ALIAZATOR_PLUGINS_ARRAY}${retval},"
+    _aliazator_shadowing "${1}"
+    _aliazator_source_var_skip="${retval}"
+
+    #skipping must not destroy what an earlier set defined under the same
+    #name; the space separated list is walked without relying on IFS
+    _aliazator_source_var_restore=""
+    _aliazator_source_var_list="${_aliazator_source_var_skip}"
+    while _aliazator_source_var_list="${_aliazator_source_var_list# }"; [ -n "${_aliazator_source_var_list}" ]; do
+        _aliazator_source_var_name="${_aliazator_source_var_list%% *}"
+        _aliazator_source_var_list="${_aliazator_source_var_list#"${_aliazator_source_var_name}"}"
+        _aliazator_source_var_prev="$(alias "${_aliazator_source_var_name}" 2>/dev/null)" || continue
+        case "${_aliazator_source_var_prev}" in
+            alias\ *) ;;
+            *) _aliazator_source_var_prev="alias ${_aliazator_source_var_prev}" ;; #dash prints name='value'
+        esac
+        _aliazator_source_var_restore="${_aliazator_source_var_restore}${_aliazator_source_var_prev}
+"
+    done
+
     . "${1}"
+
+    _aliazator_source_var_list="${_aliazator_source_var_skip}"
+    while _aliazator_source_var_list="${_aliazator_source_var_list# }"; [ -n "${_aliazator_source_var_list}" ]; do
+        _aliazator_source_var_name="${_aliazator_source_var_list%% *}"
+        _aliazator_source_var_list="${_aliazator_source_var_list#"${_aliazator_source_var_name}"}"
+        unalias "${_aliazator_source_var_name}" 2>/dev/null
+        ALIAZATOR_SKIPPED="${ALIAZATOR_SKIPPED}${_aliazator_source_var_name},"
+    done
+    if [ -n "${_aliazator_source_var_restore}" ]; then
+        eval "${_aliazator_source_var_restore}"
+    fi
 }
 
 _aliazator_enable()
@@ -40,7 +162,7 @@ _aliazator_enable()
         installed)
             for aliases in "${ALIAZATOR_PATH}"/extra/*; do
                 _basename "${aliases}" .aliases
-                if command -v "${retval}" 1> /dev/null 2>&1; then
+                if PATH="${_aliazator_var_path}" command -v "${retval}" 1> /dev/null 2>&1; then
                     _aliazator_source "${aliases}"
                 fi
             done
@@ -78,10 +200,12 @@ if [ -f "${HOME}/.aliases" ] && [ ! -f "${ALIAZATOR_PATH}"/default/zcustom.alias
     ln -s "${HOME}/.aliases" "${ALIAZATOR_PATH}"/default/zcustom.aliases #setup custom before starting
 fi
 
+_aliazator_lookup_path; _aliazator_var_path="${retval}"
+ALIAZATOR_SKIPPED=""
 _aliazator_enable "${1}"; aliazator_status="${?}"
 
-export ALIAZATOR_PLUGINS_ARRAY
+export ALIAZATOR_PLUGINS_ARRAY ALIAZATOR_SKIPPED
 
 return "${aliazator_status}"
 
-# vim: set ts=8 sw=4 tw=0 ft=sh : 
+# vim: set ts=8 sw=4 tw=0 ft=sh :
