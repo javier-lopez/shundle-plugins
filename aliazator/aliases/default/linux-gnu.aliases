@@ -1,6 +1,5 @@
 #linux-gnu
 alias dir='ls -d */'
-alias less.color='less -R'
 
 #ls
 alias ls='ls --color=auto'
@@ -19,9 +18,6 @@ alias Al=la
 alias l='ls --no-group -d . >/dev/null 2>&1 && ng="--no-group"; ls --group-directories-first -d . >/dev/null 2>&1 && gdf="--group-directories-first"; ls -lhrtq "${ng}" "${gdf}" --color=auto'
 alias ll=l
 alias lh=l
-alias lc='wc -l'
-alias cl=lc
-alias l1='ls -1 --color=auto'
 alias lsdot='ls --color=auto -ld .*'
 #alias lsmode='_lsmode() { [ "$#" = "0" ] && f="." || f="$1"; stat "$f" | awk "/^Access:/ {gsub(/\(|\)/,\"\"); printf \$2 \" \"; exit}"; printf "%s\\n" "$f"; }; _lsmode'
 alias lsgrep='ls|grep'
@@ -40,7 +36,6 @@ alias show.bandwidth.usage='top.broadband'
 #other single command aliases which don't deserve their own file
 alias psgrep='ps aux|grep'
 alias grep='grep --color'
-alias alert='m="$([ X"${?}" = X"0" ] && echo "[+]" || echo "[-]") $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"; xm="$(command -v gxmessage)" || xm=xmessage; $xm -center "${m}"'
 alias sgrep='grep -rni --exclude-dir={.git,.svn,.bzr,.hg,.pc,CVS} --binary-files=without-match'
 alias update-fonts='sudo fc-cache -f -v'
 alias list.fonts="fc-list"
