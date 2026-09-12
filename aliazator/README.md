@@ -107,10 +107,10 @@ on one system and partially on another. Skipped names are listed in
 If an earlier set had already defined a skipped name, that earlier definition
 is kept.
 
-To let an alias hide a command on purpose, list its name in `ALIAZATOR_SHADOW`:
+To let an alias hide a command on purpose, list its name in `ALIAZATOR_OVERRIDE`:
 
    ```sh
-   ALIAZATOR_SHADOW="size install gs"
+   ALIAZATOR_OVERRIDE="size install gs"
    ```
 
 An alias only exists in the interactive shell, so scripts and `make` keep

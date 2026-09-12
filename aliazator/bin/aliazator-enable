@@ -74,7 +74,7 @@ _aliazator_first_word()
 _aliazator_shadowing()
 {   #aliases in file ${1} that would hide an existing command (retval, a list):
     #an alias named like a command is kept only when it decorates that same
-    #command (alias ls='ls --color'), or when its name is in ALIAZATOR_SHADOW,
+    #command (alias ls='ls --color'), or when its name is in ALIAZATOR_OVERRIDE,
     #a deliberate choice; alias dd='dot diff' is dropped
     _aliazator_shadowing_var_names=""
     while IFS= read -r _aliazator_shadowing_var_line; do
@@ -86,7 +86,7 @@ _aliazator_shadowing()
         _aliazator_shadowing_var_name="${_aliazator_shadowing_var_line#alias }"
         _aliazator_shadowing_var_name="${_aliazator_shadowing_var_name#-- }" #alias -- -='cd -'
         _aliazator_shadowing_var_name="${_aliazator_shadowing_var_name%%=*}"
-        case " ${ALIAZATOR_SHADOW} " in
+        case " ${ALIAZATOR_OVERRIDE} " in
             *" ${_aliazator_shadowing_var_name} "*) continue ;;
         esac
         _aliazator_shadowing_var_value="${_aliazator_shadowing_var_line#*=}"
