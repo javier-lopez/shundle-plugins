@@ -12,6 +12,11 @@
 #===============================================================================
 #Don't modify this section directly, instead set options in your shell init file
 [ -z "${ETERNALIZE_PATH}" ] && ETERNALIZE_PATH="${plugin}/eternalize/eternalize.data"
+#commands not worth an eternal line: glob patterns, comma separated. Set it in
+#your shell init file; set it to the empty string to record everything. The
+#default stays out of any other plugin's aliases on purpose: excluding them
+#here is what makes 'aliazator stats' blind to the aliases you use most
+[ -z "${ETERNALIZE_IGNORE+x}" ] && ETERNALIZE_IGNORE="cd,cd *,ls,ls *,pwd,exit,clear,history,history *,eternalize*"
 
 #===============================================================================
 #================================== Plugin =====================================
@@ -21,12 +26,23 @@
 
 export HISTCONTROL="ignoreboth"
 PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"\
-'_ehistory="$(history 1|cut -d" " -f5-)"
-_estatus="0"; case "${_ehistory}" in
-    ""|cd|cd\ *|ls|ls\ *|gs|gd|gl|getpass*|pg|\.\.|ll|man\ *|bashrc) _estatus="1" ;;
-    mail*|l\ *|c|gps|g|mpc\ *|pwd|tls|tadd|tdone|eternalize*|vi|vim) _estatus="1" ;;
-    ussh\ *|htop|mutt|translate\ *|history|rm.rf\ *|tmux|find.file*) _estatus="1" ;;
-esac
+'_ehistory="$(history 1)"
+#history right-aligns its number in 5 columns, so cutting by field position
+#only works while that number has 3 digits: at 2 it returns the command with a
+#blank in front (which no ignore pattern then matches) and past 999 it returns
+#nothing at all, so the whole session goes unrecorded. Strip the leading
+#blanks, the number, and the blanks after it
+_ehistory="${_ehistory#"${_ehistory%%[! ]*}"}"
+_ehistory="${_ehistory#* }"
+_ehistory="${_ehistory#"${_ehistory%%[! ]*}"}"
+
+_estatus="0"; [ -z "${_ehistory}" ] && _estatus="1"
+_eignore="${ETERNALIZE_IGNORE}"
+while [ -n "${_eignore}" ] && [ X"${_estatus}" = X"0" ]; do
+    _epattern="${_eignore%%,*}"
+    case "${_ehistory}" in ${_epattern}) _estatus="1" ;; esac
+    [ X"${_eignore}" = X"${_epattern}" ] && _eignore="" || _eignore="${_eignore#*,}"
+done
 
 if [ X"${_estatus}" = X"0" ]; then
     if [ X"${_ehistory}" != X"${_ehistory__last}" ]; then
