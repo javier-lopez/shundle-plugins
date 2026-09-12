@@ -1,0 +1,345 @@
+# Name:         core
+# Author:       Javier Lopez <m@javier.io>
+# Description:  the palette and the prompt segments every ps theme shares
+# License:      wtfpl
+# Source:       http://github.com/javier-lopez/shundle-plugins/colorize
+# Version:      0.1
+# Shell:        sh
+
+#Sourced by colorize before the ps theme. A theme says what it uses and lays
+#it out; nothing here draws a prompt by itself:
+#
+#    _cz_use status pwd git
+#    PS1="${_CZ_USER}\u${_CZ_RESET} [\${_CZ_STATUS}:\${_CZ_PWD}\${_CZ_GIT}] \$ "
+#
+#Colours written straight into PS1 expand once, when the theme builds it, so
+#they use ${_CZ_*} with no backslash. Segments are recomputed every prompt, so
+#PS1 must keep them unexpanded: \${_CZ_STATUS}, \${_CZ_PWD}, \${_CZ_GIT}.
+
+#===============================================================================
+#================================== Palette ====================================
+#===============================================================================
+
+#\001 and \002 are what bash turns \[ and \] into: the markers that tell
+#readline "these bytes take no width". Written as raw bytes they also work
+#inside a variable PS1 expands, where a literal \[ would print as text and
+#leave the cursor misplaced on any long or recalled line
+_cz__s="$(printf '\001')"; _cz__x="$(printf '\002')"; _cz__e="$(printf '\033')"
+
+_cz_color() { printf "%s" "${_cz__s}${_cz__e}[${1}m${_cz__x}"; }
+
+_CZ_RESET="${_cz__s}${_cz__e}[0m${_cz__x}"
+_CZ_BOLD="${_cz__s}${_cz__e}[1m${_cz__x}"
+_CZ_DIM="${_cz__s}${_cz__e}[1;38m${_cz__x}"
+
+#the ANSI slots, which is what a .theme repaints: a prompt written with these
+#follows the colour theme instead of fighting it
+_CZ_BLACK="${_cz__s}${_cz__e}[1;30m${_cz__x}"
+_CZ_RED="${_cz__s}${_cz__e}[1;31m${_cz__x}"
+_CZ_GREEN="${_cz__s}${_cz__e}[1;32m${_cz__x}"
+_CZ_YELLOW="${_cz__s}${_cz__e}[1;33m${_cz__x}"
+_CZ_BLUE="${_cz__s}${_cz__e}[1;34m${_cz__x}"
+_CZ_MAGENTA="${_cz__s}${_cz__e}[1;35m${_cz__x}"
+_CZ_CYAN="${_cz__s}${_cz__e}[1;36m${_cz__x}"
+_CZ_WHITE="${_cz__s}${_cz__e}[1;37m${_cz__x}"
+
+#Semantic names, so a theme says what a colour is for and a .theme can
+#redefine any of them before the prompt is built.
+#
+#The slot number comes first and the escape is built from it, not the other way
+#round: a .theme repaints the terminal's ANSI slots, so the slot is the only
+#thing that survives a change of theme. It is also the only form another
+#program can use — a finder, a pager, ls — and that is how something outside
+#colorize ends up wearing the same colours as the prompt without knowing which
+#prompt is active
+[ -z "${_CZ_N_OK}" ]     && _CZ_N_OK="2"
+[ -z "${_CZ_N_ERR}" ]    && _CZ_N_ERR="1"
+[ -z "${_CZ_N_USER}" ]   && _CZ_N_USER="4"
+[ -z "${_CZ_N_HOST}" ]   && _CZ_N_HOST="2"
+[ -z "${_CZ_N_PATH}" ]   && _CZ_N_PATH="2"
+[ -z "${_CZ_N_HOME}" ]   && _CZ_N_HOME="5"
+[ -z "${_CZ_N_SEP}" ]    && _CZ_N_SEP="1"
+[ -z "${_CZ_N_ABBR}" ]   && _CZ_N_ABBR="7"
+[ -z "${_CZ_N_ACCENT}" ] && _CZ_N_ACCENT="3"
+[ -z "${_CZ_N_DIM}" ]    && _CZ_N_DIM="8"
+#the slot the terminal paints as background. No prompt draws with it — it is
+#here for the programs that have to draw something and want it not to be seen.
+#A light theme sets it to 7
+[ -z "${_CZ_N_BG}" ]     && _CZ_N_BG="0"
+
+[ -z "${_CZ_OK}" ]     && _CZ_OK="${_cz__s}${_cz__e}[01;3${_CZ_N_OK}m${_cz__x}"
+[ -z "${_CZ_ERR}" ]    && _CZ_ERR="${_cz__s}${_cz__e}[01;3${_CZ_N_ERR}m${_cz__x}"
+[ -z "${_CZ_USER}" ]   && _CZ_USER="${_cz__s}${_cz__e}[1;3${_CZ_N_USER}m${_cz__x}"
+[ -z "${_CZ_HOST}" ]   && _CZ_HOST="${_cz__s}${_cz__e}[1;3${_CZ_N_HOST}m${_cz__x}"
+[ -z "${_CZ_PATH}" ]   && _CZ_PATH="${_cz__s}${_cz__e}[1;3${_CZ_N_PATH}m${_cz__x}"
+[ -z "${_CZ_HOME}" ]   && _CZ_HOME="${_cz__s}${_cz__e}[1;3${_CZ_N_HOME}m${_cz__x}"
+[ -z "${_CZ_SEP}" ]    && _CZ_SEP="${_cz__s}${_cz__e}[1;3${_CZ_N_SEP}m${_cz__x}"
+[ -z "${_CZ_ABBR}" ]   && _CZ_ABBR="${_cz__s}${_cz__e}[1;3${_CZ_N_ABBR}m${_cz__x}"
+[ -z "${_CZ_ACCENT}" ] && _CZ_ACCENT="${_cz__s}${_cz__e}[1;3${_CZ_N_ACCENT}m${_cz__x}"
+
+#root deserves a different colour, and two themes were computing it by hand
+#_CZ_ROOT is the identity, _CZ_WHOAMI the colour: a theme that only repaints
+#needs the second, one that drops \u for root needs the first
+if [ X"${EUID:-$(id -u 2>/dev/null)}" = X"0" ]; then _CZ_ROOT="1"; _CZ_WHOAMI="${_CZ_RED}"
+else _CZ_ROOT=""; _CZ_WHOAMI="${_CZ_USER}"; fi
+
+#===============================================================================
+#================================= Segments ====================================
+#===============================================================================
+
+#every one of these is builtins only: no subshell, no process, once per prompt
+
+_cz_status()
+{   #${1} is the exit status, taken before anything else could overwrite it
+    #no closing reset in any segment: where the colour ends is the theme's
+    #call, and that is what lets one segment run into the next
+    if [ X"${1}" = X"0" ]; then
+        _CZ_STATUS="${_CZ_OK}0"
+        _CZ_MARK="${_CZ_OK}${_CZ_MARK_OK}"
+    else
+        _CZ_STATUS="${_CZ_ERR}${1}"
+        _CZ_MARK="${_CZ_ERR}${_CZ_MARK_ERR}"
+    fi
+}
+
+_cz_pwd()
+{   #$HOME as ~, and middle components cut to COLORIZE_PWD_MAX characters: the
+    #first and the last are always whole, they are the ones you read
+    _CZ_PWD=""
+    _cz_pwd__p="${PWD}"
+    case "${_cz_pwd__p}" in
+        "${HOME}"|"${HOME}"/*)
+            _CZ_PWD="${_CZ_HOME}~"
+            _cz_pwd__p="${_cz_pwd__p#"${HOME}"}" ;;
+    esac
+
+    _cz_pwd__n=0
+    _cz_pwd__rest="${_cz_pwd__p#/}"
+    while [ -n "${_cz_pwd__rest}" ]; do
+        _cz_pwd__n=$((_cz_pwd__n + 1))
+        case "${_cz_pwd__rest}" in
+            */*) _cz_pwd__rest="${_cz_pwd__rest#*/}" ;;
+            *)   _cz_pwd__rest="" ;;
+        esac
+    done
+
+    _cz_pwd__i=0
+    _cz_pwd__rest="${_cz_pwd__p#/}"
+    while [ -n "${_cz_pwd__rest}" ]; do
+        case "${_cz_pwd__rest}" in
+            */*) _cz_pwd__d="${_cz_pwd__rest%%/*}"; _cz_pwd__rest="${_cz_pwd__rest#*/}" ;;
+            *)   _cz_pwd__d="${_cz_pwd__rest}";     _cz_pwd__rest="" ;;
+        esac
+        _cz_pwd__i=$((_cz_pwd__i + 1))
+
+        if [ "${_cz_pwd__i}" -eq 1 ] || [ "${_cz_pwd__i}" -eq "${_cz_pwd__n}" ] ||
+           [ "${#_cz_pwd__d}" -le "${COLORIZE_PWD_MAX}" ]; then
+            _CZ_PWD="${_CZ_PWD}${_CZ_SEP}/${_CZ_PATH}${_cz_pwd__d}"
+        else
+            _cz_pwd__short=""
+            while [ "${#_cz_pwd__short}" -lt "${COLORIZE_PWD_MAX}" ]; do
+                _cz_pwd__short="${_cz_pwd__short}${_cz_pwd__d%"${_cz_pwd__d#?}"}"
+                _cz_pwd__d="${_cz_pwd__d#?}"
+            done
+            _CZ_PWD="${_CZ_PWD}${_CZ_SEP}/${_CZ_ABBR}${_cz_pwd__short}"
+        fi
+    done
+}
+
+_cz_git()
+{   #the branch without running git: walk up to a .git directory and read HEAD
+    _CZ_GIT="" _CZ_GIT_NAME="" _CZ_GIT_DIRTY="" _CZ_GIT_AHEAD="" _CZ_GIT_BEHIND=""
+    _cz_git__dir="${PWD}"
+    while [ -n "${_cz_git__dir}" ]; do
+        [ -d "${_cz_git__dir}/.git" ] && break
+        _cz_git__dir="${_cz_git__dir%/*}"
+    done
+    [ -d "${_cz_git__dir}/.git" ] || return 0
+
+    #a .git file (worktrees, submodules) needs git to resolve, and a branch in
+    #a prompt is not worth a process: it stays quiet there
+    read -r _cz_git__ref < "${_cz_git__dir}/.git/HEAD" 2>/dev/null || return 0
+    case "${_cz_git__ref}" in
+        #not ##*/: a branch may carry slashes, and "feature/login" read as
+        #"login" points at the wrong branch on the one prompt that matters
+        ref:*refs/heads/*) _cz_git__name="${_cz_git__ref#*refs/heads/}" ;;
+        ref:*) _cz_git__name="${_cz_git__ref##*/}" ;;
+        "")    return 0 ;;
+        *)     _cz_git__name="${_cz_git__ref%"${_cz_git__ref#???????}"}" ;;
+    esac
+
+    #the one mode that forks, because only git can answer it. --branch costs
+    #the same as the plain status and also says how far the branch is from its
+    #remote, which powerline was paying two more git calls for
+    _cz_git__mark=""
+    if [ X"${COLORIZE_GITPROMPT}" = X"dirty" ]; then
+        _cz_git__st="$(git -C "${_cz_git__dir}" status --porcelain --branch 2>/dev/null)"
+        case "${_cz_git__st}" in
+            *"
+"*) _cz_git__mark="*" ;;    #anything past the ## line means work in progress
+        esac
+        case "${_cz_git__st}" in
+            *"[ahead "*)  _CZ_GIT_AHEAD="${_cz_git__st#*\[ahead }"
+                          _CZ_GIT_AHEAD="${_CZ_GIT_AHEAD%%[],]*}" ;;
+        esac
+        case "${_cz_git__st}" in
+            *"behind "*)  _CZ_GIT_BEHIND="${_cz_git__st#*behind }"
+                          _CZ_GIT_BEHIND="${_CZ_GIT_BEHIND%%[],]*}" ;;
+        esac
+    fi
+
+    #the pieces, for a theme that assembles its own string instead of taking
+    #the composed one below
+    _CZ_GIT_NAME="${_cz_git__name}" _CZ_GIT_DIRTY="${_cz_git__mark}"
+
+    #what wraps the branch is the only thing themes disagree on: " (main)",
+    #" on main", "[main]". Both halves are read here and not at load time, so
+    #a .theme that repaints _CZ_ACCENT afterwards is still obeyed. The default
+    #closes its own colour because the segment may be empty, and a dangling
+    #reset in the theme would then paint the rest of the prompt
+    _CZ_GIT="${_CZ_GIT_PRE-" ${_CZ_ACCENT}("}${_cz_git__name}${_cz_git__mark}${_CZ_GIT_POST-")${_CZ_RESET}"}"
+}
+
+_cz_files()
+{   #"24 files, 228Kb", the way arch and prome7hius spell it. The count is a
+    #glob: the shell already reads the directory, ls only added three processes
+    #to say the same. The size is the one thing no builtin knows
+    set -- *
+    if [ X"${1}" = X"*" ] && [ ! -e "${1}" ] && [ ! -L "${1}" ]; then
+        _cz_files__n=0
+    else
+        _cz_files__n="${#}"
+    fi
+    #ls is the only one who knows the total; the first line is parsed here so
+    #sed is not a third process on the way
+    _cz_files__t="$(ls -lah 2>/dev/null)"
+    _cz_files__t="${_cz_files__t%%
+*}"
+    _CZ_FILES="${_cz_files__n} files, ${_cz_files__t#total }b"
+}
+
+_cz_load()
+{   #the 1-minute load average, and a colour that escalates with it. /proc is
+    #two orders of magnitude cheaper than uptime|sed|bc, and says the same
+    _CZ_LOAD=""
+    read -r _cz_load__1 _cz_load__rest < /proc/loadavg 2>/dev/null || return 0
+
+    #0.52 -> 52, without bc. The decimals are always two, so one leading zero
+    #is all that can hide there: $(( )) would read "052" as octal
+    _cz_load__i="${_cz_load__1%.*}"
+    _cz_load__d="${_cz_load__1#*.}"
+    _cz_load__d="${_cz_load__d#0}"
+    _cz_load__n=$(( ${_cz_load__i:-0} * 100 + ${_cz_load__d:-0} ))
+
+    #bold grey -> green -> yellow -> red -> on red: the progression matters
+    #more than the thresholds, anything past yellow is already asking for help
+    if   [ "${_cz_load__n}" -lt 70 ];  then _cz_load__c="1m${_cz__e}[30"
+    elif [ "${_cz_load__n}" -lt 120 ]; then _cz_load__c="1m${_cz__e}[32"
+    elif [ "${_cz_load__n}" -lt 200 ]; then _cz_load__c="1m${_cz__e}[33"
+    elif [ "${_cz_load__n}" -lt 300 ]; then _cz_load__c="1m${_cz__e}[31"
+    elif [ "${_cz_load__n}" -lt 500 ]; then _cz_load__c="30m${_cz__e}[41"
+    else _cz_load__c="1m${_cz__e}[37m${_cz__e}[41"; fi
+
+    _CZ_LOAD="${_cz__s}${_cz__e}[${_cz_load__c}m${_cz__x}${_cz_load__1}"
+}
+
+_cz_chroot()
+{   #static: the chroot you are in does not change under a running shell
+    [ -z "${debian_chroot}" ] && [ -r /etc/debian_chroot ] &&
+        read -r debian_chroot < /etc/debian_chroot 2>/dev/null
+    [ -n "${debian_chroot}" ] && _CZ_CHROOT="(${debian_chroot})" || _CZ_CHROOT=""
+}
+
+#===============================================================================
+#=================================== Wiring ====================================
+#===============================================================================
+
+_cz_prompt()
+{   #${?} first, before any other segment can overwrite it
+    _cz_prompt__ret="${?}"
+    [ -n "${_CZ_USE_STATUS}" ] && _cz_status "${_cz_prompt__ret}"
+    [ -n "${_CZ_USE_PWD}" ]    && _cz_pwd
+    [ -n "${_CZ_USE_GIT}" ]    && _cz_git
+    [ -n "${_CZ_USE_FILES}" ]  && _cz_files
+    [ -n "${_CZ_USE_LOAD}" ]   && _cz_load
+    return 0
+}
+
+_cz_hook()
+{   #a theme with a segment of its own registers it here instead of touching
+    #PROMPT_COMMAND by hand: it runs after the core's, which owns ${?}
+    [ -z "${1}" ] && return 1
+    case "${PROMPT_COMMAND}" in
+        *"${1}"*) ;;
+        *) PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND}; }${1}" ;;
+    esac
+}
+
+_cz_enabled()
+{   #a module is on when you did not narrow COLORIZE_MODULES and the commands
+    #it needs are installed. A theme asks for everything it can draw; what is
+    #off just leaves an empty variable, so the prompt degrades instead of
+    #breaking, and that decision is yours, not the theme author's
+    [ -z "${1}" ] && return 1
+
+    if [ -n "${COLORIZE_MODULES}" ]; then
+        case " ${COLORIZE_MODULES} " in
+            *" ${1} "*) ;;
+            *) return 1 ;;
+        esac
+    fi
+
+    case "${1}" in
+        git) [ X"${COLORIZE_GITPROMPT}" = X"off" ] && return 1
+             #the branch is read from .git/HEAD, no git needed; only the dirty
+             #mark asks git itself
+             if [ X"${COLORIZE_GITPROMPT}" = X"dirty" ]; then
+                 command -v git >/dev/null 2>&1 || return 1
+             fi ;;
+        files) command -v ls >/dev/null 2>&1 || return 1 ;;
+        load)  [ -r /proc/loadavg ] || return 1 ;;
+    esac
+    return 0
+}
+
+_cz_use()
+{   #a theme declares everything it can draw; _cz_enabled decides what of that
+    #actually runs on this machine
+    for _cz_use__what in "${@}"; do
+        _cz_enabled "${_cz_use__what}" || continue
+        case "${_cz_use__what}" in
+            status) _CZ_USE_STATUS="1" ;;
+            pwd)    _CZ_USE_PWD="1" ;;
+            git)    _CZ_USE_GIT="1" ;;
+            files)  _CZ_USE_FILES="1" ;;
+            load)   _CZ_USE_LOAD="1" ;;
+            chroot) _cz_chroot ;;
+            *) printf "%s\\n" "colorize: unknown module '${_cz_use__what}'" >&2 ;;
+        esac
+    done
+
+    #first in PROMPT_COMMAND: only the first entry still sees your command's
+    #exit status, and the segments must be ready before PS1 expands them
+    case "${PROMPT_COMMAND}" in
+        *_cz_prompt*) ;;
+        *) PROMPT_COMMAND="_cz_prompt${PROMPT_COMMAND:+; ${PROMPT_COMMAND}}" ;;
+    esac
+
+    #a first run so the very first prompt is not drawn with empty segments
+    _cz_prompt
+}
+
+[ -z "${COLORIZE_PWD_MAX}" ] && { [ X"${TERM}" = X"linux" ] && COLORIZE_PWD_MAX="3" || COLORIZE_PWD_MAX="4"; }
+#+x, not -z: a theme may want no mark at all on success (italian shows one
+#only when the command failed), and an empty string is an answer
+[ -z "${_CZ_MARK_OK+x}" ]  && _CZ_MARK_OK="✓"
+[ -z "${_CZ_MARK_ERR+x}" ] && _CZ_MARK_ERR="✗"
+
+#set -x without a file and a line number is a wall of text: three themes each
+#carried this copy, and it belongs to no theme in particular
+#http://aymanh.com/how-debug-bash-scripts
+if [ -n "${BASH_VERSION}" ]; then
+     export PS4='>>(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+else export PS4='>>($0:${LINENO})+:'; fi
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :

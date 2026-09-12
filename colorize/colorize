@@ -15,10 +15,17 @@
 [ -z "${COLORIZE_PS}" ]    && COLORIZE_PS="yujie"
 [ -z "${COLORIZE_THEME}" ] && COLORIZE_THEME="default-dark"
 [ -z "${COLORIZE_UTILS}" ] && COLORIZE_UTILS="sky"
+#a prompt is personal: off unless asked for. "branch" adds the branch to
+#whatever theme is active, "dirty" also marks uncommitted changes, which is
+#the only mode that runs git on every prompt
+[ -z "${COLORIZE_GITPROMPT}" ] && COLORIZE_GITPROMPT=""
 
 #===============================================================================
 #================================== Plugin =====================================
 #===============================================================================
+
+#the palette and the segments a ps theme is written against, before the theme
+[ -f "${COLORIZE_PATH}/core" ] && . "${COLORIZE_PATH}/core"
 
 if [ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]; then
      . "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps"

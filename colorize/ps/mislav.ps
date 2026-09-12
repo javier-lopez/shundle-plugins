@@ -1,21 +1,18 @@
-# show git branch/tag, or name-rev if on detached head
-parse_git_branch() {
-  (command git symbolic-ref -q HEAD || command git name-rev --name-only --no-undefined --always HEAD) 2>/dev/null
-}
+#mislav.ps
 
-if [ -n "$BASH" ]; then
-  # set variable identifying the chroot you work in (used in the prompt below)
-  if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-  fi
+if [ -n "${BASH_VERSION}" ]; then
+  #the branch in the running colour, nothing repainted and nothing to close
+  _CZ_GIT_PRE=" (" _CZ_GIT_POST=")"
+  _cz_use chroot git
 
-  _git_where() {
-    ref="$(parse_git_branch)" && printf "%s" " (${ref#refs/heads/})"
-  }
-
-  PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\e[0;31m\]\w\[\e[m\]$(_git_where) $ '
+  PS1="\${_CZ_CHROOT}${_CZ_GREEN}\h${_CZ_RESET}:$(_cz_color '0;31')\w$(_cz_color '')\${_CZ_GIT} \$ "
 
 elif [ -n "$ZSH_VERSION" ]; then
+  # show git branch/tag, or name-rev if on detached head
+  parse_git_branch() {
+    (command git symbolic-ref -q HEAD || command git name-rev --name-only --no-undefined --always HEAD) 2>/dev/null
+  }
+
   local GIT_PROMPT_PREFIX="%{$reset_color%}%{$fg[green]%}["
   local GIT_PROMPT_SUFFIX="]%{$reset_color%}"
   local GIT_PROMPT_DIRTY="%{$fg[red]%}*%{$reset_color%}"
@@ -57,4 +54,4 @@ elif [ -n "$ZSH_VERSION" ]; then
 
 fi
 
-# vim: set ts=8 sw=4 tw=0 ft=sh : 
+# vim: set ts=8 sw=4 tw=0 ft=sh :

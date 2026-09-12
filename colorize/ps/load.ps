@@ -1,52 +1,17 @@
 #load.ps
 
-load_out() {
-  printf "%s" "$(uptime | sed -e "s/.*load average: \(.*\...\), \(.*\...\), \(.*\...\).*/\1/" -e "s/ //g")"
-}
+#the 1-minute load, and a colour that escalates with it. The progression is
+#what matters — bold grey, green, yellow, red, then black on red and white on
+#red — because anything past yellow is the machine asking for help.
+#It used to cost uptime|sed, bc and up to three tput calls on every prompt;
+#the core reads /proc/loadavg and picks the colour with arithmetic
+_cz_use load
 
-load_color() {
-  gray=0
-  red=1
-  green=2
-  yellow=3
-  blue=4
-  magenta=5
-  cyan=6
-  white=7
+#these two are constants: tput runs once, at startup, not per prompt
+CYAN="\[$(tput bold ; tput setaf 6)\]"
+NOCOLOUR="\[$(tput sgr0)\]"
 
-  # Colour progression is important ...
-  #   bold gray -> bold green -> bold yellow -> bold red ->
-  #   black on red -> bold white on red
-  #
-  # Then we have to choose the values at which the colours switch, with
-  # anything past yellow being pretty important.
-
-  tmp=$(printf "%s\\n" "$(load_out)*100" | bc)
-  let load100=${tmp%.*}
-
-  if [ ${load100} -lt 70 ]; then
-      tput bold ; tput setaf ${gray}
-  elif [ ${load100} -ge 70 ] && [ ${load100} -lt 120 ]; then
-      tput bold ; tput setaf ${green}
-  elif [ ${load100} -ge 120 ] && [ ${load100} -lt 200 ]; then
-      tput bold ; tput setaf ${yellow}
-  elif [ ${load100} -ge 200 ] && [ ${load100} -lt 300 ]; then
-      tput bold ; tput setaf ${red}
-  elif [ ${load100} -ge 300 ] && [ ${load100} -lt 500 ]; then
-      tput setaf ${gray} ; tput setab ${red}
-  else
-      tput bold ; tput setaf ${white} ; tput setab ${red}
-  fi
-}
-
-load() {
-  CYAN="\[$(tput bold ; tput setaf 6)\]"
-  NOCOLOUR="\[$(tput sgr0)\]"
-
-  PS1="[\[\$(load_color)\]\$(load_out)${NOCOLOUR}][\D{%H%M}]\
+PS1="[\${_CZ_LOAD}${NOCOLOUR}][\D{%H%M}]\
  \u:${CYAN}\w${NOCOLOUR}\$> "
-}
-
-load
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

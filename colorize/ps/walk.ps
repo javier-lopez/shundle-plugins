@@ -1,5 +1,14 @@
 #walk.ps
 
-PS1="\n\[\033[32;1m\]It's \t\[\033[33;1m\] Currently browsing \[\033[1;36m\]\w \[\033[33;1m\]directory\n\[\033[34;1m\]\$(if [ \$? = 0 ]; then printf %s '\[\e[37m\]Last Command Was Successfully Executed \[\e[32m\]^_^\[\e[0m\]'; else printf %s '\[\e[37m\]Smeggin Hell !!! Last Command Was Unknown \[\e[32m\]O_O\[\e[0m\]'; fi) \n\[\033[31m\]What is thy bidding, my master? \n\n\[\033[34;1m\]"
+#the mark is a whole sentence here, and it paints itself: _cz_status must not
+#put a colour in front of it
+_CZ_OK="" _CZ_ERR=""
+_CZ_MARK_OK="$(_cz_color 37)Last Command Was Successfully Executed $(_cz_color 32)^_^${_CZ_RESET}"
+_CZ_MARK_ERR="$(_cz_color 37)Smeggin Hell !!! Last Command Was Unknown $(_cz_color 32)O_O${_CZ_RESET}"
+_cz_use status
+
+PS1="\n$(_cz_color '32;1')It's \t$(_cz_color '33;1') Currently browsing ${_CZ_CYAN}\w \
+$(_cz_color '33;1')directory\n$(_cz_color '34;1')\${_CZ_MARK} \n\
+$(_cz_color 31)What is thy bidding, my master? \n\n$(_cz_color '34;1')"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :
