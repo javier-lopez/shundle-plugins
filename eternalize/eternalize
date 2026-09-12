@@ -17,6 +17,14 @@
 #default stays out of any other plugin's aliases on purpose: excluding them
 #here is what makes 'aliazator stats' blind to the aliases you use most
 [ -z "${ETERNALIZE_IGNORE+x}" ] && ETERNALIZE_IGNORE="cd,cd *,ls,ls *,pwd,exit,clear,history,history *,eternalize*"
+#the key that numbers the screen inside the finder. Ctrl-S is XON/XOFF in a
+#terminal, but fzf reads in raw mode so it gets there; a multiplexer that
+#insists on flow control is the case for changing this
+[ -z "${ETERNALIZE_FZF_JUMP+x}" ] && ETERNALIZE_FZF_JUMP="ctrl-s"
+#how the finder looks. ETERNALIZE_FZF_OPTS is left unset here on purpose: its
+#default is built on first use, once every plugin has loaded, so it can borrow
+#colorize's slot numbers. Set it yourself to take over, or to the empty string
+#to fall back to your own FZF_DEFAULT_OPTS
 
 #===============================================================================
 #================================== Plugin =====================================
@@ -50,6 +58,75 @@ if [ X"${_estatus}" = X"0" ]; then
        printf "%s\\n" "${_ehistory}" >> "${ETERNALIZE_PATH}"
     fi
 fi'
+
+#Ctrl-R over the eternal file: ETERNALIZE_BIND holds the readline key sequence
+#to bind it to, e.g. ETERNALIZE_BIND='"\C-r"'. Unset, the default, leaves
+#readline's own reverse search alone: this is a key you opt into
+case "${-}" in
+    *i*) if [ -n "${ETERNALIZE_BIND}" ] && [ -n "${BASH_VERSION}" ]; then
+    _eternalize_search()
+    {   #the pick lands in the edit buffer instead of running: that is what
+        #READLINE_LINE buys, and only 'bind -x' can write it. The file is read
+        #newest first and deduplicated, filtered by whatever is already typed
+        [ -r "${ETERNALIZE_PATH}" ] || return 0
+
+        if command -v fzf >/dev/null 2>&1; then
+            #the finder wears the prompt's colours, and it does it without
+            #knowing which prompt: colorize publishes the ANSI slot each role
+            #uses, a .theme repaints those slots, and both move together. The
+            #numbers here are only the fallback for a shell without colorize
+            if [ -z "${ETERNALIZE_FZF_OPTS+x}" ]; then
+                ETERNALIZE_FZF_OPTS="--color=16,fg:-1,bg:-1,fg+:-1,bg+:-1,query:-1"
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},prompt:${_CZ_N_USER:-4}"
+                #the accent is what stands out, and what you searched for is
+                #exactly that
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},hl:${_CZ_N_ACCENT:-3},hl+:${_CZ_N_ACCENT:-3}"
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},spinner:${_CZ_N_ACCENT:-3}"
+                #fzf has no colour of its own for the jump labels: it paints
+                #them with the pointer's. So this one line decides the colour
+                #of the numbers as well, and the go-ahead colour is the one
+                #that fits something you are about to press
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},pointer:${_CZ_N_OK:-2},marker:${_CZ_N_OK:-2}"
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},info:${_CZ_N_DIM:-8},header:${_CZ_N_DIM:-8},border:${_CZ_N_DIM:-8}"
+                #the rail down the left margin. Left alone fzf emits no colour
+                #for it at all, so it inherits whatever was current and shows
+                #up as a grey bar; painted with the background it disappears,
+                #and the only thing left on that column is the pointer
+                ETERNALIZE_FZF_OPTS="${ETERNALIZE_FZF_OPTS},gutter:${_CZ_N_BG:-0}"
+            fi
+
+            #--cycle wraps around at both ends. ETERNALIZE_FZF_JUMP paints a
+            #number on every line you can see and the next key takes that one:
+            #the numbers are the positions of the list as it stands, so they
+            #stay right no matter how much you have typed. Printing them
+            #permanently is what does not work — fzf can only stamp an item
+            #with its position in the input, and that stops matching the screen
+            #at the first keystroke. --sync because the list opens already
+            #filtered by whatever you had typed, and a key pressed before that
+            #settles would find nothing to label
+            _eternalize_search__pick="$(tac "${ETERNALIZE_PATH}" | awk '!seen[$0]++' |
+                fzf --no-sort --cycle --sync --height="40%" --prompt="eternalize> " \
+                    --header="${ETERNALIZE_FZF_JUMP}: number the screen, then pick" \
+                    --query="${READLINE_LINE}" \
+                    --jump-labels="123456789abcdefghijklmnopqrstuvwxyz" \
+                    --bind="${ETERNALIZE_FZF_JUMP}:jump-accept" ${ETERNALIZE_FZF_OPTS})"
+        else
+            _eternalize_search__menu="$(tac "${ETERNALIZE_PATH}" | awk '!seen[$0]++' |
+                grep -i -F -e "${READLINE_LINE}" | head -15 | nl -ba -w2 -s" ")"
+            [ -n "${_eternalize_search__menu}" ] || return 0
+            printf "\n%s\n%s" "${_eternalize_search__menu}" "eternalize# " > /dev/tty
+            read -r _eternalize_search__n < /dev/tty
+            _eternalize_search__pick="$(printf "%s\n" "${_eternalize_search__menu}" |
+                awk -v n="${_eternalize_search__n}" '$1 == n { sub(/^ *[0-9]+ /, ""); print }')"
+        fi
+
+        [ -n "${_eternalize_search__pick}" ] || return 0
+        READLINE_LINE="${_eternalize_search__pick}"
+        READLINE_POINT="${#READLINE_LINE}"
+    }
+    bind -x "${ETERNALIZE_BIND}: _eternalize_search" 2>/dev/null
+    fi ;;
+esac
 
 if [ -z "${EDITOR}" ]; then
     _shundle_expose eternalize="vi ${ETERNALIZE_PATH}"

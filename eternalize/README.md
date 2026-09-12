@@ -34,6 +34,74 @@ After completing the installation, no action is required, it will start logging 
 
 For looking at the eternal historial the `eternalize` alias is provided, it will open the eternal history file in the configured $EDITOR.
 
+**ETERNALIZE_BIND**
+
+The readline key sequence that searches the eternal file, empty by default so
+readline's own `Ctrl-R` keeps working until you say otherwise:
+
+   ```sh
+   ETERNALIZE_BIND='"\C-r"'     #or '"\C-x\C-r"' to keep both
+   ```
+
+`Ctrl-R` searches only the current shell's memory; this one searches every
+command every session ever ran. The pick lands in the edit buffer, cursor at
+the end, for you to edit or run — `bind -x` is what allows that, by letting the
+function write `READLINE_LINE`. With [fzf](https://github.com/junegunn/fzf)
+installed it is a fuzzy finder seeded with whatever you had typed; without it,
+a numbered menu of the 15 most recent unique matches. Bash only.
+
+**ETERNALIZE_FZF_JUMP**
+
+Inside the finder, this key **puts a number on every line you can see** and the
+next key takes that one:
+
+   ```sh
+   ETERNALIZE_FZF_JUMP="ctrl-s"     #s for show
+   ```
+
+The numbers are the positions of the list as it stands, so they keep pointing
+at what you are looking at however much you have typed — which is why they are
+not printed permanently: fzf can only stamp a line with its position in the
+*input*, and that stops matching the screen at the first keystroke.
+
+`Ctrl-S` is XON/XOFF in a terminal, but fzf reads in raw mode so it gets there.
+A multiplexer that insists on flow control is the case for changing this.
+
+**ETERNALIZE_FZF_OPTS**
+
+How the finder looks. Unset — the default — it is built on first use out of
+[colorize](https://github.com/javier-lopez/shundle-plugins/tree/master/colorize)'s
+slot numbers, so the finder wears the prompt's colours without ever knowing
+which prompt is active. Change your `ps` theme or your `.theme` and the finder
+follows; without colorize it falls back to the ANSI defaults.
+
+| in the finder | takes the slot of | which in `yujie` is |
+|---------------|-------------------|---------------------|
+| the `eternalize>` prompt | `_CZ_N_USER`, the one `\u` wears | blue |
+| what your search matched | `_CZ_N_ACCENT` — the accent is what stands out, and that is what this is | yellow |
+| the pointer, **and the numbers** | `_CZ_N_OK`, the go-ahead colour | green |
+| the counter, the header, the border | `_CZ_N_DIM` | grey |
+
+fzf has no colour of its own for the jump labels — it paints them with the
+pointer's — so that one entry decides both.
+
+Colours are slot numbers and never hex — `-1` is the terminal's own — so:
+
+   ```sh
+   ETERNALIZE_FZF_OPTS="--color=16,fg:-1,bg:-1,hl:2,prompt:4,pointer:3"
+   ETERNALIZE_FZF_OPTS=""           #or hand it over to your FZF_DEFAULT_OPTS
+   ```
+
+eternalize installs nothing. fzf ships a static binary per platform, so if you
+want the fuzzy finder, fetch it from your shundle configuration with a
+`PostInstall` line of your own — pick the asset that matches your machine:
+
+   ```sh
+   Bundle='gh:javier-lopez/shundle-plugins/eternalize'
+       ETERNALIZE_BIND='"\C-r"'
+       PostInstall='wget -qO- https://github.com/junegunn/fzf/releases/download/v0.74.4/fzf-0.74.4-linux_amd64.tar.gz | tar xz -C ~/.local/bin fzf && chmod +x ~/.local/bin/fzf'
+   ```
+
 **ETERNALIZE_IGNORE**
 
 Commands not worth an eternal line, as glob patterns separated by commas:
