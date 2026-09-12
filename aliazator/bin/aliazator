@@ -25,6 +25,7 @@ _usage()
     printf "%s\\n" "  list    [subset]  list available plugins"
     printf "%s\\n" "  search  [pattern] look up where an alias is been sourced from, or if's managed by aliazator"
     printf "%s\\n" "  stats   [subset]  count how often aliases are used in the shell history"
+    printf "%s\\n" "  suggest [n]       propose aliases for the repeated commands that have none"
     return 1
 }
 
@@ -206,6 +207,105 @@ _aliazator_stats()
         }' "${_aliazator_stats__history}" "${@}"
 }
 
+_aliazator_suggest_free()
+{   #a name is free when nothing in this shell answers to it yet
+    [ -z "${1}" ] && return 1
+    alias "${1}" >/dev/null 2>&1 && return 1
+    command -v "${1}" >/dev/null 2>&1 && return 1
+    case ",${_aliazator_suggest__taken}," in *",${1},"*) return 1 ;; esac
+    return 0
+}
+
+_aliazator_suggest()
+{   #the reverse of 'stats': the command shapes repeated in the history that no
+    #alias covers yet. Groups by the first two words, so 'git push origin a'
+    #and 'git push origin b' are one habit, and proposes a name built from
+    #their initials, skipping the ones already taken in this shell. It only
+    #prints: paste the lines you want into the custom set (~/.aliases)
+    _aliazator_suggest__history="${ETERNALIZE_PATH}"
+    [ -r "${_aliazator_suggest__history}" ] || _aliazator_suggest__history="${HISTFILE:-${HOME}/.bash_history}"
+    if [ ! -r "${_aliazator_suggest__history}" ]; then
+        printf "%s\\n" "aliazator: no readable history (ETERNALIZE_PATH or HISTFILE)" >&2
+        return 1
+    fi
+
+    _aliazator_suggest__top="${1:-15}"
+    case "${_aliazator_suggest__top}" in
+        ''|*[!0-9]*) printf "%s\\n" "aliazator: 'suggest [n]' takes a number" >&2; return 1 ;;
+    esac
+
+    printf "%s\\n" "history: ${_aliazator_suggest__history}"
+    _aliazator_suggest__taken=""
+    #alias files first: awk needs to know what is covered before it reads the
+    #history. 3 uses is the floor, and a shape under 10 characters saves nothing
+    awk -v hist="${_aliazator_suggest__history}" '
+        FILENAME != hist {
+            if ($0 !~ /^[ \t]*alias /) next
+            name = $0; sub(/^[ \t]*alias (-- )?/, "", name)
+            value = name; sub(/=.*/, "", name)
+            sub(/^[^=]*=["\047]?/, "", value); sub(/["\047][ \t]*(#.*)?$/, "", value)
+            covered[name] = 1
+            m = split(value, w, /[ \t]+/)
+            if (m > 0) shape[(m > 1) ? w[1] " " w[2] : w[1]] = name
+            next
+        }
+        {
+            n = split($0, seg, /&&|\|\||;|\|/)
+            for (i = 1; i <= n; i++) {
+                s = seg[i]; sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s)
+                m = split(s, w, /[ \t]+/)
+                if (m == 0 || w[1] == "") continue
+                f = (w[1] == "sudo" && m > 1) ? 2 : 1
+                if (w[f] in covered) continue
+                key = (m > f) ? w[f] " " w[f + 1] : w[f]
+                if (key in shape) continue
+                if (length(key) < 10) continue
+                #a quote, a paren or an '=' means this is a fragment of a
+                #multi-line entry, not a command the shell ever saw
+                if (key ~ /[\047"(\[${}=]/) continue
+                uses[key]++
+                if (sample[key] == "" || length(s) < length(sample[key])) sample[key] = s
+            }
+        }
+        END { for (k in uses) if (uses[k] >= 3) printf "%d\t%s\t%s\n", uses[k], k, sample[k] }
+    ' "${ALIAZATOR_PATH}"/default/*.aliases "${ALIAZATOR_PATH}"/extra/*.aliases \
+      "${_aliazator_suggest__history}" | sort -k1,1nr | head -n "${_aliazator_suggest__top}" |
+    while IFS="	" read -r _aliazator_suggest__uses _aliazator_suggest__key _aliazator_suggest__sample; do
+        #the shape has to start with something this machine can actually run
+        command -v "${_aliazator_suggest__key%% *}" >/dev/null 2>&1 || continue
+
+        _aliazator_suggest__one="${_aliazator_suggest__key%% *}"
+        _aliazator_suggest__two="${_aliazator_suggest__key#* }"
+        [ X"${_aliazator_suggest__two}" = X"${_aliazator_suggest__key}" ] && _aliazator_suggest__two=""
+        #a path contributes its last component: ./scripts/run.sh -> run.sh -> r
+        #lowercase: a name that needs shift is a name you will not type
+        _aliazator_suggest__one="$(printf "%s" "${_aliazator_suggest__one##*/}" | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z')"
+        _aliazator_suggest__two="$(printf "%s" "${_aliazator_suggest__two##*/}" | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z')"
+        _aliazator_suggest__name="$(printf "%.1s%.1s" "${_aliazator_suggest__one}" "${_aliazator_suggest__two}")"
+
+        #a taken name grows by one more letter of the second word, up to 4
+        _aliazator_suggest__char="2"
+        while ! _aliazator_suggest_free "${_aliazator_suggest__name}"; do
+            _aliazator_suggest__next="$(printf "%s" "${_aliazator_suggest__two}" | cut -c"${_aliazator_suggest__char}")"
+            if [ -z "${_aliazator_suggest__next}" ] || [ "${_aliazator_suggest__char}" -gt "4" ]; then
+                _aliazator_suggest__name=""; break
+            fi
+            _aliazator_suggest__name="${_aliazator_suggest__name}${_aliazator_suggest__next}"
+            _aliazator_suggest__char="$((_aliazator_suggest__char + 1))"
+        done
+
+        if [ -z "${_aliazator_suggest__name}" ]; then
+            printf "%6d  %-34s #every short name is taken\\n" \
+                "${_aliazator_suggest__uses}" "${_aliazator_suggest__key}"
+        else
+            _aliazator_suggest__taken="${_aliazator_suggest__taken}${_aliazator_suggest__name},"
+            printf "%6d  %-34s #e.g. %s\\n" "${_aliazator_suggest__uses}" \
+                "alias ${_aliazator_suggest__name}='${_aliazator_suggest__key}'" \
+                "${_aliazator_suggest__sample}"
+        fi
+    done
+}
+
 if [ "${#}" -lt "1" ]; then
    _usage
 else
@@ -215,6 +315,7 @@ else
         l*) _aliazator_list    "${2}";;
         d*) _aliazator_disable "${2}";;
         st*) _aliazator_stats  "${2}";;
+        su*) _aliazator_suggest "${2}";;
         s*) _aliazator_search  "${2}";;
         e*) . "${ALIAZATOR_PATH}/../bin/aliazator-enable" "${2}" ;;
         *) _usage ;;

@@ -129,6 +129,27 @@ first:
    $ aliazator stats git
    ```
 
+### Which aliases are missing
+
+`aliazator suggest [n]` is the reverse of `stats`: it reads the same history and
+lists the command shapes you repeat that no alias covers, most repeated first.
+It groups by the first two words, so `git push origin a` and `git push origin b`
+count as one habit, and it proposes a name from their initials, growing it by
+one letter while the name is taken by an alias, a command or a function in this
+shell. A shape needs 3 uses and 10 characters to show up; the word after `sudo`
+counts as the command, so `sudo apt install` suggests an alias for
+`apt install` (with `alias sudo='sudo '` loaded, `sudo <alias>` still expands).
+
+It never writes: every line is ready to paste into the `custom` set
+(`~/.aliases`).
+
+   ```
+   $ aliazator suggest
+   history: /home/m/.eternalize-data
+      206  alias br='bash scripts/run.sh'     #e.g. bash scripts/run.sh
+       48  alias dsto='docker stop'           #e.g. docker stop
+   ```
+
 Command lookups ignore WSL's Windows directories (`/mnt/<drive>/...` in
 `PATH`): a failed lookup costs ~40ms there against ~0.1ms in Linux
 directories, and aliazator runs hundreds of them.
