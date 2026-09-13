@@ -53,22 +53,6 @@ Colorthemes are separated by category:
  2. **theme**: define the general colors for your terminal
  3. **utils**: set a theme for special utilities such as `ls`, `less`, `grep`, etc
 
-The `modern` utils set adds the newer tools — `eza`, `bat`, `delta`, `rg` — on
-top of whichever classic set you already use, dressing each in the same slot
-numbers the prompt wears. It installs nothing and defines no alias: a static
-binary is a per-machine decision, so fetch the ones you want from your own
-shundle configuration, and naming commands is
-[aliazator](https://github.com/javier-lopez/shundle-plugins/tree/master/aliazator)'s
-job. Whatever is not installed leaves its variables unset and the classic tool
-keeps working:
-
-   ```sh
-   Bundle="github:javier-lopez/shundle-plugins/colorize"
-       COLORIZE_UTILS="modern"
-       COLORIZE_UTILS_BASE="sky"   #the classic set it builds on
-       PostInstall='wget -qO- https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz | tar xz -C ~/.local/bin ./eza && chmod +x ~/.local/bin/eza'
-   ```
-
 Once you decide which theme to use, define `COLORIZE_PS`, `COLORIZE_THEME` and `COLORIZE_UTILS` in your shell configuration file (~/.bashrc for bash, .zshrc for zsh and so on):
 
    ```sh
