@@ -1,0 +1,80 @@
+#!/bin/sh
+
+_eternalize_usage()
+{
+    printf "%s\\n" "Usage: eternalize [OPTION]"
+    printf "\\n"
+    printf "%s\\n" "  edit          open the eternal file in \$EDITOR (the default)"
+    printf "%s\\n" "  stats [n]     the shape of everything you have ever typed"
+    return 1
+}
+
+_eternalize_edit()
+{
+    if [ -n "${EDITOR}" ] && command -v "${EDITOR}" >/dev/null 2>&1; then
+         "${EDITOR}" "${ETERNALIZE_PATH}"
+    else vi "${ETERNALIZE_PATH}"; fi
+}
+
+_eternalize_stats()
+{   #what the eternal file can answer today: how much you repeat yourself, and
+    #how concentrated that is. No heatmap by hour or by weekday — the file
+    #holds commands and nothing else, so there is no time to plot. Adding one
+    #means a parallel file, the way the directory would be added
+    [ -r "${ETERNALIZE_PATH}" ] || {
+        printf "%s\\n" "eternalize: cannot read ${ETERNALIZE_PATH}" >&2; return 1; }
+
+    _eternalize_stats__n="${1:-12}"
+    case "${_eternalize_stats__n}" in
+        ''|*[!0-9]*) printf "%s\\n" "eternalize: 'stats [n]' takes a number" >&2; return 1 ;;
+    esac
+
+    awk -v top="${_eternalize_stats__n}" '
+        {
+            total++
+            line[$0]++
+            #the command, not the line: what you reach for, however you called it
+            c = $1
+            if (c == "sudo" && NF > 1) c = $2
+            if (c != "") { cmd[c]++; if (cmd[c] > max) max = cmd[c] }
+        }
+        END {
+            if (total == 0) { print "eternalize: the file is empty"; exit }
+            for (l in line) uniq++
+            for (c in cmd) { ncmd++; n = ++i; k[n] = c }
+
+            #the top, by hand: sorting in awk without asort() is one pass per
+            #line printed, and the list is short
+            printf "%d commands, %d different lines (you repeat yourself %.1f times over)\n\n",
+                   total, uniq, total / uniq
+
+            shown = 0; covered = 0
+            while (shown < top && shown < ncmd) {
+                best = ""; bestn = -1
+                for (n = 1; n <= ncmd; n++) {
+                    c = k[n]
+                    if (!taken[c] && cmd[c] > bestn) { bestn = cmd[c]; best = c }
+                }
+                if (best == "") break
+                taken[best] = 1; shown++; covered += bestn
+                bar = ""
+                w = int(bestn * 28 / max); if (w < 1) w = 1
+                while (length(bar) < w) bar = bar "|"
+                printf "  %6d  %-14s %s\n", bestn, substr(best, 1, 14), bar
+            }
+            printf "\n%d different commands; the top %d are %.0f%% of everything you type\n",
+                   ncmd, shown, covered * 100 / total
+        }' "${ETERNALIZE_PATH}"
+}
+
+if [ "${#}" -lt "1" ]; then
+    _eternalize_edit
+else
+    case "${1}" in
+        st*) _eternalize_stats "${2}" ;;
+        e*)  _eternalize_edit ;;
+        *)   _eternalize_usage ;;
+    esac
+fi
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :

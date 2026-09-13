@@ -34,6 +34,32 @@ After completing the installation, no action is required, it will start logging 
 
 For looking at the eternal historial the `eternalize` alias is provided, it will open the eternal history file in the configured $EDITOR.
 
+**eternalize stats**
+
+The shape of everything you have ever typed:
+
+   ```
+   $ eternalize stats
+   3044 commands, 1212 different lines (you repeat yourself 2.5 times over)
+
+        423  docker         ||||||||||||||||||||||||||||
+        225  gbr            ||||||||||||||
+        218  gll            ||||||||||||||
+        ...
+   246 different commands; the top 12 are 60% of everything you type
+   ```
+
+That last line is the one that pays: when a handful of names carry most of your
+typing, an alias for each is worth more than a hundred you never reach for —
+which is exactly what
+[aliazator](https://github.com/javier-lopez/shundle-plugins/tree/master/aliazator)'s
+`suggest` and `teach` work on. The word after `sudo` counts as the command, so
+`sudo docker ps` lands on `docker` where it belongs.
+
+There is no breakdown by hour or by weekday: the file holds commands and
+nothing else, so there is no time to plot. Recording one means a second file
+alongside this one, left for when it buys more than one report.
+
 **ETERNALIZE_BIND**
 
 The readline key sequence that searches the eternal file, empty by default so
