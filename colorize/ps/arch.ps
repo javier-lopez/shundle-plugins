@@ -1,11 +1,11 @@
 #arch.ps
 #http://maketecheasier.com/8-useful-and-interesting-bash-prompts/2009/09/04
 
-_cz_use status files
+_cz_use status files ssh
 
 [ -n "${_CZ_ROOT}" ] && _cz_arch_who="${_CZ_WHOAMI}\h" || _cz_arch_who="${_CZ_WHOAMI}\u@\h"
 
-PS1="\n${_CZ_WHITE}┌(${_cz_arch_who}${_CZ_WHITE})─(\${_CZ_MARK}${_CZ_WHITE})─(${_CZ_BLUE}\@ \d${_CZ_WHITE})${_CZ_WHITE}\n\
+PS1="\n${_CZ_WHITE}┌(\${_CZ_SSH}${_cz_arch_who}${_CZ_WHITE})─(\${_CZ_MARK}${_CZ_WHITE})─(${_CZ_BLUE}\@ \d${_CZ_WHITE})${_CZ_WHITE}\n\
 └─(${_CZ_GREEN}\w${_CZ_WHITE})─(${_CZ_GREEN}\${_CZ_FILES}${_CZ_WHITE})─> ${_CZ_RESET}"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

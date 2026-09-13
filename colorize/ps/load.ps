@@ -5,13 +5,13 @@
 #red — because anything past yellow is the machine asking for help.
 #It used to cost uptime|sed, bc and up to three tput calls on every prompt;
 #the core reads /proc/loadavg and picks the colour with arithmetic
-_cz_use load
+_cz_use load ssh
 
 #these two are constants: tput runs once, at startup, not per prompt
 CYAN="\[$(tput bold ; tput setaf 6)\]"
 NOCOLOUR="\[$(tput sgr0)\]"
 
 PS1="[\${_CZ_LOAD}${NOCOLOUR}][\D{%H%M}]\
- \u:${CYAN}\w${NOCOLOUR}\$> "
+ \${_CZ_SSH}\u:${CYAN}\w${NOCOLOUR}\$> "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

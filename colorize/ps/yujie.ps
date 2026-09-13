@@ -1,8 +1,8 @@
 #yujie.ps
 
-_cz_use status pwd git chroot
+_cz_use status pwd git chroot ssh elapsed
 
-PS1="${_CZ_RESET}╔═\${_CZ_CHROOT}[${_CZ_DIM}\D{%R %a(%d).%b}${_CZ_RESET}] ${_CZ_USER}\u${_CZ_RESET}@${_CZ_HOST}\h${_CZ_RESET} [\${_CZ_STATUS}${_CZ_RESET}:${_CZ_PATH}\${_CZ_PWD}${_CZ_RESET}]\${_CZ_GIT}
+PS1="${_CZ_RESET}╔═\${_CZ_CHROOT}[${_CZ_DIM}\D{%R %a(%d).%b}${_CZ_RESET}] \${_CZ_SSH}${_CZ_USER}\u${_CZ_RESET}@${_CZ_HOST}\h${_CZ_RESET} [\${_CZ_STATUS}\${_CZ_ELAPSED}${_CZ_RESET}:${_CZ_PATH}\${_CZ_PWD}${_CZ_RESET}]\${_CZ_GIT}
 ╚═[\$] "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

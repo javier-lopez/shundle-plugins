@@ -7,9 +7,9 @@
 #so the empty case is an answer and _cz_status must not colour it
 _CZ_OK="" _CZ_ERR=""
 _CZ_MARK_OK="" _CZ_MARK_ERR="[${_CZ_WHITE}✗${_cz_it}]─"
-_cz_use status
+_cz_use status ssh
 
-PS1="${_cz_it}┌─\${_CZ_MARK}[${_CZ_WHITE}\t${_cz_it}]─[${_CZ_WHITE}\u@\h${_cz_it}]\n\
+PS1="${_cz_it}┌─\${_CZ_MARK}[${_CZ_WHITE}\t${_cz_it}]─[\${_CZ_SSH}${_CZ_WHITE}\u@\h${_cz_it}]\n\
 └──> ${_CZ_WHITE}\W${_cz_it} \$ ${_CZ_WHITE}>>${_CZ_RESET} "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

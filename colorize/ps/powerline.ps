@@ -50,14 +50,14 @@ __powerline() {
         local BG_EXIT="$BG_GREEN"
         [ X"$_CZ_STATUS" = X"0" ] || BG_EXIT="$BG_RED"
 
-        PS1="$BG_BLUE$FG_BASE3 \w $RESET"
+        PS1="${_CZ_SSH}$BG_BLUE$FG_BASE3 \w $RESET"
         PS1+="$BG_CYAN$FG_BASE3$(__git_info)$RESET"
         PS1+="$BG_EXIT$FG_BASE3 $PS_SYMBOL $RESET "
     }
 
     # the exit colour and the branch are per prompt, not per shell
     _CZ_OK="" _CZ_ERR=""
-    _cz_use status git
+    _cz_use status git ssh
     _cz_hook _ps1
     _ps1
 }

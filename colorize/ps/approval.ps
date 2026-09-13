@@ -1,8 +1,8 @@
 #approval.ps
 
 _CZ_MARK_OK=":)" _CZ_MARK_ERR=":("
-_cz_use status
+_cz_use status ssh
 
-PS1="${_CZ_OK}\u@\h ${_CZ_BLUE}\W \${_CZ_MARK} ${_CZ_BLUE}\$${_CZ_RESET} "
+PS1="\${_CZ_SSH}${_CZ_OK}\u@\h ${_CZ_BLUE}\W \${_CZ_MARK} ${_CZ_BLUE}\$${_CZ_RESET} "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

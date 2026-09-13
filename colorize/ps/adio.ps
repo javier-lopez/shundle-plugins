@@ -437,6 +437,8 @@ __git_ps1 ()
     return $exit
 }
 
-export PS1='┌─[\[\e[38;5;32m\]\w\[\e[0m\]\[\e[38;5;240m\]$(__git_ps1 " (%s)")\[\e[0m\]]\n└─╼ '
+_cz_use ssh
+
+export PS1='┌─[${_CZ_SSH}\[\e[38;5;32m\]\w\[\e[0m\]\[\e[38;5;240m\]$(__git_ps1 " (%s)")\[\e[0m\]]\n└─╼ '
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

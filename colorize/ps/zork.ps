@@ -35,7 +35,7 @@ _zork_scm()
 #$VIMRUNTIME is an environment variable: it costs nothing and it cannot go stale
 [ -n "${VIMRUNTIME}" ] && _zork_vim="[$(_cz_color '0;36')vim shell${_CZ_RESET}]" || _zork_vim=""
 
-_cz_use git
+_cz_use git ssh
 _cz_hook _zork_scm
 
 case "${HOSTNAME}" in
@@ -47,7 +47,7 @@ esac
     _zork_user="$(_cz_color '01;31')\u$(_cz_color '00')" ||
     _zork_user="$(_cz_color '01;32')\u$(_cz_color '00')"
 
-PS1="┌─[${_zork_user}][${_zork_host}]\${_ZORK_SCM}[$(_cz_color '0;36')\w${_CZ_RESET}]${_zork_vim}
+PS1="┌─[\${_CZ_SSH}${_zork_user}][${_zork_host}]\${_ZORK_SCM}[$(_cz_color '0;36')\w${_CZ_RESET}]${_zork_vim}
 └─▪ "
 PS2="└─▪ "
 

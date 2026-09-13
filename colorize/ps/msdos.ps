@@ -15,9 +15,10 @@ _msdos_pwd()
     [ -z "${_MSDOS_PWD}" ] && _MSDOS_PWD="\\"
 }
 
+_cz_use ssh
 _cz_hook _msdos_pwd
 _msdos_pwd
 
-PS1="C:\${_MSDOS_PWD}\\> "
+PS1="\${_CZ_SSH}C:\${_MSDOS_PWD}\\> "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

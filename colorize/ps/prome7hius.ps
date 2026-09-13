@@ -1,12 +1,12 @@
 #prome7hius.ps
 
-_cz_use files
+_cz_use files ssh
 
 #the original wrote \[\033[01;37m\u\033[01;37m\], with \u trapped inside the
 #zero-width brackets: bash then counted the username as taking no columns
 _cz_p7_dim="$(_cz_color '0;37')"
 
-PS1="${_CZ_WHITE}┌─[\t]──[${_CZ_WHITE}\u${_CZ_WHITE}]──[${_cz_p7_dim}${HOSTNAME%%.*}${_CZ_WHITE}]:\w\$${_CZ_WHITE}\n\
+PS1="${_CZ_WHITE}┌─[\t]──[\${_CZ_SSH}${_CZ_WHITE}\u${_CZ_WHITE}]──[${_cz_p7_dim}${HOSTNAME%%.*}${_CZ_WHITE}]:\w\$${_CZ_WHITE}\n\
 ${_CZ_WHITE}└──${_CZ_WHITE}($(_cz_color '32;1')\${_CZ_FILES}${_CZ_WHITE})>>${_CZ_RESET}"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

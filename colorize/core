@@ -61,6 +61,7 @@ _CZ_WHITE="${_cz__s}${_cz__e}[1;37m${_cz__x}"
 [ -z "${_CZ_N_SEP}" ]    && _CZ_N_SEP="1"
 [ -z "${_CZ_N_ABBR}" ]   && _CZ_N_ABBR="7"
 [ -z "${_CZ_N_ACCENT}" ] && _CZ_N_ACCENT="3"
+[ -z "${_CZ_N_ALERT}" ]  && _CZ_N_ALERT="1"
 [ -z "${_CZ_N_DIM}" ]    && _CZ_N_DIM="8"
 #the slot the terminal paints as background. No prompt draws with it — it is
 #here for the programs that have to draw something and want it not to be seen.
@@ -76,6 +77,9 @@ _CZ_WHITE="${_cz__s}${_cz__e}[1;37m${_cz__x}"
 [ -z "${_CZ_SEP}" ]    && _CZ_SEP="${_cz__s}${_cz__e}[1;3${_CZ_N_SEP}m${_cz__x}"
 [ -z "${_CZ_ABBR}" ]   && _CZ_ABBR="${_cz__s}${_cz__e}[1;3${_CZ_N_ABBR}m${_cz__x}"
 [ -z "${_CZ_ACCENT}" ] && _CZ_ACCENT="${_cz__s}${_cz__e}[1;3${_CZ_N_ACCENT}m${_cz__x}"
+#not _CZ_ERR: that one means the last command failed. This one means look
+#where you are standing before you run the next one
+[ -z "${_CZ_ALERT}" ]  && _CZ_ALERT="${_cz__s}${_cz__e}[1;3${_CZ_N_ALERT}m${_cz__x}"
 
 #root deserves a different colour, and two themes were computing it by hand
 #_CZ_ROOT is the identity, _CZ_WHOAMI the colour: a theme that only repaints
@@ -243,6 +247,41 @@ _cz_load()
     _CZ_LOAD="${_cz__s}${_cz__e}[${_cz_load__c}m${_cz__x}${_cz_load__1}"
 }
 
+_cz_elapsed()
+{   #how long the last command took, shown only past COLORIZE_ELAPSED_MIN.
+    #The clock starts in PS0, which bash expands after reading your command
+    #line and right before running it — and the arithmetic inside an expansion
+    #assigns in this very shell, so no process and no trap. A DEBUG trap is
+    #the usual way and it is the wrong one: DEBUG fires for every entry of
+    #PROMPT_COMMAND too, so the naive version ends up timing how long you took
+    #to type, and installing a global trap steps on whatever else uses it
+    _CZ_ELAPSED=""
+    [ -z "${_cz_elapsed__t0}" ] && return 0
+    _cz_elapsed__d=$(( SECONDS - _cz_elapsed__t0 ))
+    _cz_elapsed__t0=""
+    [ "${_cz_elapsed__d}" -lt "${COLORIZE_ELAPSED_MIN}" ] && return 0
+
+    _cz_elapsed__h=$(( _cz_elapsed__d / 3600 ))
+    _cz_elapsed__m=$(( _cz_elapsed__d % 3600 / 60 ))
+    _cz_elapsed__s=$(( _cz_elapsed__d % 60 ))
+    if   [ "${_cz_elapsed__h}" -gt 0 ]; then _cz_elapsed__v="${_cz_elapsed__h}h${_cz_elapsed__m}m"
+    elif [ "${_cz_elapsed__m}" -gt 0 ]; then _cz_elapsed__v="${_cz_elapsed__m}m${_cz_elapsed__s}s"
+    else _cz_elapsed__v="${_cz_elapsed__s}s"; fi
+
+    #empty most of the time, so it closes its own colour
+    _CZ_ELAPSED="${_CZ_ELAPSED_PRE-" ${_CZ_DIM}"}${_cz_elapsed__v}${_CZ_ELAPSED_POST-"${_CZ_RESET}"}"
+}
+
+_cz_ssh()
+{   #static: you cannot ssh out of the shell you are already in. sshd puts
+    #these in the environment, so knowing costs nothing — and a prompt that
+    #looks the same on your laptop and on a production node is how a command
+    #ends up running on the wrong machine
+    if [ -n "${SSH_CONNECTION}" ] || [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
+         _CZ_SSH="${_CZ_SSH_PRE-"${_CZ_ALERT}"}${_CZ_SSH_MARK}${_CZ_SSH_POST-"${_CZ_RESET} "}"
+    else _CZ_SSH=""; fi
+}
+
 _cz_chroot()
 {   #static: the chroot you are in does not change under a running shell
     [ -z "${debian_chroot}" ] && [ -r /etc/debian_chroot ] &&
@@ -262,6 +301,7 @@ _cz_prompt()
     [ -n "${_CZ_USE_GIT}" ]    && _cz_git
     [ -n "${_CZ_USE_FILES}" ]  && _cz_files
     [ -n "${_CZ_USE_LOAD}" ]   && _cz_load
+    [ -n "${_CZ_USE_ELAPSED}" ] && _cz_elapsed
     return 0
 }
 
@@ -298,6 +338,11 @@ _cz_enabled()
              fi ;;
         files) command -v ls >/dev/null 2>&1 || return 1 ;;
         load)  [ -r /proc/loadavg ] || return 1 ;;
+        #PS0 arrived in bash 4.4, and without it there is no honest way to
+        #know when your command started
+        elapsed) [ -n "${BASH_VERSINFO}" ] || return 1
+                 [ "${BASH_VERSINFO}" -gt 4 ] ||
+                 { [ "${BASH_VERSINFO}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -ge 4 ]; } || return 1 ;;
     esac
     return 0
 }
@@ -313,6 +358,14 @@ _cz_use()
             git)    _CZ_USE_GIT="1" ;;
             files)  _CZ_USE_FILES="1" ;;
             load)   _CZ_USE_LOAD="1" ;;
+            #the clock is armed here and read in _cz_prompt. Whatever PS0 you
+            #already had keeps working: this only prefixes it
+            elapsed) _CZ_USE_ELAPSED="1"
+                     case "${PS0}" in
+                         *_cz_elapsed__t0*) ;;
+                         *) PS0="\${_cz__pad:0:\$(( _cz_elapsed__t0 = SECONDS, 0 ))}${PS0}" ;;
+                     esac ;;
+            ssh)    _cz_ssh ;;
             chroot) _cz_chroot ;;
             *) printf "%s\\n" "colorize: unknown module '${_cz_use__what}'" >&2 ;;
         esac
@@ -334,6 +387,11 @@ _cz_use()
 #only when the command failed), and an empty string is an answer
 [ -z "${_CZ_MARK_OK+x}" ]  && _CZ_MARK_OK="✓"
 [ -z "${_CZ_MARK_ERR+x}" ] && _CZ_MARK_ERR="✗"
+[ -z "${_CZ_SSH_MARK+x}" ] && _CZ_SSH_MARK="«ssh»"
+[ -z "${COLORIZE_ELAPSED_MIN}" ] && COLORIZE_ELAPSED_MIN="5"
+#PS0's substring expansion is only evaluated when the variable is set, and an
+#empty one would skip the arithmetic that arms the clock
+_cz__pad="0"
 
 #set -x without a file and a line number is a wall of text: three themes each
 #carried this copy, and it belongs to no theme in particular

@@ -7,13 +7,13 @@
 #status | tail to decide the mark. The mark is COLORIZE_GITPROMPT=dirty now,
 #and it is the only mode that still runs git
 _CZ_GIT_PRE=" on ${_CZ_MAGENTA}" _CZ_GIT_POST="${_CZ_WHITE}"
-_cz_use git
+_cz_use git ssh
 
 # Change this symbol to something sweet.
 # (http://en.wikipedia.org/wiki/Unicode_symbols)
 symbol="⚡ "
 
-PS1="${_CZ_RED}\u ${_CZ_WHITE}in ${_CZ_GREEN}\w${_CZ_WHITE}\${_CZ_GIT}\n${symbol}$(_cz_color '')"
+PS1="\${_CZ_SSH}${_CZ_RED}\u ${_CZ_WHITE}in ${_CZ_GREEN}\w${_CZ_WHITE}\${_CZ_GIT}\n${symbol}$(_cz_color '')"
 PS2="${_CZ_YELLOW}→ $(_cz_color '')"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

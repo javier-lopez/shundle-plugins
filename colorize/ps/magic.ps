@@ -9,8 +9,9 @@ _magic_next() {
 
 #not PROMPT_COMMAND by hand: _cz_hook keeps the core's entry first, which is
 #the only one that still sees the exit status of what you just ran
+_cz_use ssh
 _cz_hook _magic_next
 
-PS1="\$${_CZ_RESET} "
+PS1="\${_CZ_SSH}\$${_CZ_RESET} "
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

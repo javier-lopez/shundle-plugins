@@ -103,6 +103,7 @@ can move it:
 | `_CZ_PATH` / `_CZ_HOME` / `_CZ_SEP` | a path, its `~`, the `/` between | green / magenta / red |
 | `_CZ_ABBR` | a path component that had to be cut | white |
 | `_CZ_ACCENT` | whatever the theme wants to stand out | yellow |
+| `_CZ_ALERT` | look where you are standing before running the next one — not `_CZ_ERR`, which means the last one failed | red |
 | `_CZ_WHOAMI` | `\u`, but red when that user is root | `_CZ_USER` |
 | `_CZ_ROOT` | not a colour: set when you are root | empty |
 
@@ -133,6 +134,8 @@ prompt without ever knowing which prompt is active —
 | `files`  | `_CZ_FILES`, `"24 files, 228Kb"`                           | one `ls`      |
 | `chroot` | `_CZ_CHROOT`, computed once                                | nothing       |
 | `load`   | `_CZ_LOAD`, the 1-minute load already coloured by severity  | nothing       |
+| `ssh`    | `_CZ_SSH`, empty unless this shell came in over ssh; computed once | nothing |
+| `elapsed`| `_CZ_ELAPSED`, how long the last command took, empty below `COLORIZE_ELAPSED_MIN` seconds | nothing, needs bash ≥ 4.4 |
 
 Ask for everything the theme can draw. **The user decides which modules load**,
 with `COLORIZE_MODULES`; a module that is off, or whose commands are missing,
@@ -147,8 +150,20 @@ Customising what a segment looks like:
    ```sh
    _CZ_MARK_OK=":)" _CZ_MARK_ERR=":("       #or "" to show nothing on success
    _CZ_GIT_PRE=" on " _CZ_GIT_POST=""       #instead of " (branch)"
+   _CZ_SSH_MARK="[remote]"                  #instead of «ssh»
    COLORIZE_PWD_MAX=3                       #characters kept per middle component
+   COLORIZE_ELAPSED_MIN=30                  #say nothing under half a minute
    ```
+
+`ssh` and `elapsed` are the two worth explaining. A prompt that looks the same
+on your laptop and on a production node is how a command ends up running on
+the wrong machine: sshd already puts `SSH_CONNECTION` in the environment, so
+saying so costs nothing and `_CZ_N_ALERT` paints it. And `elapsed` starts its
+clock in `PS0` — bash expands it after reading your command line and just
+before running it, and the arithmetic inside an expansion assigns in that same
+shell. The usual `trap ... DEBUG` is the wrong tool: DEBUG fires for every
+entry of `PROMPT_COMMAND` as well, so it ends up timing how long you took to
+type, and a global trap steps on whatever else wanted one.
 
 A theme with a segment of its own writes it and registers it with
 `_cz_hook <function>`, rather than touching `PROMPT_COMMAND`: the core's entry
