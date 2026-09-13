@@ -12,8 +12,6 @@
 #===============================================================================
 #Don't modify this section directly, instead set options in your shell init file
 [ -z "${ALIAZATOR_PLUGINS}" ] && ALIAZATOR_PLUGINS="minimal"
-[ -z "${ALIAZATOR_CLOUD}" ]   && ALIAZATOR_CLOUD=""
-#TODO 03-11-2013 04:35 >> add support for http://alias.sh
 
 #===============================================================================
 #================================== Plugin =====================================
