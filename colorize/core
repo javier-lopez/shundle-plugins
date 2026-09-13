@@ -261,12 +261,25 @@ _cz_elapsed()
     _cz_elapsed__t0=""
     [ "${_cz_elapsed__d}" -lt "${COLORIZE_ELAPSED_MIN}" ] && return 0
 
-    _cz_elapsed__h=$(( _cz_elapsed__d / 3600 ))
+    #two units at most and never a zero one: "1m", not "1m0s"; "5d18h", not the
+    #138h53m that dropping days would give you. Past the hour the seconds stop
+    #being information, and a prompt is not a stopwatch
+    _cz_elapsed__dd=$(( _cz_elapsed__d / 86400 ))
+    _cz_elapsed__h=$(( _cz_elapsed__d % 86400 / 3600 ))
     _cz_elapsed__m=$(( _cz_elapsed__d % 3600 / 60 ))
     _cz_elapsed__s=$(( _cz_elapsed__d % 60 ))
-    if   [ "${_cz_elapsed__h}" -gt 0 ]; then _cz_elapsed__v="${_cz_elapsed__h}h${_cz_elapsed__m}m"
-    elif [ "${_cz_elapsed__m}" -gt 0 ]; then _cz_elapsed__v="${_cz_elapsed__m}m${_cz_elapsed__s}s"
-    else _cz_elapsed__v="${_cz_elapsed__s}s"; fi
+    if [ "${_cz_elapsed__dd}" -gt 0 ]; then
+        _cz_elapsed__v="${_cz_elapsed__dd}d"
+        [ "${_cz_elapsed__h}" -gt 0 ] && _cz_elapsed__v="${_cz_elapsed__v}${_cz_elapsed__h}h"
+    elif [ "${_cz_elapsed__h}" -gt 0 ]; then
+        _cz_elapsed__v="${_cz_elapsed__h}h"
+        [ "${_cz_elapsed__m}" -gt 0 ] && _cz_elapsed__v="${_cz_elapsed__v}${_cz_elapsed__m}m"
+    elif [ "${_cz_elapsed__m}" -gt 0 ]; then
+        _cz_elapsed__v="${_cz_elapsed__m}m"
+        [ "${_cz_elapsed__s}" -gt 0 ] && _cz_elapsed__v="${_cz_elapsed__v}${_cz_elapsed__s}s"
+    else
+        _cz_elapsed__v="${_cz_elapsed__s}s"
+    fi
 
     #empty most of the time, so it closes its own colour
     _CZ_ELAPSED="${_CZ_ELAPSED_PRE-" ${_CZ_DIM}"}${_cz_elapsed__v}${_CZ_ELAPSED_POST-"${_CZ_RESET}"}"
