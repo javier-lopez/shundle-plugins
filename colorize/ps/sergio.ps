@@ -37,7 +37,7 @@ prompt_command() {
 
 #it used to be PROMPT_COMMAND=prompt_command, which threw away whatever the
 #core and the other plugins had already put there
-_cz_use ssh
+_cz_use ssh elapsed
 _cz_hook prompt_command
 
 #   Because most of the action goes on in the blue bar at the top of the
@@ -53,7 +53,7 @@ $PromLIGHT_GREEN\$PromNewPWD\033[K  \
 \033[0;\${PromCurDateLoc}H$PromYELLOW\${PromCurDate} \
 \033[K\
 \033[u\033[1A\033[1B\
-$PromLIGHT_CYAN\]\${_CZ_SSH}>\[$PromNO_COLOUR\] "
+$PromLIGHT_CYAN\]\${_CZ_SSH}\${_CZ_ELAPSED}>\[$PromNO_COLOUR\] "
 
 PS2="\[$PromLIGHT_CYAN\]-\[$PromNO_COLOUR\] "
 }

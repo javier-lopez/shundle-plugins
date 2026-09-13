@@ -3,9 +3,9 @@
 if [ -n "${BASH_VERSION}" ]; then
   #the branch in the running colour, nothing repainted and nothing to close
   _CZ_GIT_PRE=" (" _CZ_GIT_POST=")"
-  _cz_use chroot git ssh
+  _cz_use chroot git ssh elapsed
 
-  PS1="\${_CZ_CHROOT}\${_CZ_SSH}${_CZ_GREEN}\h${_CZ_RESET}:$(_cz_color '0;31')\w$(_cz_color '')\${_CZ_GIT} \$ "
+  PS1="\${_CZ_CHROOT}\${_CZ_SSH}${_CZ_GREEN}\h${_CZ_RESET}:$(_cz_color '0;31')\w$(_cz_color '')\${_CZ_GIT}\${_CZ_ELAPSED} \$ "
 
 elif [ -n "$ZSH_VERSION" ]; then
   # show git branch/tag, or name-rev if on detached head

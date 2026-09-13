@@ -437,8 +437,8 @@ __git_ps1 ()
     return $exit
 }
 
-_cz_use ssh
+_cz_use ssh elapsed
 
-export PS1='┌─[${_CZ_SSH}\[\e[38;5;32m\]\w\[\e[0m\]\[\e[38;5;240m\]$(__git_ps1 " (%s)")\[\e[0m\]]\n└─╼ '
+export PS1='┌─[${_CZ_SSH}\[\e[38;5;32m\]\w\[\e[0m\]\[\e[38;5;240m\]$(__git_ps1 " (%s)")\[\e[0m\]${_CZ_ELAPSED}]\n└─╼ '
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

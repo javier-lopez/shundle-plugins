@@ -5,10 +5,10 @@
 _CZ_OK="" _CZ_ERR=""
 _CZ_MARK_OK="$(_cz_color 37)Last Command Was Successfully Executed $(_cz_color 32)^_^${_CZ_RESET}"
 _CZ_MARK_ERR="$(_cz_color 37)Smeggin Hell !!! Last Command Was Unknown $(_cz_color 32)O_O${_CZ_RESET}"
-_cz_use status ssh
+_cz_use status ssh elapsed
 
 PS1="\n\${_CZ_SSH}$(_cz_color '32;1')It's \t$(_cz_color '33;1') Currently browsing ${_CZ_CYAN}\w \
-$(_cz_color '33;1')directory\n$(_cz_color '34;1')\${_CZ_MARK} \n\
+$(_cz_color '33;1')directory\n$(_cz_color '34;1')\${_CZ_MARK}\${_CZ_ELAPSED} \n\
 $(_cz_color 31)What is thy bidding, my master? \n\n$(_cz_color '34;1')"
 
 # vim: set ts=8 sw=4 tw=0 ft=sh :

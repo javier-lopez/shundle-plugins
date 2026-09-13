@@ -388,7 +388,9 @@ _cz_use()
 [ -z "${_CZ_MARK_OK+x}" ]  && _CZ_MARK_OK="✓"
 [ -z "${_CZ_MARK_ERR+x}" ] && _CZ_MARK_ERR="✗"
 [ -z "${_CZ_SSH_MARK+x}" ] && _CZ_SSH_MARK="«ssh»"
-[ -z "${COLORIZE_ELAPSED_MIN}" ] && COLORIZE_ELAPSED_MIN="5"
+#a minute: below that you were there watching it, and a number nobody reads is
+#just noise in the prompt
+[ -z "${COLORIZE_ELAPSED_MIN}" ] && COLORIZE_ELAPSED_MIN="60"
 #PS0's substring expansion is only evaluated when the variable is set, and an
 #empty one would skip the arithmetic that arms the clock
 _cz__pad="0"

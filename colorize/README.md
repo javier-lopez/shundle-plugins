@@ -135,7 +135,7 @@ prompt without ever knowing which prompt is active —
 | `chroot` | `_CZ_CHROOT`, computed once                                | nothing       |
 | `load`   | `_CZ_LOAD`, the 1-minute load already coloured by severity  | nothing       |
 | `ssh`    | `_CZ_SSH`, empty unless this shell came in over ssh; computed once | nothing |
-| `elapsed`| `_CZ_ELAPSED`, how long the last command took, empty below `COLORIZE_ELAPSED_MIN` seconds | nothing, needs bash ≥ 4.4 |
+| `elapsed`| `_CZ_ELAPSED`, how long the last command took, empty below `COLORIZE_ELAPSED_MIN` seconds (a minute by default) | nothing, needs bash ≥ 4.4 |
 
 Ask for everything the theme can draw. **The user decides which modules load**,
 with `COLORIZE_MODULES`; a module that is off, or whose commands are missing,
@@ -152,7 +152,7 @@ Customising what a segment looks like:
    _CZ_GIT_PRE=" on " _CZ_GIT_POST=""       #instead of " (branch)"
    _CZ_SSH_MARK="[remote]"                  #instead of «ssh»
    COLORIZE_PWD_MAX=3                       #characters kept per middle component
-   COLORIZE_ELAPSED_MIN=30                  #say nothing under half a minute
+   COLORIZE_ELAPSED_MIN=10                  #say it sooner than the default minute
    ```
 
 `ssh` and `elapsed` are the two worth explaining. A prompt that looks the same
