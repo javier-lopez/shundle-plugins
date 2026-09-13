@@ -150,6 +150,23 @@ It never writes: every line is ready to paste into the `custom` set
        48  alias dsto='docker stop'           #e.g. docker stop
    ```
 
+**teach**
+
+`aliazator teach [n]` is the third side of the same coin: an alias you have
+loaded and have **never** used, picked at random.
+
+   ```
+   $ aliazator teach
+     gpl          git pull                                     (git)
+
+   100 of your loaded aliases have never been used
+   ```
+
+Only from the sets loaded in this shell — teaching a name that nothing here
+answers to is worse than saying nothing. And it runs when you ask it to, never
+on its own: a shell that lectures you every time you open it stops being a
+place you want to be.
+
 Command lookups ignore WSL's Windows directories (`/mnt/<drive>/...` in
 `PATH`): a failed lookup costs ~40ms there against ~0.1ms in Linux
 directories, and aliazator runs hundreds of them.

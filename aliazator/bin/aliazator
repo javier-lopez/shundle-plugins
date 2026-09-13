@@ -26,6 +26,7 @@ _usage()
     printf "%s\\n" "  search  [pattern] look up where an alias is been sourced from, or if's managed by aliazator"
     printf "%s\\n" "  stats   [subset]  count how often aliases are used in the shell history"
     printf "%s\\n" "  suggest [n]       propose aliases for the repeated commands that have none"
+    printf "%s\\n" "  teach   [n]       show an alias you have loaded and never used"
     return 1
 }
 
@@ -207,6 +208,74 @@ _aliazator_stats()
         }' "${_aliazator_stats__history}" "${@}"
 }
 
+_aliazator_teach()
+{   #the other half of 'stats': an alias you have loaded and have never used.
+    #Only from the sets loaded in this shell, because teaching a name nothing
+    #here answers to is worse than saying nothing. It runs when you ask it to
+    #and never on its own — a shell that lectures you every time you open it
+    #stops being a place you want to be
+    _aliazator_teach__history="${ETERNALIZE_PATH}"
+    [ -r "${_aliazator_teach__history}" ] || _aliazator_teach__history="${HISTFILE:-${HOME}/.bash_history}"
+    if [ ! -r "${_aliazator_teach__history}" ]; then
+        printf "%s\\n" "aliazator: no readable history (ETERNALIZE_PATH or HISTFILE)" >&2
+        return 1
+    fi
+
+    _aliazator_teach__n="${1:-1}"
+    case "${_aliazator_teach__n}" in
+        ''|*[!0-9]*) printf "%s\\n" "aliazator: 'teach [n]' takes a number" >&2; return 1 ;;
+    esac
+
+    #awk's srand() seeds from the clock in SECONDS: two calls in the same
+    #second would teach you the same alias twice, which is the one thing this
+    #must not do. $$ is no good either — the file is sourced, so it is the
+    #shell's pid and never changes
+    _aliazator_teach__seed=""
+    if [ -r /dev/urandom ] && command -v od >/dev/null 2>&1; then
+        _aliazator_teach__seed="$(od -An -N3 -tu4 < /dev/urandom 2>/dev/null | tr -d ' 	')"
+    fi
+
+    set -- "${ALIAZATOR_PATH}"/default/*.aliases "${ALIAZATOR_PATH}"/extra/*.aliases
+    awk -v hist="${_aliazator_teach__history}" -v loaded=",${ALIAZATOR_PLUGINS_ARRAY}," \
+        -v want="${_aliazator_teach__n}" -v seed="${_aliazator_teach__seed}" '
+        FILENAME == hist {
+            #read exactly as stats does: every command position counts, and so
+            #does the word after sudo
+            n = split($0, seg, /&&|\|\||;|\|/)
+            for (i = 1; i <= n; i++) {
+                s = seg[i]; sub(/^[ \t]+/, "", s)
+                m = split(s, w, /[ \t]+/)
+                if (w[1] != "") uses[w[1]]++
+                if (w[1] == "sudo" && m > 1) uses[w[2]]++
+            }
+            next
+        }
+        /^[ \t]*alias / {
+            set = FILENAME; sub(/.*\//, "", set); sub(/\.aliases$/, "", set)
+            if (index(loaded, "," set ",") == 0) next
+            name = $0; sub(/^[ \t]*alias (-- )?/, "", name)
+            value = name; sub(/=.*/, "", name); sub(/^[^=]*=["\047]?/, "", value)
+            sub(/["\047][ \t]*(#.*)?$/, "", value)
+            if (uses[name] > 0) next
+            k = ++unused; nm[k] = name; vl[k] = value; st[k] = set
+        }
+        END {
+            if (unused == 0) { print "aliazator: every loaded alias has earned its keep"; exit }
+            if (want > unused) want = unused
+            if (seed != "") srand(seed); else srand()
+            #a random start and then forward: picking n of them stays linear
+            #instead of rolling the dice until it lands on a free slot
+            p = int(rand() * unused) + 1
+            for (i = 0; i < want; i++) {
+                while (seen[p]) p = p % unused + 1
+                seen[p] = 1
+                printf "  %-12s %-44s (%s)\n", nm[p], substr(vl[p], 1, 44), st[p]
+                p = p % unused + 1
+            }
+            printf "\n%d of your loaded aliases have never been used\n", unused
+        }' "${_aliazator_teach__history}" "${@}"
+}
+
 _aliazator_suggest_free()
 {   #a name is free when nothing in this shell answers to it yet
     [ -z "${1}" ] && return 1
@@ -316,6 +385,7 @@ else
         d*) _aliazator_disable "${2}";;
         st*) _aliazator_stats  "${2}";;
         su*) _aliazator_suggest "${2}";;
+        t*) _aliazator_teach   "${2}";;
         s*) _aliazator_search  "${2}";;
         e*) . "${ALIAZATOR_PATH}/../bin/aliazator-enable" "${2}" ;;
         *) _usage ;;
