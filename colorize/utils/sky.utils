@@ -10,7 +10,7 @@ export LESS_TERMCAP_ue="$(printf "\033[0m")"          # end underline
 export LESS_TERMCAP_us="$(printf "\033[4;38;5;146m")" # begin underline
 
 # grep
-export GREP_COLOR='1;35' #purple
+export GREP_COLORS='mt=1;35' #purple, GREP_COLOR (singular) is deprecated as GNU grep 3.x
 #Usage of GREP_OPTIONS is deprecated as GNU grep 2.25
 #export GREP_OPTIONS='--color=auto'
 
