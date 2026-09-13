@@ -26,34 +26,257 @@ _basename()
     #printf "%s" "${_basename__name}"
 }
 
+#The list is a gallery, not an inventory: 'atelierlakeside-dark' and
+#'brewer-dark' are two names that tell you nothing, and the whole reason to run
+#this command is to choose between them. Every line carries what its item looks
+#like, drawn with the item's own colors and never with the ones you have on.
+#
+#Colors here are not optional and do not follow SHUNDLE_ENV_COLOR: a preview
+#without color is a blank line.
+_CZ_L_HEAD='\033[1;34m'
+_CZ_L_ON='\033[1;31m'
+_CZ_L_DIM='\033[38;5;240m'
+_CZ_L_OFF='\033[0m'
+
+_colorize_list_render_ps()
+{   #a prompt does not exist until it is expanded, and ${PS1@P} is the only
+    #thing that expands one the way the shell about to draw it would. It runs
+    #in a child bash for two reasons: this script is SOURCED into your shell,
+    #so sixteen themes read here would leave you wearing the last one, and
+    #'@P' is a syntax error in every shell that is not bash 4.4
+    command -v bash >/dev/null 2>&1 || return 0
+    COLORIZE_PATH="${COLORIZE_PATH}" bash 2>/dev/null <<'_CZ_PS_EOF'
+[ -n "${BASH_VERSINFO}" ] || exit 0
+[ "${BASH_VERSINFO[0]}" -gt 4 ] ||
+    { [ "${BASH_VERSINFO[0]}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -ge 4 ]; } || exit 0
+
+. "${COLORIZE_PATH}/core" >/dev/null 2>&1
+#a prompt that takes two lines is drawn on two lines here too: flattening it
+#hides the one thing that makes it different. One row carries the whole thing,
+#so the break travels as a vertical tab - a byte a prompt has no use for - and
+#is opened back up at drawing time
+_cz_l__nl=$'\013'
+for _cz_l__f in "${COLORIZE_PATH}"/ps/*.ps; do
+    _cz_l__n="${_cz_l__f##*/}"; _cz_l__n="${_cz_l__n%.ps}"
+    #the parentheses are the point: a theme sets PS1, PS0, PROMPT_COMMAND and
+    #whatever else it fancies, and all of it dies with the subshell
+    (   . "${_cz_l__f}" >/dev/null 2>&1
+        _cz_prompt >/dev/null 2>&1
+        _cz_l__p="${PS1@P}"
+        printf '%s\t%s\n' "${_cz_l__n}" "${_cz_l__p//$'\n'/${_cz_l__nl}}" )
+done
+_CZ_PS_EOF
+}
+
+_colorize_list_render_theme()
+{   #the sixteen slots the theme would install, read straight out of it. Drawn
+    #in 24 bit because a theme IS its colors: rounding them to the 256 color
+    #cube turns neighbouring themes into the same picture. And never with
+    #slots 0-15, which is what the theme you already wear redefined
+    awk '
+    function hex(s,   i, c, d, v) {
+        v = 0; s = tolower(s)
+        for (i = 1; i <= length(s); i++) {
+            d = index("0123456789abcdef", substr(s, i, 1)) - 1
+            if (d < 0) return -1
+            v = v * 16 + d
+        }
+        return v
+    }
+    #half the themes write their bright half as color10="$color2". Resolving
+    #that is not a nicety: those six slots are where two themes of the same
+    #family stop looking alike
+    function deref(v,   hops) {
+        for (hops = 0; hops < 16 && substr(v, 1, 1) == "$"; hops++) {
+            gsub(/[${}]/, "", v); sub(/^color/, "", v)
+            v = raw[v + 0]
+        }
+        return v
+    }
+    function rgb(v,   p) {
+        v = deref(v)
+        if (split(v, p, "/") != 3) return ""
+        if (hex(p[1]) < 0 || hex(p[2]) < 0 || hex(p[3]) < 0) return ""
+        return sprintf("%d;%d;%d", hex(p[1]), hex(p[2]), hex(p[3]))
+    }
+    function flush(   i, s, v, p, r, g, b, f, k) {
+        if (name == "") return
+        s = ""
+        #a base16 theme and its light twin carry the SAME sixteen slots: what
+        #separates them is foreground on background. Show that first or the
+        #preview says the two are the same theme
+        f = rgb(fgv); k = rgb(bgv)
+        if (f != "" && k != "")
+            s = sprintf("\033[48;2;%sm\033[38;2;%sm Aa \033[0m ", k, f)
+        for (i = 0; i <= 15; i++) {
+            v = deref(raw[i])
+            if (split(v, p, "/") != 3) continue
+            r = hex(p[1]); g = hex(p[2]); b = hex(p[3])
+            if (r < 0 || g < 0 || b < 0) continue
+            s = s sprintf("\033[48;2;%d;%d;%dm  ", r, g, b)
+        }
+        #printed even when s is empty: a listing lists, and an item we could
+        #not draw is still an item you may want to enable
+        printf "%s\t%s\n", name, s
+        delete raw; fgv = ""; bgv = ""
+    }
+    FNR == 1 {
+        flush()
+        name = FILENAME; sub(/.*\//, "", name); sub(/\.theme$/, "", name)
+    }
+    /^(color[0-9]+|foreground|background)=/ {
+        n = $0; sub(/=.*$/, "", n)
+        v = $0; sub(/^[^=]*=/, "", v); gsub(/["\047]/, "", v); sub(/[ \t].*$/, "", v)
+        if (n == "foreground")     fgv = v
+        else if (n == "background") bgv = v
+        else { sub(/^color/, "", n); raw[n + 0] = v }
+    }
+    END { flush() }' "${COLORIZE_PATH}"/theme/*.theme 2>/dev/null
+}
+
+_colorize_list_render_utils()
+{   #a utils set is mostly LS_COLORS, so the preview is the question you are
+    #actually asking: what will my files look like
+    awk '
+    function paint(key, sample,   c) {
+        c = code[key]
+        if (c == "" || c == "target") return ""
+        return sprintf("\033[%sm%s\033[0m ", c, sample)
+    }
+    FNR == 1 {
+        if (name != "") { print line }
+        name = FILENAME; sub(/.*\//, "", name); sub(/\.utils$/, "", name)
+        line = name "\t"; drawn = 0; delete code
+    }
+    /LS_COLORS=/ && !drawn {
+        drawn = 1
+        v = $0; sub(/^[^=]*=/, "", v); gsub(/["\047;]$/, "", v); gsub(/^["\047]/, "", v)
+        n = split(v, a, ":")
+        for (i = 1; i <= n; i++) {
+            j = index(a[i], "=")
+            if (j > 1) code[substr(a[i], 1, j - 1)] = substr(a[i], j + 1)
+        }
+        line = name "\t" paint("di", "dir") paint("ex", "run") \
+               paint("*.md", "notes.md") paint("*.jpg", "photo.jpg") \
+               paint("*.tar", "backup.tar")
+    }
+    END { if (name != "") print line }' "${COLORIZE_PATH}"/utils/*.utils 2>/dev/null
+}
+
+_colorize_list_draw()
+{   #$1 name column, $2 columns left for the preview, $3 the item in use.
+    #Everything a row becomes is decided here, continuation lines included: a
+    #prompt of two lines is two rows, and tabs cannot carry that back to the
+    #shell - read(1) eats leading ones, so an empty name field is unsayable
+    awk -v w="${1}" -v max="${2}" -v active="${3}" '
+    BEGIN {
+        for (i = 128; i < 192; i++) cont[sprintf("%c", i)] = 1
+        on = "\033[1;31m"; off = "\033[0m"
+        pad = sprintf("%" (w + 3) "s", "")
+    }
+    #a preview may paint colour and nothing else: sergio draws its prompt on
+    #the terminal first line with \033[s\033[H, and listing themes is no
+    #reason to scribble over your screen. SGR through, every other escape out
+    function clean(s,   out, vis, i, j, len, c) {
+        out = ""; vis = 0; i = 1; len = length(s)
+        while (i <= len) {
+            c = substr(s, i, 1)
+            #\001 and \002 are readline telling itself "this prints nothing"
+            if (c == "\001" || c == "\002") { i++; continue }
+            if (c == "\033") {
+                if (substr(s, i + 1, 1) == "[") {
+                    j = i + 2
+                    while (j <= len && index("0123456789;:<=>?", substr(s, j, 1)) > 0) j++
+                    if (substr(s, j, 1) == "m") out = out substr(s, i, j - i + 1)
+                    i = j + 1
+                } else if (index("()*+-./#%", substr(s, i + 1, 1)) > 0) {
+                    i += 3      #charset selection: ESC ( B and its relatives
+                } else i += 2   #anything else, an OSC included, we want no part of
+                continue
+            }
+            #a continuation byte belongs to the character before it: it costs
+            #no column, and cutting in front of one leaves half a glyph
+            if (!(c in cont)) {
+                if (vis >= max) { out = out "\033[0m\342\200\246"; break }
+                vis++
+            }
+            out = out c; i++
+        }
+        return out off
+    }
+    #what is left once the colour is taken out, which is how you tell a line
+    #that draws nothing from one that merely looks empty
+    function bare(s) {
+        gsub(/\033\[[0-9;:<=>?]*[a-zA-Z]/, "", s)
+        gsub(/\033[()*+\-.\/#%]./, "", s)
+        gsub(/[\001\002 \t]/, "", s)
+        return s
+    }
+    {
+        t = index($0, "\t")
+        if (t == 0) { name = $0; s = "" }
+        else        { name = substr($0, 1, t - 1); s = substr($0, t + 1) }
+
+        if (name == active) head = sprintf(" %s+%-" w "s%s ", on, name, off)
+        else                head = sprintf("  %-" w "s ", name)
+
+        n = split(s, seg, "\013")
+        #several themes open or close their prompt with a blank line, to hold
+        #it apart from the command output. Here the row above already does
+        #that, and an empty line reads as a bug rather than as breathing room
+        while (n > 0 && bare(seg[n]) == "") n--
+        for (b = 1; b <= n && bare(seg[b]) == ""; b++) ;
+
+        if (b > n) { print head; next }
+        for (i = b; i <= n; i++)
+            printf "%s%s\n", (i == b ? head : pad), clean(seg[i])
+    }'
+}
+
 _colorize_list()
 {
-    _colorize_list_sourced()
-    {
-        [ -z "${1}" ] && return 1
-        case "${1}" in
-            "${COLORIZE_THEME}"|"${COLORIZE_PS}"|"${COLORIZE_UTILS}") return 0 ;;
-        esac
-        return 1
-    }
-
     _colorize_list_item()
     {
         [ -z "${1}" ] && return 1
-        printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_BLUE}" "${1}" "${_BIN_SHUNDLE_ENV_NORMAL}"
+
+        #one pass for the width, so the previews line up in a column instead of
+        #starting wherever the longest name happens to end
+        _cz_l__w="0"; _cz_l__n="0"
         for item in "${COLORIZE_PATH}"/"${1}"/*; do
-            _basename "${item}" ."${1}"
-            bitem="${retval}"
-            if _colorize_list_sourced "${bitem}"; then
-                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_RED}"    " +${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-            else
-                printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" "  ${bitem}" "${_BIN_SHUNDLE_ENV_NORMAL}"
-            fi
+            _basename "${item}" ."${1}"; bitem="${retval}"
+            [ "${#bitem}" -gt "${_cz_l__w}" ] && _cz_l__w="${#bitem}"
+            _cz_l__n="$(( _cz_l__n + 1 ))"
         done
+
+        printf "%b%s%b %b%s%b\\n" "${_CZ_L_HEAD}" "${1}" "${_CZ_L_OFF}" \
+            "${_CZ_L_DIM}" "${_cz_l__n}" "${_CZ_L_OFF}"
+
+        #the renderers answer 'name<tab>preview', in the same order the glob
+        #walks, so the marker and the padding are decided in exactly one place.
+        #A renderer that cannot draw here - no bash for the prompts, a theme
+        #file with no palette in it - says nothing, and a name with no preview
+        #is still a listing
+        _cz_l__rows="$(_colorize_list_render_"${1}")"
+        if [ -z "${_cz_l__rows}" ]; then
+            _cz_l__rows="$(for item in "${COLORIZE_PATH}"/"${1}"/*; do
+                _basename "${item}" ."${1}"; printf "%s\\n" "${retval}"; done)"
+        fi
+
+        #which one is in use is a question per section: two sections are free
+        #to carry an item of the same name
         case "${1}" in
-            ps)    [ -f "${COLORIZE_PS}" ]    && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_PS}"    "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
-            theme) [ -f "${COLORIZE_THEME}" ] && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_THEME}" "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
-            utils) [ -f "${COLORIZE_UTILS}" ] && printf "%b%s%b\\n" "${_BIN_SHUNDLE_ENV_NORMAL}" " +${COLORIZE_UTILS}" "${_BIN_SHUNDLE_ENV_NORMAL}" ;;
+            ps)    _cz_l__on="${COLORIZE_PS}"    ;;
+            theme) _cz_l__on="${COLORIZE_THEME}" ;;
+            utils) _cz_l__on="${COLORIZE_UTILS}" ;;
+        esac
+
+        printf "%s\\n" "${_cz_l__rows}" | _colorize_list_draw \
+            "${_cz_l__w}" "$(( ${COLUMNS:-80} - _cz_l__w - 6 ))" "${_cz_l__on}"
+
+        case "${1}" in
+            ps)    [ -f "${COLORIZE_PS}" ]    && printf " %b+%s%b\\n" "${_CZ_L_ON}" "${COLORIZE_PS}"    "${_CZ_L_OFF}" ;;
+            theme) [ -f "${COLORIZE_THEME}" ] && printf " %b+%s%b\\n" "${_CZ_L_ON}" "${COLORIZE_THEME}" "${_CZ_L_OFF}" ;;
+            utils) [ -f "${COLORIZE_UTILS}" ] && printf " %b+%s%b\\n" "${_CZ_L_ON}" "${COLORIZE_UTILS}" "${_CZ_L_OFF}" ;;
         esac
         return 0
     }
