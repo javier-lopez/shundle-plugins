@@ -1,0 +1,80 @@
+# Name:         runner
+# Author:       Javier Lopez <m@javier.io>
+# Description:  one short command for whatever this project uses to run things
+# License:      wtfpl
+# Source:       http://github.com/javier-lopez/shundle-plugins/runner
+# Version:      0.1
+# Shell:        sh
+# Depends:      none
+
+#===============================================================================
+#================================ Settings =====================================
+#===============================================================================
+#Don't modify this section directly, instead set options in your shell init file
+[ -z "${RUNNER_NAME}" ]  && RUNNER_NAME="r"
+#searched in this order, walking up from where you stand. The first one found
+#wins, so put the project's own script before the generic build files
+[ -z "${RUNNER_FILES}" ] && RUNNER_FILES="scripts/run.sh run.sh justfile Justfile Makefile makefile Taskfile.yml package.json"
+
+#===============================================================================
+#================================== Plugin =====================================
+#===============================================================================
+
+_runner_find()
+{   #walk up until a runner shows up, the same way git looks for .git. Builtins
+    #only: this runs on every invocation, and it is the reason the command is
+    #worth typing instead of the path
+    RUNNER_ROOT="" RUNNER_FILE=""
+    _runner_find__dir="${PWD}"
+    while : ; do
+        for _runner_find__f in ${RUNNER_FILES}; do
+            if [ -f "${_runner_find__dir}/${_runner_find__f}" ]; then
+                RUNNER_ROOT="${_runner_find__dir:-/}"
+                RUNNER_FILE="${_runner_find__f}"
+                return 0
+            fi
+        done
+        #the empty string is the last step: "${dir}/x" is then "/x", which is
+        #how the filesystem root gets its turn
+        [ -z "${_runner_find__dir}" ] && return 1
+        _runner_find__dir="${_runner_find__dir%/*}"
+    done
+}
+
+_runner()
+{
+    if ! _runner_find; then
+        printf "%s\\n" "runner: nothing to run from here. Looked up for:" >&2
+        for _runner__f in ${RUNNER_FILES}; do printf "%s\\n" "  ${_runner__f}" >&2; done
+        return 1
+    fi
+
+    #no arguments is a question, not an order: 'make' with no target builds,
+    #and guessing that you meant it is not this plugin's call
+    if [ "${#}" -lt "1" ]; then
+        printf "%s\\n" "${RUNNER_ROOT}/${RUNNER_FILE}"
+        return 0
+    fi
+
+    #from the root, always: a compose file or a Makefile names its paths
+    #relative to the project, not to the subdirectory you happened to be in.
+    #A subshell, so your own directory is where you left it
+    (
+        cd "${RUNNER_ROOT}" || exit 1
+        case "${RUNNER_FILE}" in
+            #the script's own shebang decides the interpreter; forcing bash on
+            #a script that asked for sh is how a plugin breaks a project
+            *.sh)      if [ -x "${RUNNER_FILE}" ]; then "./${RUNNER_FILE}" "${@}"
+                       else sh "${RUNNER_FILE}" "${@}"; fi ;;
+            [jJ]ustfile)   just "${@}" ;;
+            [mM]akefile)   make "${@}" ;;
+            Taskfile.yml)  task "${@}" ;;
+            package.json)  npm run "${@}" ;;
+            *)             "./${RUNNER_FILE}" "${@}" ;;
+        esac
+    )
+}
+
+_shundle_expose "${RUNNER_NAME}"="_runner"
+
+# vim: set ts=8 sw=4 tw=0 ft=sh :
