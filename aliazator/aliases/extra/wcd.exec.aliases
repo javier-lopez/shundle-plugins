@@ -1,0 +1,18 @@
+#wcd, jumping to a directory by a piece of its name from wherever you are.
+#
+#The file is named after wcd.exec and not after wcd on purpose: aliazator's
+#"installed" mode sources a group only when a command by that same basename is
+#on the PATH, so naming it this way is the whole gate - no wcd.exec, no alias.
+#The debian package installs the binary under exactly that name, which is also
+#the name learn's wrapper looks for, so the two line up without help.
+#
+#The second half is checked here because aliazator can only gate on one name:
+#wcd.exec finds the directory, but a child process cannot change its parent's
+#directory, so something has to be SOURCED to actually go there. That is
+#learn's wcd wrapper, and it is why this is an alias over cd rather than a
+#command of its own. Archive the wrapper and the alias goes with it.
+#
+#Nothing here builds the index wcd.exec reads. Without it the wrapper falls
+#back to a plain cd, so this is safe from the first shell and useless until
+#update-cd has run once - its own header suggests a nightly cron entry.
+command -v wcd >/dev/null 2>&1 && alias cd='. wcd'
