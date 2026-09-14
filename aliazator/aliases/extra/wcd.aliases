@@ -1,0 +1,10 @@
+#the file is named after wcd so that "installed" mode turns it on exactly when
+#the command exists: learn exposes wcd into ~/.bin, which is on the PATH long
+#before shundle loads, so the gate answers correctly whatever the bundle order.
+#
+#cd is a shell builtin, so the "never hide a command" rule drops this alias
+#unless it is asked for by name: ALIAZATOR_OVERRIDE="... cd". That is the right
+#way round - hiding cd IS the feature, not an accident - and wcd falls straight
+#through to the builtin for every path that already exists, reaching its index
+#only when the word you typed is not one
+alias cd='. wcd'
