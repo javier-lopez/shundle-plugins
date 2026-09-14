@@ -17,7 +17,7 @@
 #================================== Plugin =====================================
 #===============================================================================
 
-export ALIAZATOR_PATH=""${plugin}"/aliazator/aliases"
+export ALIAZATOR_PATH="${plugin}/aliazator/aliases"
 export ALIAZATOR_CACHE="${ALIAZATOR_PLUGINS}"
 
 . "${plugin}"/aliazator/bin/aliazator-enable "${ALIAZATOR_PLUGINS}"
