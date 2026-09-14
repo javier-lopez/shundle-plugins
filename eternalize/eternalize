@@ -17,6 +17,20 @@
 #default stays out of any other plugin's aliases on purpose: excluding them
 #here is what makes 'aliazator stats' blind to the aliases you use most
 [ -z "${ETERNALIZE_IGNORE+x}" ] && ETERNALIZE_IGNORE="cd,cd *,ls,ls *,pwd,exit,clear,history,history *,eternalize*"
+#lines that must never reach the file, kept apart from ETERNALIZE_IGNORE on
+#purpose: that one is a taste list and people replace it wholesale in their rc,
+#which would take this with it without anyone noticing. Same syntax, same
+#matching, separate variable, and you have to empty it deliberately.
+#
+#Every pattern wants an assignment or a distinctive prefix, never a bare word.
+#That distinction is the whole design: five months of one real file held twenty
+#lines mentioning "secret", "token" or "passwd" and only five carried a value.
+#A pattern like *secret* would also have hidden "ag SECRET_KEY" and
+#"vi repo-read.token", which are commands worth finding again
+[ -z "${ETERNALIZE_REDACT+x}" ] && ETERNALIZE_REDACT="*AKIA*,*secret*=*,*SECRET*=*,*token=*,*TOKEN=*,*password=*,*PASSWORD=*,*passwd=*,*_key_id=*,*_KEY_ID=*,*ghp_*,*github_pat_*,*BEGIN*PRIVATE*KEY*,*--password*,*--token*"
+#how fast a command's usage count decays, in lines. At the default a command
+#you have not run in 500 lines counts half as much as one you ran today
+[ -z "${ETERNALIZE_HALFLIFE}" ] && ETERNALIZE_HALFLIFE="500"
 #the key that numbers the screen inside the finder. Ctrl-S is XON/XOFF in a
 #terminal, but fzf reads in raw mode so it gets there; a multiplexer that
 #insists on flow control is the case for changing this
@@ -33,7 +47,35 @@
 #TODO 02-10-2013 04:26 >> fix bad behavor when ETERNALIZE_PATH is changed on the fly
 
 export HISTCONTROL="ignoreboth"
-PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"\
+
+_ereturn() { return "${1}"; }
+
+#${?} belongs to whoever reads it first, and by the time the block below runs
+#every other plugin's hook has had a turn at it. So the status is taken at the
+#very front of PROMPT_COMMAND and handed straight back: _ereturn is a function,
+#not a subshell, so the entry that follows sees the exit code its own comment
+#says it needs - colorize's _cz_prompt among them - and nothing forks
+case "${PROMPT_COMMAND}" in
+    *_ereturn*) ;;
+    *) PROMPT_COMMAND='_eexit=$?; _ereturn "${_eexit}"'"${PROMPT_COMMAND:+; ${PROMPT_COMMAND}}" ;;
+esac
+
+#the clock starts in PS0, which bash expands after reading your line and right
+#before running it. The arithmetic inside the expansion assigns in this shell:
+#no process, no DEBUG trap. PS0 arrived in bash 4.4; without it the duration is
+#simply always zero, which is a missing column and not a broken plugin
+if [ -n "${BASH_VERSINFO}" ] && { [ "${BASH_VERSINFO}" -gt 4 ] ||
+   { [ "${BASH_VERSINFO}" -eq 4 ] && [ "${BASH_VERSINFO[1]}" -ge 4 ]; }; }; then
+    _e__pad="0"
+    case "${PS0}" in
+        *_e_t0*) ;;
+        *) PS0="\${_e__pad:0:\$(( _e_t0 = SECONDS, 0 ))}${PS0}" ;;
+    esac
+fi
+
+case "${PROMPT_COMMAND}" in
+ *_ehistory=*) ;;
+ *) PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }"\
 '_ehistory="$(history 1)"
 #history right-aligns its number in 5 columns, so cutting by field position
 #only works while that number has 3 digits: at 2 it returns the command with a
@@ -45,25 +87,78 @@ _ehistory="${_ehistory#* }"
 _ehistory="${_ehistory#"${_ehistory%%[! ]*}"}"
 
 _estatus="0"; [ -z "${_ehistory}" ] && _estatus="1"
-_eignore="${ETERNALIZE_IGNORE}"
+_eignore="${ETERNALIZE_IGNORE}${ETERNALIZE_REDACT:+,${ETERNALIZE_REDACT}}"
 while [ -n "${_eignore}" ] && [ X"${_estatus}" = X"0" ]; do
     _epattern="${_eignore%%,*}"
     case "${_ehistory}" in ${_epattern}) _estatus="1" ;; esac
     [ X"${_eignore}" = X"${_epattern}" ] && _eignore="" || _eignore="${_eignore#*,}"
 done
 
+#an armed clock is read once and disarmed, so a prompt that never started a
+#command - an empty line, a Ctrl-C - cannot report the time you spent typing
+_edur="0"
+[ -n "${_e_t0}" ] && _edur=$(( SECONDS - _e_t0 ))
+_e_t0=""
+
 if [ X"${_estatus}" = X"0" ]; then
-    if [ X"${_ehistory}" != X"${_ehistory__last}" ]; then
-       export _ehistory__last="${_ehistory}"
-       printf "%s\\n" "${_ehistory}" >> "${ETERNALIZE_PATH}"
+    #"same as last time" used to mean the same text, which threw away the run
+    #where a command you had just fixed finally worked. The record is what
+    #repeats or does not: a different status or a different directory is a
+    #different thing that happened, even when you typed the same letters
+    _enow="${_eexit}|${PWD}|${_ehistory}"
+    if [ X"${_enow}" != X"${_ehistory__last}" ]; then
+       export _ehistory__last="${_enow}"
+       #the command goes last because it is the one field with no shape: it can
+       #hold spaces, quotes, even the tab that separates the others, and put at
+       #the end none of that has to be escaped. Lines written before this
+       #format have no tab at all, which is exactly how the reader tells them
+       #apart - no migration, no second format to keep alive
+       printf "%s %s\\t%s\\t%s\\n" "${_eexit:-0}" "${_edur}" "${PWD}" "${_ehistory}" >> "${ETERNALIZE_PATH}"
     fi
 fi'
+ ;;
+esac
 
 #Ctrl-R over the eternal file: ETERNALIZE_BIND holds the readline key sequence
 #to bind it to, e.g. ETERNALIZE_BIND='"\C-r"'. Unset, the default, leaves
 #readline's own reverse search alone: this is a key you opt into
 case "${-}" in
     *i*) if [ -n "${ETERNALIZE_BIND}" ] && [ -n "${BASH_VERSION}" ]; then
+    _eternalize_list()
+    {   #what the finder is fed, deduplicated and ranked.
+        #
+        #Reading newest-first and keeping the first sighting of each line - what
+        #this did before - answers "what did I just do", and a history search is
+        #almost never that question. The count it threw away was the answer: in
+        #a file of 3182 lines, 975 of the 1243 distinct commands had been run
+        #exactly once and 28 accounted for most of the volume. Ordering by
+        #recency alone puts this afternoon on top and buries the twenty commands
+        #that are actually your work.
+        #
+        #So: count the runs, and let age discount the count rather than replace
+        #it. ETERNALIZE_HALFLIFE is where that discount is set.
+        #
+        #The command is everything past the second tab, taken by hand instead of
+        #with $NF, because the command may itself contain tabs and $NF would
+        #hand back only its last piece. A line with no tabs is one written
+        #before the format changed, and is the command entire. Trailing blanks
+        #and repeated spaces are folded so that "git status" and "git status "
+        #stop counting as two different commands - on the real file that alone
+        #merged 53 pairs
+        [ -r "${ETERNALIZE_PATH}" ] || return 0
+        awk -F'\t' -v half="${ETERNALIZE_HALFLIFE:-500}" '
+            { if (NF >= 3) { r = substr($0, index($0, "\t") + 1)
+                             c = substr(r, index(r, "\t") + 1) }
+              else           c = $0
+              gsub(/^[ \t]+|[ \t]+$/, "", c); gsub(/  +/, " ", c)
+              if (c == "") next
+              n[c]++; last[c] = NR }
+            END { if (half <= 0) half = 1
+                  for (c in n)
+                      printf "%.6f\t%s\n", n[c] * exp(-log(2) * (NR - last[c]) / half), c }
+        ' "${ETERNALIZE_PATH}" | sort -rn | cut -f2-
+    }
+
     _eternalize_search()
     {   #the pick lands in the edit buffer instead of running: that is what
         #READLINE_LINE buys, and only 'bind -x' can write it. The file is read
@@ -104,14 +199,15 @@ case "${-}" in
             #at the first keystroke. --sync because the list opens already
             #filtered by whatever you had typed, and a key pressed before that
             #settles would find nothing to label
-            _eternalize_search__pick="$(tac "${ETERNALIZE_PATH}" | awk '!seen[$0]++' |
+            #--no-sort keeps the order it is given, which is now the ranking
+            _eternalize_search__pick="$(_eternalize_list |
                 fzf --no-sort --cycle --sync --height="40%" --prompt="eternalize> " \
                     --header="${ETERNALIZE_FZF_JUMP}: number the screen, then pick" \
                     --query="${READLINE_LINE}" \
                     --jump-labels="123456789abcdefghijklmnopqrstuvwxyz" \
                     --bind="${ETERNALIZE_FZF_JUMP}:jump-accept" ${ETERNALIZE_FZF_OPTS})"
         else
-            _eternalize_search__menu="$(tac "${ETERNALIZE_PATH}" | awk '!seen[$0]++' |
+            _eternalize_search__menu="$(_eternalize_list |
                 grep -i -F -e "${READLINE_LINE}" | head -15 | nl -ba -w2 -s" ")"
             [ -n "${_eternalize_search__menu}" ] || return 0
             printf "\n%s\n%s" "${_eternalize_search__menu}" "eternalize# " > /dev/tty
