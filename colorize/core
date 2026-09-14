@@ -25,6 +25,10 @@
 #inside a variable PS1 expands, where a literal \[ would print as text and
 #leave the cursor misplaced on any long or recalled line
 _cz__s="$(printf '\001')"; _cz__x="$(printf '\002')"; _cz__e="$(printf '\033')"
+#BEL closes an OSC. ECMA-48 allows ST (ESC \) too, and every terminal written
+#since the nineties takes BEL: the title line in a plain .bashrc has used it
+#forever, which is the compatibility argument in one sentence
+_cz__a="$(printf '\007')"
 
 _cz_color() { printf "%s" "${_cz__s}${_cz__e}[${1}m${_cz__x}"; }
 
@@ -318,6 +322,59 @@ _cz_prompt()
     return 0
 }
 
+_cz_osc()
+{   #OSC 133 tells the terminal where the prompt ends and the output begins, so
+    #it can stop seeing a river of bytes and start seeing commands: jump to the
+    #previous prompt, select one command's output, mark the ones that failed.
+    #
+    #This runs LAST in PROMPT_COMMAND on purpose. A theme that builds PS1 once
+    #at startup would be served just as well by wrapping it there, but powerline
+    #rebuilds PS1 on every prompt, and anything written before its hook is
+    #thrown away. Last is the only position that works for both.
+    [ -z "${_CZ_USE_OSC}" ] && return 0
+
+    #D closes the command that just ended and carries its exit status, A opens
+    #the new prompt. Both go straight to the terminal rather than into PS1:
+    #bytes that are never part of the prompt string can never be counted into
+    #its width. _cz_prompt runs first and is the only one that still sees ${?}
+    printf '%s]133;D;%s%s%s]133;A%s' \
+        "${_cz__e}" "${_cz_prompt__ret:-0}" "${_cz__a}" "${_cz__e}" "${_cz__a}"
+
+    #B is the one mark that has to live inside PS1: it says "the prompt stops
+    #here, what follows is what the human typed", and only PS1 knows where that
+    #is. Hence \001..\002 around it, and hence the idempotence check: this
+    #function runs on every prompt and PS1 must not grow a mark each time
+    case "${PS1}" in
+        *133\;B*) ;;
+        *) PS1="${PS1}${_cz__s}${_cz__e}]133;B${_cz__a}${_cz__x}" ;;
+    esac
+}
+
+_cz_osc_arm()
+{   #called by the plugin once the theme has been sourced, which is the first
+    #moment every hook a theme wanted is already registered - appending here is
+    #what puts _cz_osc behind all of them
+    [ -z "${COLORIZE_OSC}" ] && return 0
+    #a terminal that cannot use the marks should not be sent them. The kernel
+    #console and a dumb terminal are the two that gain nothing
+    case "${TERM}" in linux|dumb|"") return 0 ;; esac
+    _CZ_USE_OSC="1"
+
+    #C says "the command is running now, everything after this is its output".
+    #PS0 is expanded the moment you press enter, which is exactly that moment.
+    #No \001..\002 here: PS0 is printed, never measured by readline
+    case "${PS0}" in
+        *133\;C*) ;;
+        *) PS0="${PS0}${_cz__e}]133;C${_cz__a}" ;;
+    esac
+
+    case "${PROMPT_COMMAND}" in
+        *_cz_osc*) ;;
+        *) PROMPT_COMMAND="${PROMPT_COMMAND:+${PROMPT_COMMAND}; }_cz_osc" ;;
+    esac
+    _cz_osc
+}
+
 _cz_hook()
 {   #a theme with a segment of its own registers it here instead of touching
     #PROMPT_COMMAND by hand: it runs after the core's, which owns ${?}
@@ -404,6 +461,11 @@ _cz_use()
 #a minute: below that you were there watching it, and a number nobody reads is
 #just noise in the prompt
 [ -z "${COLORIZE_ELAPSED_MIN}" ] && COLORIZE_ELAPSED_MIN="60"
+#on by default, unlike the git prompt: that one costs a git call per prompt and
+#changes what you see, so it is a choice. This costs nothing, shows nothing,
+#and a terminal that does not know OSC 133 drops it without a trace. Set it to
+#the empty string to stop emitting it
+[ -z "${COLORIZE_OSC+x}" ] && COLORIZE_OSC="1"
 #PS0's substring expansion is only evaluated when the variable is set, and an
 #empty one would skip the arithmetic that arms the clock
 _cz__pad="0"

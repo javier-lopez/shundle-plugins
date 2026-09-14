@@ -31,6 +31,10 @@ if [ -f "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps" ]; then
      . "${COLORIZE_PATH}/ps/${COLORIZE_PS}.ps"
 else . "${plugin}/colorize/bin/colorize" e "${COLORIZE_PS}"; fi
 
+#after the theme, never before: this is the first moment PS1 exists and every
+#hook the theme wanted is already sitting in PROMPT_COMMAND
+command -v _cz_osc_arm >/dev/null 2>&1 && _cz_osc_arm
+
 if [ -f "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme" ]; then
     [ -f ~/.Xdefaults-theme-colorize ] && \
         . "${COLORIZE_PATH}/theme/${COLORIZE_THEME}.theme" || \
