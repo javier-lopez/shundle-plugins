@@ -17,17 +17,6 @@
 #default stays out of any other plugin's aliases on purpose: excluding them
 #here is what makes 'aliazator stats' blind to the aliases you use most
 [ -z "${ETERNALIZE_IGNORE+x}" ] && ETERNALIZE_IGNORE="cd,cd *,ls,ls *,pwd,exit,clear,history,history *,eternalize*"
-#lines that must never reach the file, kept apart from ETERNALIZE_IGNORE on
-#purpose: that one is a taste list and people replace it wholesale in their rc,
-#which would take this with it without anyone noticing. Same syntax, same
-#matching, separate variable, and you have to empty it deliberately.
-#
-#Every pattern wants an assignment or a distinctive prefix, never a bare word.
-#That distinction is the whole design: five months of one real file held twenty
-#lines mentioning "secret", "token" or "passwd" and only five carried a value.
-#A pattern like *secret* would also have hidden "ag SECRET_KEY" and
-#"vi repo-read.token", which are commands worth finding again
-[ -z "${ETERNALIZE_REDACT+x}" ] && ETERNALIZE_REDACT="*AKIA*,*secret*=*,*SECRET*=*,*token=*,*TOKEN=*,*password=*,*PASSWORD=*,*passwd=*,*_key_id=*,*_KEY_ID=*,*ghp_*,*github_pat_*,*BEGIN*PRIVATE*KEY*,*--password*,*--token*"
 #how fast a command's usage count decays, in lines. At the default a command
 #you have not run in 500 lines counts half as much as one you ran today
 [ -z "${ETERNALIZE_HALFLIFE}" ] && ETERNALIZE_HALFLIFE="500"
@@ -87,7 +76,7 @@ _ehistory="${_ehistory#* }"
 _ehistory="${_ehistory#"${_ehistory%%[! ]*}"}"
 
 _estatus="0"; [ -z "${_ehistory}" ] && _estatus="1"
-_eignore="${ETERNALIZE_IGNORE}${ETERNALIZE_REDACT:+,${ETERNALIZE_REDACT}}"
+_eignore="${ETERNALIZE_IGNORE}"
 while [ -n "${_eignore}" ] && [ X"${_estatus}" = X"0" ]; do
     _epattern="${_eignore%%,*}"
     case "${_ehistory}" in ${_epattern}) _estatus="1" ;; esac
