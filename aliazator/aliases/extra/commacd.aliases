@@ -1,0 +1,21 @@
+#named after commacd for the same reason wcd.aliases is named after wcd:
+#"installed" mode turns this file on exactly when the command exists, and learn
+#exposes commacd into ~/.bin, which is on the PATH long before shundle loads.
+#
+#this one sources where wcd.aliases aliases, and it has no choice: ',' ',,' and
+#',,,' are aliases commacd defines over functions it also defines, and no alias
+#can put a function in your shell - only reading the file can. So the link in
+#~/.bin is not a command anybody runs: executing it does nothing at all, its
+#presence on the PATH is the entire signal, and this is what reads it.
+#
+#nothing below reaches _aliazator_shadowing, which only looks at literal
+#"alias" lines and cannot see through a source. Harmless here - no command is
+#named ',' - and it is why these three need no ALIAZATOR_OVERRIDE entry. It
+#would not be harmless for a file that shadowed something.
+#
+#the guard is not decoration: aliazator runs under sh, zsh and ksh too, and
+#commacd is bash (arrays, shopt, complete). Asked for by name so that the
+#shells it was not written for skip it instead of erroring on every prompt
+if [ -n "${BASH_VERSION}" ]; then
+    . commacd
+fi
